@@ -1,16 +1,20 @@
-import { View, Text, StyleSheet } from "react-native";
-import Mapa from "./mapa"; 
+// App.js
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import HomeScreen from './Pantallas/pantallaPrincipal';  // Importa la pantalla de inicio
+import SecondScreen from './Pantallas/segundaPantalla';  // Importa la segunda pantalla
+
+const Stack = createStackNavigator();
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Mapa</Text>
-      <Mapa />
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Home">
+        <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'Pantalla Principal' }} />
+        <Stack.Screen name="Second" component={SecondScreen} options={{ title: 'Segunda Pantalla' }} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16 },
-  title: { fontSize: 24, fontWeight: "bold", marginBottom: 10 },
-});
