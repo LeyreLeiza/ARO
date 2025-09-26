@@ -3,27 +3,31 @@ import { AppRegistry } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'; 
 import { createStackNavigator } from '@react-navigation/stack'; 
+
+// Tus pantallas
 import PantallaPrincipal from './Pantallas/pantallaPrincipal';
 import SegundaPantalla from './Pantallas/segundaPantalla';
+import LoginScreen from './Componentes/LoginScreen';
+
+// Iconos
 import HomeIcon from './assets/HomeIcon';
 import MapIcon from './assets/MapIcon';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator(); 
 
-// Componente de navegación con Tabs
+// Tabs de la app
 const TabNavigation = () => {
   return (
     <Tab.Navigator 
         initialRouteName="Principal" 
         screenOptions={{
-            tabBarActiveTintColor: 'tomato',     // Color cuando está activa la tab
-            tabBarInactiveTintColor: 'gray',     // Color cuando está inactiva
+            tabBarActiveTintColor: 'tomato',
+            tabBarInactiveTintColor: 'gray',
         }}>
       <Tab.Screen
         name="Principal"
         component={PantallaPrincipal}
-        
         options={{ 
             title: 'Pantalla Principal', 
             tabBarIcon: ({ color, size }) => (
@@ -45,11 +49,22 @@ const TabNavigation = () => {
   );
 };
 
+// Navegación general con Login primero
 const NavigationSetup = () => {
   return (
     <NavigationContainer>
-      {/* Usar el TabNavigation dentro del Stack o directamente */}
-      <TabNavigation />
+      <Stack.Navigator initialRouteName="Login">
+        <Stack.Screen 
+          name="Login" 
+          component={LoginScreen} 
+          options={{ headerShown: false }} 
+        />
+        <Stack.Screen 
+          name="App" 
+          component={TabNavigation} 
+          options={{ headerShown: false }} 
+        />
+      </Stack.Navigator>
     </NavigationContainer>
   );
 };
