@@ -1,5 +1,3 @@
-
-// ARO/triPlan/Componentes/LoginScreen.js
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
 
@@ -20,6 +18,7 @@ export default function LoginScreen({ navigation }) {
     }
   };
 
+  //Luego borrar
   const omitir = () => {
     navigation.replace("App");
   };
