@@ -8,6 +8,7 @@ import SegundaPantalla from './Pantallas/segundaPantalla';
 import BDPantalla from './Pantallas/pantallaBD';
 import HomeIcon from './assets/HomeIcon';
 import MapIcon from './assets/MapIcon';
+import LoginScreen from './Pantallas/loginPantalla';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator(); 
@@ -59,8 +60,18 @@ const TabNavigation = () => {
 const NavigationSetup = () => {
   return (
     <NavigationContainer>
-      {/* Usar el TabNavigation dentro del Stack o directamente */}
-      <TabNavigation />
+      <Stack.Navigator initialRouteName="Login">
+        <Stack.Screen 
+          name="Login" 
+          component={LoginScreen} 
+          options={{ headerShown: false }} 
+        />
+        <Stack.Screen 
+          name="App" 
+          component={TabNavigation} 
+          options={{ headerShown: false }} 
+        />
+      </Stack.Navigator>
     </NavigationContainer>
   );
 };
