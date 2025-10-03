@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
@@ -30,7 +30,8 @@ export default function Mapa() {
     longitudeDelta: 0.05,
   });
   const [activeMarker, setActiveMarker] = useState(null);
-  const [dismissedMarker, setDismissedMarker] = useState(null);
+  const [lastDismissed, setLastDismissed] = useState({});
+  const lastDismissedRef = useRef(lastDismissed);
 
   const markers = [
     { id: 1, title: "Ayuntamiento de Pamplona", latitude: 42.8169, longitude: -1.6432 },
@@ -38,6 +39,13 @@ export default function Mapa() {
     { id: 3, title: "Ciudadela de Pamplona", latitude: 42.8154, longitude: -1.6510 },
     { id: 4, title: "UPNA", latitude: 42.800645, longitude: -1.635858 },
   ];
+
+  const cooldown = 15 * 60 * 1000; // 2 min
+
+  // Mantener ref actualizado
+  useEffect(() => {
+    lastDismissedRef.current = lastDismissed;
+  }, [lastDismissed]);
 
   useEffect(() => {
     (async () => {
@@ -73,20 +81,22 @@ export default function Mapa() {
             }
           });
 
-          if (nearest && nearest.distance < 20) {
-            if (dismissedMarker !== nearest.id) {
+          if (nearest && nearest.distance < 15) {
+            const lastTime = lastDismissedRef.current[nearest.id] || 0;
+            const now = Date.now();
+
+            if (now - lastTime > cooldown) {
               setActiveMarker(nearest);
             }
           } else {
             setActiveMarker(null);
-            setDismissedMarker(null);
           }
         }
       );
 
       return () => subscription.remove();
     })();
-  }, [dismissedMarker]);
+  }, []); 
 
   return (
     <View style={styles.container}>
@@ -108,7 +118,10 @@ export default function Mapa() {
             <TouchableOpacity
               style={styles.closeIcon}
               onPress={() => {
-                setDismissedMarker(activeMarker.id);
+                setLastDismissed((prev) => ({
+                  ...prev,
+                  [activeMarker.id]: Date.now(),
+                }));
                 setActiveMarker(null);
               }}
             >
@@ -130,7 +143,6 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   map: { flex: 1 },
 
-  // Fondo semitransparente tipo modal
   popupOverlay: {
     position: "absolute",
     top: 0,
@@ -141,8 +153,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-
-  // Caja del popup
   popup: {
     width: "80%",
     backgroundColor: "white",
@@ -152,7 +162,7 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowOpacity: 0.3,
     shadowRadius: 6,
-    position: "relative", // necesario para colocar la ❌
+    position: "relative",
   },
   popupTitle: {
     fontSize: 22,
@@ -164,8 +174,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: "center",
   },
-
-  // Botón de cerrar en la esquina superior derecha
   closeIcon: {
     position: "absolute",
     top: 10,
