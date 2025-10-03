@@ -5,6 +5,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack'; 
 import PantallaPrincipal from './Pantallas/pantallaPrincipal';
 import SegundaPantalla from './Pantallas/segundaPantalla';
+import BDPantalla from './Pantallas/pantallaBD';
 import HomeIcon from './assets/HomeIcon';
 import MapIcon from './assets/MapIcon';
 
@@ -36,6 +37,16 @@ const TabNavigation = () => {
         component={SegundaPantalla}
         options={{ 
             title: 'Segunda Pantalla',
+            tabBarIcon: ({ color, size }) => (
+                <MapIcon size={size} stroke={color} />            
+            )
+        }}
+      />
+        <Tab.Screen
+        name="BD"
+        component={BDPantalla}
+        options={{ 
+            title: 'BD',
             tabBarIcon: ({ color, size }) => (
                 <MapIcon size={size} stroke={color} />            
             )
