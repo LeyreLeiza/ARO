@@ -18,7 +18,6 @@ export default function PantallaPrincipal({ navigation }) {
         </Pressable>
       </View>
     </Layout>
-
   );
 }
 
