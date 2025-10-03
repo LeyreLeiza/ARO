@@ -1,7 +1,8 @@
 import React from 'react';
-import { StyleSheet, Text, View, Button} from 'react-native';
+import { StyleSheet, Text, View, Button } from 'react-native';
 import Mapa from "../mapa"; 
 import Layout from '../Componentes/layout';
+import BottomSheet from '../Componentes/BottomSheet'; // 👈 añadimos el BottomSheet
 
 export default function SegundaPantalla({ navigation }) {
   return (
@@ -16,7 +17,9 @@ export default function SegundaPantalla({ navigation }) {
         <Text style={styles.title}>Mapa</Text>
         <Mapa />
       </View>
-      
+
+      {/* 👇 Aquí aparece el botón deslizable */}
+      <BottomSheet />
     </Layout>
   );
 }
