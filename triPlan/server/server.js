@@ -3,7 +3,7 @@ import { query } from "./conectarBD.js";  // tu archivo de conexión a MariaDB
 
 const app = express();
 app.use(express.json()); // para procesar JSON si haces POST
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 10000;
 
 // Ruta para obtener todos los puntos de interés
 app.get("/puntos", async (req, res) => {
