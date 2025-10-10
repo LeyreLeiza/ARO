@@ -48,14 +48,14 @@ export default function App() {
   //devuelve datos -> variable puntos metida y mostrada en un ScrollView
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Puntos de interés</Text>
+      <Text style={[styles.title, { marginTop: 0 }]}>Puntos de interés</Text>
       <ScrollView>  
         {puntos.length === 0 ? (
           <Text>No hay datos disponibles</Text>
         ) : (
           puntos.map((p, index) => (
             <Text key={index} style={styles.item}>
-              {p.NOMBRE}: lat {p.lat}, lon {p.lon}
+              {p.NOMBRE}
             </Text>
           ))
         )}
@@ -66,7 +66,7 @@ export default function App() {
 
 //estilos
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, marginTop: 40 },
+  container: { flex: 1, padding: 16, marginTop: 20 },
   title: { fontSize: 24, fontWeight: "bold", marginBottom: 10 },
   item: { fontSize: 18, marginBottom: 8 },
 });

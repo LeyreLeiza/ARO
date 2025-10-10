@@ -1,8 +1,9 @@
 import React, { useRef } from 'react';
 import { View, StyleSheet, Animated, PanResponder } from 'react-native';
+import Busqueda from "../Pantallas/pantallaBusqueda"
 
-const MIN_HEIGHT = 80;   // altura mínima (solo el asa)
-const MAX_HEIGHT = 500;  // altura máxima
+const MIN_HEIGHT = 30;   // altura mínima (solo el asa)
+const MAX_HEIGHT = 600;  // altura máxima
 
 const BottomSheet = () => {
   const sheetHeight = useRef(new Animated.Value(MIN_HEIGHT)).current;
@@ -37,7 +38,7 @@ const BottomSheet = () => {
 
       {/* Contenido */}
       <View style={styles.content}>
-        {/* Aquí iría la info de las rutas o lo que quieras */}
+        <Busqueda/>
       </View>
     </Animated.View>
   );
@@ -60,7 +61,7 @@ const styles = StyleSheet.create({
   },
   handleArea: {
     alignItems: 'center',
-    padding: 20, // área clicable más grande
+    paddingTop: 10, // área clicable más grande
   },
   handle: {
     width: 80,
@@ -70,7 +71,7 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 10,
+    padding: -10,
   },
 });
 

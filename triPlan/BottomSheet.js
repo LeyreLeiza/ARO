@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TouchableOpacity, StyleSheet, Animated } from 'react-native';
+import { View, TouchableOpacity, StyleSheet, Animated, Text } from 'react-native';
 
 const BottomSheet = () => {
   const [open, setOpen] = useState(false);
@@ -15,15 +15,15 @@ const BottomSheet = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <Animated.View style={styles.container}>
       {/* Botón (barra gris) */}
       <TouchableOpacity onPress={toggleSheet} style={styles.handle} />
 
       {/* Panel deslizable vacío */}
-      <Animated.View style={[styles.sheet, { height }]}>
-        {/* Aquí metes más adelante el contenido */}
-      </Animated.View>
-    </View>
+      <View style={[styles.sheet, { height }]}>
+        <Text>Hola</Text>
+      </View>
+    </Animated.View>
   );
 };
 
