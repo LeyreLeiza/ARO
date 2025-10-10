@@ -13,6 +13,7 @@ import MapIcon from './assets/MapIcon';
 import SettingsIcon from './assets/SettingsIcon';
 import LoginScreen from './Pantallas/loginPantalla';
 
+
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator(); 
 
@@ -92,3 +93,4 @@ const NavigationSetup = () => {
 };
 
 AppRegistry.registerComponent('main', () => NavigationSetup);
+
