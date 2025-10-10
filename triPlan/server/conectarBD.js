@@ -4,7 +4,7 @@ import mariadb from 'mariadb';
 
 
 export const pool = mariadb.createPool({
-    host: process.env.MARIA_HOST || '10.168.247.98', //localhost si servidor en mismo pc que app
+    host: process.env.MARIA_HOST || '10.17.123.98', //localhost si servidor en mismo pc que app
     port: Number(process.env.MARIA_PORT) || 3306,
     user: process.env.MARIA_USER || 'usuario_remoto',
     password: process.env.MARIA_PASS || 'ProyectoARO',

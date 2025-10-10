@@ -11,7 +11,7 @@ export default function App() {
     const fetchPuntos = async () => {
       try {
         // Cambia localhost por la IP de tu PC si usas móvil físico
-        const response = await fetch("http://10.187.73.98:3000/puntos");
+        const response = await fetch("http://10.17.123.98:3000/puntos");
         if (!response.ok) throw new Error("Error en la respuesta del servidor");
         const data = await response.json();
         setPuntos(data);

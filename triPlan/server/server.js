@@ -3,7 +3,7 @@ import { query } from "./conectarBD.js";  // tu archivo de conexión a MariaDB
 
 const app = express();
 app.use(express.json()); // para procesar JSON si haces POST
-const port = process.env.PORT || 3306;
+const port = process.env.PORT || 3000;
 
 // Ruta para obtener todos los puntos de interés
 app.get("/puntos", async (req, res) => {
@@ -102,11 +102,6 @@ app.get("/eventos/:id", async (req, res) => {
 });
 
 
-
-// Puedes agregar más rutas si quieres filtrar, insertar, etc.
-// Por ejemplo: /puntos/:id, /puntos/tipo, etc.
-
-// Inicia el servidor en el puerto 3000
-app.listen(3000, () =>
-  console.log("Backend corriendo en http://localhost:3000")
-);
+app.listen(port, '0.0.0.0', () => {
+  console.log(`Servidor escuchando en puerto ${port}`);
+});
