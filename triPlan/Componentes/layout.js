@@ -4,11 +4,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Layout({ children, navigation }) {
   return (
-    <SafeAreaView style={styles.container}>
       <View style={styles.content}>
         {children}
       </View>
-    </SafeAreaView>    
   );
 }
 const styles = StyleSheet.create({
@@ -17,6 +15,6 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1, 
-    paddingBottom: 60, 
+    paddingBottom: 30, 
   },
 });

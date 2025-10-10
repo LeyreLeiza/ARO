@@ -3,11 +3,14 @@ import { AppRegistry } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'; 
 import { createStackNavigator } from '@react-navigation/stack'; 
-import PantallaPrincipal from './Pantallas/pantallaPrincipal';
-import SegundaPantalla from './Pantallas/segundaPantalla';
-import BDPantalla from './Pantallas/pantallaBD';
-import HomeIcon from './assets/HomeIcon';
+import PantallaMapa from './Pantallas/pantallaMapa';
+import PantallaBusqueda from './Pantallas/pantallaBusqueda';
+import PantallaEventos from './Pantallas/pantallaEventos'
+import PantallaConfiguracion from './Pantallas/pantallaConfiguracion'
+import SearchIcon from './assets/SearchIcon';
+import CalendarIcon from './assets/CalendarIcon';
 import MapIcon from './assets/MapIcon';
+import SettingsIcon from './assets/SettingsIcon';
 import LoginScreen from './Pantallas/loginPantalla';
 
 const Stack = createStackNavigator();
@@ -17,39 +20,51 @@ const Tab = createBottomTabNavigator();
 const TabNavigation = () => {
   return (
     <Tab.Navigator 
-        initialRouteName="Principal" 
+        initialRouteName="Mapa" 
         screenOptions={{
             tabBarActiveTintColor: 'tomato',     // Color cuando está activa la tab
             tabBarInactiveTintColor: 'gray',     // Color cuando está inactiva
         }}>
       <Tab.Screen
-        name="Principal"
-        component={PantallaPrincipal}
-        
+        name="Mapa"
+        component={PantallaMapa}
         options={{ 
-            title: 'Pantalla Principal', 
+            title: 'Mapa',
             tabBarIcon: ({ color, size }) => (
-                <HomeIcon size={size} stroke={color} />            
+                <MapIcon size={size} stroke={color} />            
             )
         }}
       />
+      
       <Tab.Screen
-        name="Segunda"
-        component={SegundaPantalla}
+        name="Buscar"
+        component={PantallaBusqueda}
         options={{ 
-            title: 'Segunda Pantalla',
+            title: 'Buscar',
             tabBarIcon: ({ color, size }) => (
-                <MapIcon size={size} stroke={color} />            
+                <SearchIcon size={size} stroke={color} />            
             )
         }}
       />
-        <Tab.Screen
-        name="BD"
-        component={BDPantalla}
+
+      <Tab.Screen
+        name="Eventos"
+        component={PantallaEventos}
         options={{ 
-            title: 'BD',
+            title: 'Eventos',
             tabBarIcon: ({ color, size }) => (
-                <MapIcon size={size} stroke={color} />            
+                <CalendarIcon size={size} stroke={color} />            
+            )
+        }}
+      />
+
+      <Tab.Screen
+        name="Configuracion"
+        component={PantallaConfiguracion}
+        options={{ 
+            title: 'Configuracion',
+            tabBarIcon: ({ color, size }) => (
+                <SettingsIcon size={size} stroke={color} />            
             )
         }}
       />

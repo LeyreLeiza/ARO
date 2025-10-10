@@ -46,7 +46,7 @@ const BottomSheet = () => {
 const styles = StyleSheet.create({
   sheet: {
     position: 'absolute',
-    bottom: -50, // deja espacio para el TabNavigator
+    bottom: 0, // deja espacio para el TabNavigator
     left: 0,
     right: 0,
     backgroundColor: '#fff',
