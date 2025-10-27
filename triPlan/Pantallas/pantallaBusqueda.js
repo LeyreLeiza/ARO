@@ -1,30 +1,8 @@
-import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from "react-native";
+import { useBuscaPuntos } from "../Funcionalidades/busquedaPuntos";
 
 export default function App() {
-  const [puntos, setPuntos] = useState([]);       //guardar informacion de puntos
-  const [loading, setLoading] = useState(true);  // para mostrar cargando
-  const [error, setError] = useState(null);     //para mostrar errores
-
-  //carga los datos de la BD -> hace fetch
-  useEffect(() => {
-    const fetchPuntos = async () => {
-      try {
-        // Cambia localhost por la IP de tu PC si usas móvil físico
-        const response = await fetch("http://10.17.123.98:10000/puntos");
-        if (!response.ok) throw new Error("Error en la respuesta del servidor");
-        const data = await response.json();
-        setPuntos(data);
-      } catch (err) {
-        console.error("Error cargando datos:", err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPuntos();
-  }, []);
+  const { puntos, loading, error } = useBuscaPuntos();
 
   //Render de cargar datos 
   if (loading) {
