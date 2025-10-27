@@ -1,11 +1,10 @@
 import React, { useRef } from 'react';
 import { View, StyleSheet, Animated, PanResponder } from 'react-native';
-import Busqueda from "../Pantallas/pantallaBusqueda"
 
 const MIN_HEIGHT = 30;   // altura mínima (solo el asa)
 const MAX_HEIGHT = 600;  // altura máxima
 
-const BottomSheet = () => {
+const BottomSheet = ({ children }) => {
   const sheetHeight = useRef(new Animated.Value(MIN_HEIGHT)).current;
   const lastHeight = useRef(MIN_HEIGHT); // guardamos la última altura al soltar
 
@@ -38,7 +37,7 @@ const BottomSheet = () => {
 
       {/* Contenido */}
       <View style={styles.content}>
-        <Busqueda/>
+        {children}
       </View>
     </Animated.View>
   );
