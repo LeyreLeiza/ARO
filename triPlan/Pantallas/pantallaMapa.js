@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Image, TextInput, FlatList, ActivityIndicator } from 'react-native';
 import Mapa from "../mapa"; 
 import Layout from '../Componentes/layout';
@@ -22,6 +22,17 @@ const ubicaciones = [
 export default function PantallaMapa({ navigation }) {
   const [search, setSearch] = useState("");
   const [filteredUbis, setFilteredUbis] = useState(ubicaciones);
+  //const [ubicaciones, setUbicaciones] = useState([]); VOLVER A PONER CUANDO LLAME A LA BD
+
+  useEffect(() => {
+      const nuevasUbis = puntos.map((p, index) => ({
+        id: (index + 1).toString(),
+        titulo: p.NOMBRE,
+        coordenadas: p.COORDENADAS || "0,0",
+      }));
+      //setUbicaciones(nuevasUbis); VOLVER A PONER CUANDO LLAME A LA BD
+  }, [puntos]);
+
 
   const normalizarTexto = (str) => {
     return str
@@ -78,12 +89,13 @@ export default function PantallaMapa({ navigation }) {
           </View>
         ) : (
           <FlatList
-            data={puntos}  // aquí usas los puntos traídos del hook
-            keyExtractor={(item) => item.id.toString()}
+            data={filteredUbis} 
+            keyExtractor={(item) => item.id}
             renderItem={renderItem}
           />
         )}
-        <FlatList
+        
+        <FlatList //ESTE SEGUNDO SOBRARÁ DESPUES
           data={filteredUbis}
           keyExtractor={(item) => item.id}
           renderItem={renderItem}
