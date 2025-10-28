@@ -6,32 +6,31 @@ import BottomSheet from '../Componentes/BottomSheet';
 import { useBuscaPuntos } from "../Funcionalidades/busquedaPuntos";
 
 const imagenUbicacion = require("../assets/simboloUbicacion.png");
-const ubicaciones = [
-  { id: "1", titulo: "Ubicación 1", coordenadas: "17.213, 213.21" },
-  { id: "2", titulo: "Ubicación 2 con palabra muy larga si es larga", coordenadas: "37.213, 2.21" },
-  { id: "3", titulo: "Ubicación 3", coordenadas: "15.532, 210.45" },
-  { id: "4", titulo: "Ubicación 4 cerca del centro", coordenadas: "18.221, 200.91" },
-  { id: "5", titulo: "Ubicación 5", coordenadas: "19.121, 205.77" },
-  { id: "6", titulo: "Ubicación 6 norte", coordenadas: "16.987, 211.34" },
-  { id: "7", titulo: "Ubicación 7 sur", coordenadas: "14.653, 207.18" },
-  { id: "8", titulo: "Ubicación 8 en zona rural", coordenadas: "20.121, 215.76" },
-  { id: "9", titulo: "Ubicación 9 con nombre largo de ejemplo para probar texto largo", coordenadas: "22.553, 219.21" },
-  { id: "10", titulo: "Ubicación 10 final", coordenadas: "25.001, 223.44" }
-];
 
 export default function PantallaMapa({ navigation }) {
   const [search, setSearch] = useState("");
-  const [filteredUbis, setFilteredUbis] = useState(ubicaciones);
-  //const [ubicaciones, setUbicaciones] = useState([]); VOLVER A PONER CUANDO LLAME A LA BD
+  const [filteredUbis, setFilteredUbis] = useState([]);
+  const [ubicaciones, setUbicaciones] = useState([]); 
+
+  const { puntos, loading, error } = useBuscaPuntos();
 
   useEffect(() => {
-      const nuevasUbis = puntos.map((p, index) => ({
-        id: (index + 1).toString(),
-        titulo: p.NOMBRE,
-        coordenadas: p.COORDENADAS || "0,0",
+    // Solo ejecuta el mapeo cuando ya terminó de cargar
+    if (!loading && puntos.length > 0) {
+      const nuevasUbis = puntos.map((p) => ({
+        id: p.id.toString(),
+        titulo: p.nombre,
+        lon: Number(p.lon),
+        lat: Number(p.lat),
+        tipo: p.tipo,
       }));
-      //setUbicaciones(nuevasUbis); VOLVER A PONER CUANDO LLAME A LA BD
-  }, [puntos]);
+
+      setUbicaciones(nuevasUbis);
+      setFilteredUbis(nuevasUbis);
+    } else if (!loading && puntos.length === 0) {
+      console.log("No hay puntos disponibles");
+    }
+  }, [loading, puntos]);
 
 
   const normalizarTexto = (str) => {
@@ -56,17 +55,16 @@ export default function PantallaMapa({ navigation }) {
       <Image style={styles.imagenUbi} source={imagenUbicacion} />
       <View style={styles.textContainer}>
         <Text style={styles.titulo}>{item.titulo}</Text>
-        <Text style={styles.coordenadas}>{item.coordenadas}</Text>
+        <Text style={styles.coordenadas}>{item.tipo}</Text>
       </View>
     </View>
   );
-  
-  const { puntos, loading, error } = useBuscaPuntos();
+    
 
   return (
     <Layout navigation={navigation}>
       <View style={styles.container}>
-        <Mapa />
+        <Mapa ubicaciones={filteredUbis}/>
         <View style={styles.cajaBuscador}>
           <Image style={styles.imagenBusqueda} source={require("../assets/searchIcon.png")} />
           <TextInput
@@ -95,11 +93,6 @@ export default function PantallaMapa({ navigation }) {
           />
         )}
         
-        <FlatList //ESTE SEGUNDO SOBRARÁ DESPUES
-          data={filteredUbis}
-          keyExtractor={(item) => item.id}
-          renderItem={renderItem}
-        />
       </BottomSheet>
     </Layout>
   );

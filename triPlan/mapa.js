@@ -21,7 +21,7 @@ function getDistance(lat1, lon1, lat2, lon2) {
   return R * c;
 }
 
-export default function Mapa() {
+export default function Mapa({ ubicaciones = [] }) {
   const [location, setLocation] = useState(null);
   const [region, setRegion] = useState({
     latitude: 42.8169,
@@ -32,13 +32,6 @@ export default function Mapa() {
   const [activeMarker, setActiveMarker] = useState(null);
   const [lastDismissed, setLastDismissed] = useState({});
   const lastDismissedRef = useRef(lastDismissed);
-
-  const markers = [
-    { id: 1, title: "Ayuntamiento de Pamplona", latitude: 42.8169, longitude: -1.6432 },
-    { id: 2, title: "Plaza del Castillo", latitude: 42.8162, longitude: -1.6435 },
-    { id: 3, title: "Ciudadela de Pamplona", latitude: 42.8154, longitude: -1.6510 },
-    { id: 4, title: "UPNA", latitude: 42.800645, longitude: -1.635858 },
-  ];
 
   const cooldown = 15 * 60 * 1000; // 2 min
 
@@ -68,12 +61,12 @@ export default function Mapa() {
           let nearest = null;
           let minDist = Infinity;
 
-          markers.forEach((m) => {
+          ubicaciones.forEach((m) => {
             const d = getDistance(
               loc.coords.latitude,
               loc.coords.longitude,
-              m.latitude,
-              m.longitude
+              Number(m.lat),
+              Number(m.lon)
             );
             if (d < minDist) {
               minDist = d;
@@ -96,16 +89,18 @@ export default function Mapa() {
 
       return () => subscription.remove();
     })();
-  }, []); 
+  }, [ubicaciones]); 
+  console.log(ubicaciones);
 
   return (
     <View style={styles.container}>
       <MapView style={styles.map} region={region} showsUserLocation>
-        {markers.map((m) => (
+       
+        {ubicaciones.map((m) => (
           <Marker
             key={m.id}
-            coordinate={{ latitude: m.latitude, longitude: m.longitude }}
-            title={m.title}
+            coordinate={{ latitude: Number(m.lon), longitude: Number(m.lat) }}
+            title={m.titulo}
           />
         ))}
       </MapView>
@@ -128,7 +123,7 @@ export default function Mapa() {
               <Text style={styles.closeText}>✖</Text>
             </TouchableOpacity>
 
-            <Text style={styles.popupTitle}>📍 {activeMarker.title}</Text>
+            <Text style={styles.popupTitle}>📍 {activeMarker.titulo}</Text>
             <Text style={styles.popupText}>
               Estás a {activeMarker.distance} metros de este lugar.
             </Text>
