@@ -1,0 +1,425 @@
+/* 1. Configuración Global y Variables */
+:root {
+    --color-primario: #9f1239; /* Rojo suave vino (Red 700) */
+    --color-secundario: #f87171; /* Rojo coral suave (Red 400) */
+    --color-acento-azul: #fb7185; /* Rosa salmón (Rose 400) */
+    --color-fondo-claro: #fff; /* Rosa muy claro (Rose 50) */
+    --color-texto-principal: #2b2b2b;
+    --color-fondo-footer: #fff;
+    --color-texto-claro: #fff5f5;
+    --font-titulos: 'Poppins', sans-serif;
+    --font-cuerpo: 'Roboto', sans-serif;
+}
+
+/* Reseteo básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--font-cuerpo);
+    color: var(--color-texto-principal);
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+/* 2. Encabezado y Navegación */
+.header {
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+}
+
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 70px;
+}
+
+.nav-logo {
+    font-family: var(--font-titulos);
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--color-primario);
+    text-decoration: none;
+}
+
+.logo-img {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+.nav-menu {
+    list-style: none;
+    display: flex;
+    gap: 1.5rem;
+}
+
+.nav-link {
+    text-decoration: none;
+    color: var(--color-primario);
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+    color: var(--color-acento-azul);
+}
+
+/* 3. Sección Principal (Hero) */
+/* Eliminamos el filtro rojo */
+.hero-section {
+    position: relative;
+    background-image: url('assets/FondoTexto.avif');
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding-top: 70px;
+    color: #fff;
+}
+
+/* Capa oscura encima del fondo */
+.hero-section::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.45); /* Ajusta la opacidad (0.3 a 0.6 según lo oscuro que quieras) */
+    z-index: 1;
+}
+
+/* Aseguramos que el texto quede por encima del overlay */
+.hero-content {
+    position: relative;
+    z-index: 2;
+}
+
+.hero-content h1 {
+    font-family: var(--font-titulos);
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+}
+
+.hero-content p {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+    max-width: 600px;
+}
+
+.hero-illustration img {
+    margin-top: 2rem;
+    width: 350px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+
+.cta-button {
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    background-color: var(--color-secundario);
+    color: #fff;
+}
+
+.cta-button:hover {
+    transform: translateY(-3px) scale(1.05);
+    background-color: #ef4444;
+}
+
+/* 4. Secciones Generales */
+.section {
+    padding: 5rem 0;
+}
+
+.section-title {
+    font-family: var(--font-titulos);
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 3rem;
+    color: var(--color-primario);
+}
+
+.bg-light {
+    background-color: var(--color-fondo-claro);
+}
+
+/* 5. Sección de Características */
+.features-section {
+    background-color: var(--color-fondo-claro); /* Mismo fondo que demostración y ventajas */
+    padding: 5rem 0;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+}
+
+.feature-card {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-card h3 {
+    font-family: var(--font-titulos);
+    font-size: 1.5rem;
+    color: var(--color-secundario);
+    margin-bottom: 0.5rem;
+}
+
+.feature-card:hover, .team-member:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+}
+
+.feature-icon {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    margin-bottom: 1rem;
+}
+
+/* 6. Sección de Demostración */
+.demo-images {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: nowrap;
+}
+
+.demo-img {
+    flex: 1 1 auto;
+    max-width: 200px;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+/* 7. Sección de Equipo */
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    text-align: center;
+}
+
+.team-member {
+    font-weight: 500;
+    font-size: 1.1rem;
+    padding: 1rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+
+/* 8. Pie de Página */
+.footer {
+    background-color: var(--color-fondo-footer);
+    color: var(--color-texto-principal);
+    text-align: center;
+    padding: 3rem 0;
+}
+
+.footer-links {
+    margin-top: 1rem;
+}
+
+.footer-links a {
+    color: var(--color-texto-principal);
+    text-decoration: none;
+    margin: 0 0.5rem;
+    transition: color 0.3s ease;
+}
+
+.footer-links a:hover {
+    color: var(--color-acento-azul);
+}
+
+/* 9. Responsividad */
+@media (max-width: 768px) {
+    .hero-content h1 {
+        font-size: 2.5rem;
+    }
+
+    .nav-menu {
+        display: none;
+    }
+
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .demo-images {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .demo-img {
+        width: 80%;
+        max-width: 300px;
+    }
+}
+
+/* 10. Animaciones */
+.animate-on-scroll {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.animate-on-scroll.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* 11. Círculos diagonales (alineados y responsivos en una sola línea) */
+.container-fluid {
+    width: 100%;
+    padding: 0 2rem;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.advantages-circles-diagonal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: clamp(1rem, 3vw, 4rem); /* Espacio dinámico según pantalla */
+    flex-wrap: nowrap; /* Siempre en una sola línea */
+    padding: 4rem 0;
+    overflow: hidden; /* Evita barra horizontal */
+    flex-shrink: 1;
+}
+
+.advantage-circle {
+    flex: 1 1 clamp(180px, 20vw, 280px); /* Se ajusta automáticamente al ancho disponible */
+    aspect-ratio: 1 / 1;
+    background-color: var(--color-secundario);
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 1.5rem;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+    min-width: 160px;
+    max-width: 280px;
+}
+
+.advantages-circles-diagonal .advantage-circle:nth-child(odd) {
+    transform: translateY(-15px);
+}
+
+.advantages-circles-diagonal .advantage-circle:nth-child(even) {
+    transform: translateY(15px);
+}
+
+.advantage-circle:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 16px 35px rgba(0,0,0,0.18);
+    background-color: #fca5a5;
+}
+
+.advantage-circle h3 {
+    font-size: clamp(1rem, 1.2vw, 1.3rem);
+    margin-bottom: 0.5rem;
+    font-family: var(--font-titulos);
+}
+
+.advantage-circle p {
+    font-size: clamp(0.8rem, 1vw, 1rem);
+    line-height: 1.4;
+    max-width: 220px;
+}
+
+/* --- Responsividad --- */
+@media (max-width: 768px) {
+    .advantages-circles-diagonal {
+        flex-wrap: wrap; /* En móviles, permite saltar línea */
+        gap: 2rem;
+    }
+
+    .advantage-circle {
+        flex: 1 1 45%;
+        min-width: 160px;
+        transform: translateY(0) !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .advantage-circle {
+        flex: 1 1 80%;
+    }
+}
+
+/* === CENTRAR TODOS LOS TEXTOS DE LA WEB === */
+body, 
+h1, h2, h3, h4, h5, h6, 
+p, 
+.feature-card, 
+.demo-images, 
+.footer, 
+.section, 
+.hero-content,
+.features-grid,
+.advantages-circles-diagonal {
+    text-align: center;
+}
+
+/* Ajustes específicos para asegurar consistencia */
+
+.hero-content {
+    margin: 0 auto;
+    max-width: 800px;
+}
+
+.feature-card p,
+.advantage-circle p {
+    margin: 0 auto;
+}
+
+.section-title {
+    text-align: center;
+}
+
+.footer-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
