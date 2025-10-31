@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { View, StyleSheet, Animated, PanResponder } from 'react-native';
 
-const MIN_HEIGHT = 30;   // altura mínima (solo el asa)
+const MIN_HEIGHT = 80;   // altura mínima (solo el asa)
 const MAX_HEIGHT = 600;  // altura máxima
 
 const BottomSheet = ({ children }) => {

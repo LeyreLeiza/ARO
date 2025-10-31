@@ -4,15 +4,16 @@ import Mapa from "../mapa";
 import Layout from '../Componentes/layout';
 import BottomSheet from '../Componentes/BottomSheet'; 
 import { useBuscaPuntos } from "../Funcionalidades/busquedaPuntos";
-import { Ionicons } from '@expo/vector-icons'; // o el paquete que uses para íconos
+import InformacionPunto from './pantallaEspecificacionPunto';
+import ListaPuntos from "../Funcionalidades/listadoPuntos"
 
-const imagenUbicacion = require("../assets/simboloUbicacion.png");
 
 export default function PantallaMapa({ navigation }) {
   const [search, setSearch] = useState("");
   const [filteredUbis, setFilteredUbis] = useState([]);
   const [ubicaciones, setUbicaciones] = useState([]); 
-  const [itemAbierto, setItemAbierto] = useState([]);
+  const [puntoSeleccionado, setPuntoSeleccionado] = useState(null);
+
 
   const { puntos, loading, error } = useBuscaPuntos();
 
@@ -22,10 +23,11 @@ export default function PantallaMapa({ navigation }) {
       const nuevasUbis = puntos.map((p) => ({
         id: p.id.toString(),
         titulo: p.nombre,
-        lon: Number(p.lon),
-        lat: Number(p.lat),
+        lon: Number(p.longitud),
+        lat: Number(p.latitud),
         tipo: p.tipo,
-        descripcion: p.descripcion ,
+        descripcion: p.descripcion,
+        imagen: p.imagen
       }));
 
       setUbicaciones(nuevasUbis);
@@ -52,39 +54,7 @@ export default function PantallaMapa({ navigation }) {
 
     setFilteredUbis(results); 
   };
-
-  const renderItem = ({ item }) => (
-    <Pressable onPress={() => handlePress(item.id)}>
-      <View style={styles.caja}>
-        <View style={styles.row}>
-          <Image style={styles.imagenUbi} source={imagenUbicacion} />
-          <View style={styles.textContainer}>
-            <Text style={styles.titulo}>{item.titulo}</Text>
-            <Text style={styles.tipo}>{item.tipo}</Text>
-          </View>
-          <View style={styles.iconContainer}>
-            <Ionicons
-              name={itemAbierto.includes(item.id) ? 'chevron-up' : 'chevron-down'}
-            style={styles.icono} size={25}
-            />
-          </View>
-        </View>
-      {itemAbierto.includes(item.id) && (
-        <Text style={styles.descripcion}>{item.descripcion}</Text>
-      )}
-      </View>
-    </Pressable>
-  );
     
-  const handlePress = (id) => {
-  setItemAbierto((prev) =>
-    prev.includes(id)
-      ? prev.filter((itemId) => itemId !== id) 
-      : [...prev, id] 
-  );
-};
-
-
 
   return (
     <Layout navigation={navigation}>
@@ -101,27 +71,23 @@ export default function PantallaMapa({ navigation }) {
         </View>
       </View>
       <BottomSheet>
-        {loading ? (
-          <View style={{ padding: 10, alignItems: 'center' }}>
-            <ActivityIndicator size="large" color="#333" />
-            <Text style={{ fontSize: 16, fontWeight: '700', color: '#333'}}>Cargando datos...</Text>
-          </View>
-        ) : error ? (
-          <View style={{ padding: 20, alignItems: 'center' }}>
-            <Text style={{ fontSize: 16, fontWeight: '700', color: 'red' }}>Error: {error}</Text>
-          </View>
-        ) : (
-          <FlatList
-            data={filteredUbis} 
-            keyExtractor={(item) => item.id}
-            renderItem={renderItem}
-          />
-        )}
-        
+      {puntoSeleccionado ? (
+      <InformacionPunto 
+        punto={puntoSeleccionado} 
+        onBack={() => setPuntoSeleccionado(null)} 
+      />
+      ) : (
+        <ListaPuntos
+          filteredUbis={filteredUbis}
+          loading={loading}
+          error={error}
+          onSelect={(item) => setPuntoSeleccionado(item)}
+        />
+        )
+      }
       </BottomSheet>
     </Layout>
-  );
-}
+)}
 
 const styles = StyleSheet.create({
   container: {

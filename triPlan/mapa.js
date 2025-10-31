@@ -98,7 +98,7 @@ export default function Mapa({ ubicaciones = [] }) {
         {ubicaciones.map((m) => (
           <Marker
             key={m.id}
-            coordinate={{ latitude: Number(m.lon), longitude: Number(m.lat) }}
+            coordinate={{ latitude: Number(m.lat), longitude: Number(m.lon) }}
             title={m.titulo}
           />
         ))}

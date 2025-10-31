@@ -1,10 +1,11 @@
 import React from 'react';
 import { AppRegistry } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
+import { FontAwesome5 } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'; 
 import { createStackNavigator } from '@react-navigation/stack'; 
 import PantallaMapa from './Pantallas/pantallaMapa';
-import PantallaBusqueda from './Pantallas/pantallaBusqueda';
+import PantallaBusqueda from './Pantallas/pantallaRutas';
 import PantallaEventos from './Pantallas/pantallaEventos'
 import PantallaConfiguracion from './Pantallas/pantallaConfiguracion'
 import SearchIcon from './assets/SearchIcon';
@@ -36,17 +37,6 @@ const TabNavigation = () => {
             )
         }}
       />
-      
-      <Tab.Screen
-        name="Buscar"
-        component={PantallaBusqueda}
-        options={{ 
-            title: 'Buscar',
-            tabBarIcon: ({ color, size }) => (
-                <SearchIcon size={size} stroke={color} />            
-            )
-        }}
-      />
 
       <Tab.Screen
         name="Eventos"
@@ -56,6 +46,16 @@ const TabNavigation = () => {
             tabBarIcon: ({ color, size }) => (
                 <CalendarIcon size={size} stroke={color} />            
             )
+        }}
+      />
+
+      <Tab.Screen
+        name="Rutas"
+        component={PantallaBusqueda}
+        options={{ 
+            title: 'Rutas',
+            tabBarIcon: ({ color, size }) => (
+<FontAwesome5 name="route" size={24} color={ color } />            )
         }}
       />
 
