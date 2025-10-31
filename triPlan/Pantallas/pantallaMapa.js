@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Image, TextInput, FlatList, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, Image, TextInput, FlatList, ActivityIndicator, Pressable } from 'react-native';
 import Mapa from "../mapa"; 
 import Layout from '../Componentes/layout';
 import BottomSheet from '../Componentes/BottomSheet'; 
 import { useBuscaPuntos } from "../Funcionalidades/busquedaPuntos";
+import { Ionicons } from '@expo/vector-icons'; // o el paquete que uses para íconos
 
 const imagenUbicacion = require("../assets/simboloUbicacion.png");
 
@@ -11,6 +12,7 @@ export default function PantallaMapa({ navigation }) {
   const [search, setSearch] = useState("");
   const [filteredUbis, setFilteredUbis] = useState([]);
   const [ubicaciones, setUbicaciones] = useState([]); 
+  const [itemAbierto, setItemAbierto] = useState([]);
 
   const { puntos, loading, error } = useBuscaPuntos();
 
@@ -23,6 +25,7 @@ export default function PantallaMapa({ navigation }) {
         lon: Number(p.lon),
         lat: Number(p.lat),
         tipo: p.tipo,
+        descripcion: p.descripcion ,
       }));
 
       setUbicaciones(nuevasUbis);
@@ -51,15 +54,37 @@ export default function PantallaMapa({ navigation }) {
   };
 
   const renderItem = ({ item }) => (
-    <View style={styles.caja}>
-      <Image style={styles.imagenUbi} source={imagenUbicacion} />
-      <View style={styles.textContainer}>
-        <Text style={styles.titulo}>{item.titulo}</Text>
-        <Text style={styles.coordenadas}>{item.tipo}</Text>
+    <Pressable onPress={() => handlePress(item.id)}>
+      <View style={styles.caja}>
+        <View style={styles.row}>
+          <Image style={styles.imagenUbi} source={imagenUbicacion} />
+          <View style={styles.textContainer}>
+            <Text style={styles.titulo}>{item.titulo}</Text>
+            <Text style={styles.tipo}>{item.tipo}</Text>
+          </View>
+          <View style={styles.iconContainer}>
+            <Ionicons
+              name={itemAbierto.includes(item.id) ? 'chevron-up' : 'chevron-down'}
+            style={styles.icono} size={25}
+            />
+          </View>
+        </View>
+      {itemAbierto.includes(item.id) && (
+        <Text style={styles.descripcion}>{item.descripcion}</Text>
+      )}
       </View>
-    </View>
+    </Pressable>
   );
     
+  const handlePress = (id) => {
+  setItemAbierto((prev) =>
+    prev.includes(id)
+      ? prev.filter((itemId) => itemId !== id) 
+      : [...prev, id] 
+  );
+};
+
+
 
   return (
     <Layout navigation={navigation}>
@@ -105,13 +130,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#f0f0f0',
   },
   caja: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     alignItems: 'flex-start',
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 10,
     padding: 15,
     margin: 10,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
   },
   imagenUbi: {
     width: 50,
@@ -122,6 +151,10 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     flex: 1,
   },
+  iconContainer: {
+    marginTop: 10,
+    marginRight: 10,
+  },
   titulo: {
     fontSize: 16,
     fontWeight: '700',
@@ -129,10 +162,15 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     overflowWrap: 'break-word',
   },
-  coordenadas: {
+  tipo: {
+    color: '#555',
     fontSize: 14,
+  },
+  descripcion: {
+    fontSize: 12,
     color: '#777',
-    marginTop: 2,
+    margin: 10,
+    textAlign: 'justify',
   },
   cajaBuscador: {
     position: 'absolute',
@@ -166,11 +204,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#e8e8e8ff',
     fontSize: 16,
     color: '#7a7a7aff',
-    fontWeight: '00',
+    fontWeight: '400',
     },
   imagenBusqueda: {
     width: 40,
     height: 40,
     marginRight: 3,
+  },
+  icono: {
+    marginLeft: 'auto', 
+    alignSelf: 'center',
+    color: '#ccc',
   },
 });

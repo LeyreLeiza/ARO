@@ -90,7 +90,6 @@ export default function Mapa({ ubicaciones = [] }) {
       return () => subscription.remove();
     })();
   }, [ubicaciones]); 
-  console.log(ubicaciones);
 
   return (
     <View style={styles.container}>

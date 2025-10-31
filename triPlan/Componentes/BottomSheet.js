@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
   },
   handleArea: {
     alignItems: 'center',
-    paddingTop: 10, // área clicable más grande
+    padding: 15, // área clicable más grande
   },
   handle: {
     width: 80,
