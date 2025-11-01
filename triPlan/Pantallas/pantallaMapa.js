@@ -22,8 +22,8 @@ export default function PantallaMapa({ navigation }) {
       const nuevasUbis = puntos.map((p) => ({
         id: p.id.toString(),
         titulo: p.nombre,
-        lon: Number(p.lon),
-        lat: Number(p.lat),
+        lon: Number(p.longitud),
+        lat: Number(p.latitud),
         tipo: p.tipo,
         descripcion: p.descripcion ,
       }));

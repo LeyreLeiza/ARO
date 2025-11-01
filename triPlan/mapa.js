@@ -2,6 +2,14 @@ import { useState, useEffect, useRef } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
+import zonaImg from "./assets/markerZona.png";
+import monumentoImg from "./assets/markerMonumento.png";
+import edificioImg from "./assets/markerEdificio.png";
+import gastronomiaImg from "./assets/markerGastronomia.png";
+import arteImg from "./assets/markerArte.png";
+import deporteImg from "./assets/markerDeporte.png";
+import eventoImg from "./assets/markerEventos.png";
+import zonaVerdeImg from "./assets/markerZonaVerde.png";
 
 // Función Haversine para calcular distancia (en metros)
 function getDistance(lat1, lon1, lat2, lon2) {
@@ -20,6 +28,22 @@ function getDistance(lat1, lon1, lat2, lon2) {
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
 }
+
+//funcion para la imagen de los marcadores
+function getMarkerImage(tipo) {
+  switch(tipo) {
+    case "Zonas": return zonaImg;
+    case "Monumentos": return monumentoImg;
+    case "Edificios": return edificioImg;
+    case "Gastronomia": return gastronomiaImg;
+    case "Arte": return arteImg;
+    case "Deportes": return deporteImg;
+    case "Eventos": return eventoImg;
+    case "Zonas verdes": return zonaVerdeImg;
+    default: return null;
+  }
+}
+
 
 export default function Mapa({ ubicaciones = [] }) {
   const [location, setLocation] = useState(null);
@@ -52,11 +76,6 @@ export default function Mapa({ ubicaciones = [] }) {
         { accuracy: Location.Accuracy.High, distanceInterval: 1 },
         (loc) => {
           setLocation(loc.coords);
-          setRegion((prev) => ({
-            ...prev,
-            latitude: loc.coords.latitude,
-            longitude: loc.coords.longitude,
-          }));
 
           let nearest = null;
           let minDist = Infinity;
@@ -93,13 +112,21 @@ export default function Mapa({ ubicaciones = [] }) {
 
   return (
     <View style={styles.container}>
-      <MapView style={styles.map} region={region} showsUserLocation>
+      <MapView style={styles.map} initialRegion={region} showsUserLocation
+      customMapStyle={[
+        {
+          featureType: "poi",
+          elementType: "all",
+          stylers: [{ visibility: "off" }]
+        }
+      ]}>
        
         {ubicaciones.map((m) => (
           <Marker
             key={m.id}
-            coordinate={{ latitude: Number(m.lon), longitude: Number(m.lat) }}
+            coordinate={{ latitude: Number(m.lat), longitude: Number(m.lon) }}
             title={m.titulo}
+            image={getMarkerImage(m.tipo)} 
           />
         ))}
       </MapView>
