@@ -6,25 +6,21 @@ export default function InformacionPunto({ punto, onBack }) {
   return (
     <View style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.container}>
-        {/* Botón de volver */}
         <TouchableOpacity style={styles.botonVolver} onPress={() => onBack()}>
-          <Text style={styles.botonTexto}>← Volver</Text>
+          <Text style={styles.botonTexto}>←</Text>
         </TouchableOpacity>
 
-        {/* Imagen */}
         {punto.imagen ? (
           <View style={styles.imagenContainer}>
             <Image style={styles.imagen} source={{ uri: punto.imagen }} />
           </View>
         ) : null}
 
-        {/* Título y tipo */}
         <View style={styles.textosContainer}>
           <Text style={styles.titulo}>{punto.titulo}</Text>
           <Text style={styles.tipo}>{punto.tipo}</Text>
         </View>
 
-        {/* Zona de descripción */}
         <View style={styles.descripcionContainer}>
           <Text style={styles.descripcion}>{punto.descripcion}</Text>
         </View>
@@ -36,7 +32,7 @@ export default function InformacionPunto({ punto, onBack }) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#f0f2f5', // gris suave general
+    backgroundColor: '#f0f2f5', 
   },
 
   container: {
@@ -49,7 +45,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     paddingVertical: 8,
     paddingHorizontal: 15,
-    backgroundColor: '#1e3a8a', // azul oscuro
+    backgroundColor: '#1e3a8a',
     alignSelf: 'flex-start',
     borderRadius: 8,
   },
@@ -85,7 +81,7 @@ const styles = StyleSheet.create({
   titulo: {
     fontSize: 28,
     fontWeight: '900',
-    color: '#0b1d5d', // azul oscuro
+    color: '#0b1d5d', 
     textAlign: 'center',
     marginBottom: 8,
   },
@@ -93,13 +89,12 @@ const styles = StyleSheet.create({
   tipo: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#4b5563', // gris más oscuro
+    color: '#4b5563', 
     textAlign: 'center',
-    fontStyle: 'italic',
   },
 
   descripcionContainer: {
-    backgroundColor: '#fef9f0', // color cálido y claro distinto al gris
+    backgroundColor: '#fffdfaff', 
     padding: 20,
     borderRadius: 15,
     shadowColor: '#000',

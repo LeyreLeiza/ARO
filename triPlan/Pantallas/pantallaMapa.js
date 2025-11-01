@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Image, TextInput, FlatList, ActivityIndicator, Pressable } from 'react-native';
+import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, ScrollView } from 'react-native';
 import Mapa from "../mapa"; 
 import Layout from '../Componentes/layout';
 import BottomSheet from '../Componentes/BottomSheet'; 
@@ -45,29 +45,79 @@ export default function PantallaMapa({ navigation }) {
       .toLowerCase(); // pasamos a minúsculas
   };
 
-  const handleSearch = (text) => {
-    setSearch(text); 
+  const filtrarUbicaciones = (texto = search, categorias = activos) => {
+    const results = ubicaciones.filter((item) => {
+      const coincideTexto = normalizarTexto(item.titulo).includes(normalizarTexto(texto));
 
-    const results = ubicaciones.filter((item) =>
-      normalizarTexto(item.titulo).includes(normalizarTexto(text))
-    );
+      const coincideCategoria = categorias.includes("Todos") || categorias.includes(item.tipo);
+      return coincideTexto && coincideCategoria;
+  });
 
     setFilteredUbis(results); 
+  }
+
+  const handleSearch = (text) => {
+    setSearch(text); 
+    filtrarUbicaciones(text, activos);
   };
-    
+
+  const [activos, setActivos] = useState(['Todos']);
+  const categorias = ['Todos', 'Zonas', 'Monumentos', 'Edificios', 'Gastronomía', 'Zonas verdes', 'Arte', 'Deportes', 'Eventos'];
+  const toggleCategoria = (cat) => {
+    setActivos((prev) => {
+      let nuevosActivos;
+
+      if (prev.includes(cat)) {
+        nuevosActivos = prev.filter((c) => c !== cat);
+
+        if (nuevosActivos.length === 0) {
+          nuevosActivos = ['Todos'];
+        }
+      } else if (cat === 'Todos') {
+        nuevosActivos = ['Todos'];
+      } else {
+        nuevosActivos = prev.includes('Todos') ? [cat] : [...prev, cat];
+      }
+      
+      filtrarUbicaciones(search, nuevosActivos);
+
+      return nuevosActivos;
+    });
+  };
+
 
   return (
     <Layout navigation={navigation}>
       <View style={styles.container}>
         <Mapa ubicaciones={filteredUbis}/>
         <View style={styles.cajaBuscador}>
-          <Image style={styles.imagenBusqueda} source={require("../assets/searchIcon.png")} />
-          <TextInput
-            style={styles.input}
-            value={search}
-            onChangeText={handleSearch} 
-            placeholder="Buscar ubicacion..."
-          />
+          <View style={styles.buscador}>
+            <Image style={styles.imagenBusqueda} source={require("../assets/searchIcon.png")} />
+            <TextInput
+              style={styles.input}
+              value={search}
+              onChangeText={handleSearch} 
+              placeholder="Buscar ubicacion..."
+            />
+          </View>
+          <ScrollView 
+            horizontal 
+            showsHorizontalScrollIndicator={false} 
+            style={styles.scrollBotones}
+            contentContainerStyle={{ alignItems: 'center' }}
+          >
+            {categorias.map((cat) => (
+              <TouchableOpacity
+                key={cat}
+                onPress={() => toggleCategoria(cat)}
+                style={[styles.boton, activos.includes(cat) && styles.botonActivo]}
+              >
+                <Text style={[styles.textoBoton, activos.includes(cat) && styles.textoBotonActivo]}>
+                  {cat}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
         </View>
       </View>
       <BottomSheet>
@@ -148,7 +198,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     backgroundColor: '#fff',
     borderRadius: 10,
-    flexDirection: 'row',
+    flexDirection: 'column',
     alignItems: 'center', 
 
     // Sombra iOS
@@ -159,6 +209,9 @@ const styles = StyleSheet.create({
 
     // Sombra Android
     elevation: 5,
+  },
+  buscador: {
+    flexDirection: 'row',
   },
   input: {
     flex: 1,
@@ -171,7 +224,41 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#7a7a7aff',
     fontWeight: '400',
-    },
+  },
+  scrollBotones: {
+    width: '100%',
+    paddingVertical: 5,
+  },
+  boton: {
+    margin: 5,
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 20,
+    backgroundColor: '#f8f8f8', 
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  botonActivo: {
+    backgroundColor: '#4a90e2', 
+    borderColor: '#357ABD',
+    shadowOpacity: 0.25,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  textoBoton: {
+    fontSize: 14,
+    color: '#333',
+    fontWeight: '500',
+  },
+  textoBotonActivo: {
+    color: '#fff',
+    fontWeight: '700',
+  },
   imagenBusqueda: {
     width: 40,
     height: 40,

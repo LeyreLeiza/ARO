@@ -53,7 +53,7 @@ export default function ListaPuntos({ filteredUbis, loading, error, onSelect }) 
                 renderItem={renderItem}
                 ListEmptyComponent={
                 <View style={{ padding: 20, alignItems: 'center' }}>
-                    <Text style={{ color: '#777', fontSize: 16 }}>No se encontraron ubicaciones.</Text>
+                    <Text style={{ color: '#777', fontSize: 16 }}>No se encontraron ubicaciones</Text>
                 </View>
                 }
             />
