@@ -62,7 +62,7 @@ export default function PantallaMapa({ navigation }) {
   };
 
   const [activos, setActivos] = useState(['Todos']);
-  const categorias = ['Todos', 'Zonas', 'Monumentos', 'Edificios', 'Gastronomía', 'Zonas verdes', 'Arte', 'Deportes', 'Eventos'];
+  const categorias = ['Todos', 'Zonas', 'Monumentos', 'Edificios', 'Gastronomia', 'Zonas verdes', 'Arte', 'Deportes', 'Eventos'];
   const toggleCategoria = (cat) => {
     setActivos((prev) => {
       let nuevosActivos;
