@@ -17,23 +17,14 @@ export default function PantallaRutas({ navigation }) {
     setPuntosRutas(markers);
   };
 
-  const { puntos, loading, error } = useBuscaPuntos();
+  const { puntosPorTipo, loadingPorTipo, errorPorTipo } = useBuscaPuntos();
 
   useEffect(() => {
-    if (!loading && puntos.length > 0) {
-      const nuevasUbis = puntos.map((p) => ({
-        id: p.id.toString(),
-        titulo: p.nombre,
-        lon: Number(p.longitud),
-        lat: Number(p.latitud),
-        tipo: p.tipo,
-        descripcion: p.descripcion,
-        imagen: p.imagen
-      }));
+    if (!loadingPorTipo && puntosPorTipo.length > 0) {
 
-      setUbicaciones(nuevasUbis);
+      setUbicaciones(puntosPorTipo);
     }
-  }, [loading, puntos]);
+  }, [loadingPorTipo, puntosPorTipo]);
 
   return (
     <Layout navigation={navigation}>
@@ -67,8 +58,8 @@ export default function PantallaRutas({ navigation }) {
         ) : (
           <ListaPuntos
             filteredUbis={puntosRutas}
-            loading={loading}
-            error={error}
+            loading={loadingPorTipo}
+            error={errorPorTipo}
             onSelect={(item) => setPuntoSeleccionado(item)}
           />
         )}

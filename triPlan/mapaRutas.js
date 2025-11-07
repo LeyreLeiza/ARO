@@ -28,15 +28,14 @@ async function obtenerRutaOSRM(origen, destino) {
     }));
 
     const steps = data.routes[0].legs[0].steps.map((s) => ({
-        distance: s.distance,
-        street: s.name,
-        lat: s.maneuver.location[1],
-        lon: s.maneuver.location[0],
-        instruction: traducirPaso(s)
+      distance: s.distance,
+      street: s.name,
+      latitud: s.maneuver.location[1],
+      longitud: s.maneuver.location[0],
+      instruction: traducirPaso(s),
     }));
 
     return { coords, steps };
-
   } catch (err) {
     console.log("Error obteniendo ruta OSRM:", err);
     return { coords: [], steps: [] };
@@ -44,7 +43,7 @@ async function obtenerRutaOSRM(origen, destino) {
 }
 
 async function generarRutaConCalles(userLoc, puntosOrdenados) {
-  if (!userLoc || puntosOrdenados.length === 0) 
+  if (!userLoc || puntosOrdenados.length === 0)
     return { coords: [], steps: [] };
 
   const coordsTotales = [];
@@ -56,10 +55,9 @@ async function generarRutaConCalles(userLoc, puntosOrdenados) {
   };
 
   for (let destino of puntosOrdenados) {
-
     const destinoCoords = {
-        lat: Number(destino.lat),
-        lon: Number(destino.lon)
+      lat: Number(destino.latitud),
+      lon: Number(destino.longitud),
     };
 
     const { coords, steps } = await obtenerRutaOSRM(origen, destinoCoords);
@@ -67,7 +65,10 @@ async function generarRutaConCalles(userLoc, puntosOrdenados) {
     coordsTotales.push(...coords);
     stepsTotales.push(...steps);
 
-    origen = { lat: Number(destino.lat), lon: Number(destino.lon) };
+    origen = {
+      lat: Number(destino.latitud),
+      lon: Number(destino.longitud),
+    };
   }
 
   return { coords: coordsTotales, steps: stepsTotales };
@@ -77,16 +78,13 @@ async function generarRutaConCalles(userLoc, puntosOrdenados) {
 function getDistance(lat1, lon1, lat2, lon2) {
   const R = 6371e3;
   const toRad = (v) => (v * Math.PI) / 180;
-
   const dLat = toRad(lat2 - lat1);
   const dLon = toRad(lon2 - lon1);
-
   const a =
     Math.sin(dLat / 2) ** 2 +
     Math.cos(toRad(lat1)) *
       Math.cos(toRad(lat2)) *
       Math.sin(dLon / 2) ** 2;
-
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
 }
@@ -94,7 +92,6 @@ function getDistance(lat1, lon1, lat2, lon2) {
 function traducirPaso(step) {
   const type = step.maneuver.type;
   const modifier = step.maneuver.modifier || "";
-
   const calle = step.name ? ` por ${step.name}` : "";
 
   switch (type) {
@@ -118,17 +115,22 @@ function traducirPaso(step) {
 
 function modificadorEsp(mod) {
   switch (mod) {
-    case "left": return "a la izquierda";
-    case "right": return "a la derecha";
-    case "straight": return "recto";
-    case "slight left": return "ligeramente a la izquierda";
-    case "slight right": return "ligeramente a la derecha";
-    default: return "";
+    case "left":
+      return "a la izquierda";
+    case "right":
+      return "a la derecha";
+    case "straight":
+      return "recto";
+    case "slight left":
+      return "ligeramente a la izquierda";
+    case "slight right":
+      return "ligeramente a la derecha";
+    default:
+      return "";
   }
 }
 
-
-// Ordena los puntos por cercanía (TSP muy simple)
+// Ordena los puntos por cercanía
 function ordenarRutaPorDistancia(userLoc, puntos) {
   if (!userLoc || puntos.length === 0) return [];
 
@@ -148,8 +150,8 @@ function ordenarRutaPorDistancia(userLoc, puntos) {
       const d = getDistance(
         actual.lat,
         actual.lon,
-        Number(p.lat),
-        Number(p.lon)
+        Number(p.latitud),
+        Number(p.longitud)
       );
       if (d < distMin) {
         distMin = d;
@@ -158,7 +160,7 @@ function ordenarRutaPorDistancia(userLoc, puntos) {
     });
 
     rutaOrdenada.push(nearest);
-    actual = { lat: nearest.lat, lon: nearest.lon };
+    actual = { lat: nearest.latitud, lon: nearest.longitud };
     restantes.splice(restantes.indexOf(nearest), 1);
   }
 
@@ -204,27 +206,22 @@ export default function MapaRutas({ ubicaciones = [], onMarkersUpdate, onStepsUp
   const [activeMarker, setActiveMarker] = useState(null);
   const [lastDismissed, setLastDismissed] = useState({});
   const lastDismissedRef = useRef(lastDismissed);
+  const cooldown = 15 * 60 * 1000;
 
-  const cooldown = 15 * 60 * 1000; // 15 minutos
-
-  // Mantener ref actualizado
   useEffect(() => {
     lastDismissedRef.current = lastDismissed;
   }, [lastDismissed]);
 
-  //Tomar los primeros 5 puntos de la BD
+  // Tomar los primeros 5 puntos de la BD
   useEffect(() => {
     if (ubicaciones.length > 0) {
-        const primeros5 = ubicaciones.slice(0, 5);
-        setSelectedMarkers(primeros5);
-
-        if (onMarkersUpdate) {
-        onMarkersUpdate(primeros5);  // ✅ enviamos los puntos al padre
-        }
+      const primeros5 = ubicaciones.slice(0, 5);
+      setSelectedMarkers(primeros5);
+      if (onMarkersUpdate) onMarkersUpdate(primeros5);
     }
-    }, [ubicaciones]);
+  }, [ubicaciones]);
 
-  //Calcular ubicación del usuario + detectar zonas cercanas
+  // Localización y detección
   useEffect(() => {
     (async () => {
       const { status } = await Location.requestForegroundPermissionsAsync();
@@ -233,57 +230,17 @@ export default function MapaRutas({ ubicaciones = [], onMarkersUpdate, onStepsUp
         return;
       }
 
+      // ✅ obtener ubicación inicial
+      const initial = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.High,
+      });
+      setLocation(initial.coords);
+      console.log("📍 Ubicación inicial:", initial.coords);
+
       const subscription = await Location.watchPositionAsync(
         { accuracy: Location.Accuracy.High, distanceInterval: 1 },
         (loc) => {
           setLocation(loc.coords);
-
-          // Detectar punto más cercano
-          let nearest = null;
-          let minDist = Infinity;
-
-          ubicaciones.forEach((m) => {
-            const d = getDistance(
-              loc.coords.latitude,
-              loc.coords.longitude,
-              Number(m.lat),
-              Number(m.lon)
-            );
-            if (d < minDist) {
-              minDist = d;
-              nearest = { ...m, distance: Math.round(d) };
-            }
-          });
-
-          if (navigationSteps.length > 0) {
-            const step = navigationSteps[0];
-
-            if (step.lat && step.lon) {
-                const dist = getDistance(
-                loc.coords.latitude,
-                loc.coords.longitude,
-                step.lat,
-                step.lon
-                );
-
-                if (dist < 12) {  // 12 metros ≈ paso completado
-                const nuevos = navigationSteps.slice(1);
-                setNavigationSteps(nuevos);
-                if (onStepsUpdate) onStepsUpdate(nuevos);
-                }
-            }
-          }
-
-          if (nearest && nearest.distance < 15) {
-            const lastTime = lastDismissedRef.current[nearest.id] || 0;
-            const now = Date.now();
-
-            if (now - lastTime > cooldown) {
-              setActiveMarker(nearest);
-            }
-          } else {
-            setActiveMarker(null);
-          }
         }
       );
 
@@ -291,24 +248,21 @@ export default function MapaRutas({ ubicaciones = [], onMarkersUpdate, onStepsUp
     })();
   }, [ubicaciones]);
 
-    //Generar ruta automática cuando haya ubicación + 5 puntos
-    useEffect(() => {
-        if (!location) return;
-        if (selectedMarkers.length === 0) return;
+  // Generar ruta
+  useEffect(() => {
+    if (!location || selectedMarkers.length === 0) return;
 
-        (async () => {
-            const orden = ordenarRutaPorDistancia(location, selectedMarkers);
-            const { coords, steps } = await generarRutaConCalles(location, orden);
+    (async () => {
+      console.log("🚀 Generando ruta con", selectedMarkers.length, "puntos");
+      const orden = ordenarRutaPorDistancia(location, selectedMarkers);
+      const { coords, steps } = await generarRutaConCalles(location, orden);
 
-            setRouteCoords(coords);
-            setNavigationSteps(steps);
+      setRouteCoords(coords);
+      setNavigationSteps(steps);
 
-            if (onStepsUpdate) {
-                onStepsUpdate(steps);  // ✅ CALLBACK CORRECTO
-            }
-
-        })();
-    }, [location, selectedMarkers]);
+      if (onStepsUpdate) onStepsUpdate(steps);
+    })();
+  }, [location, selectedMarkers]);
 
   return (
     <View style={styles.container}>
@@ -316,64 +270,30 @@ export default function MapaRutas({ ubicaciones = [], onMarkersUpdate, onStepsUp
         style={styles.map}
         initialRegion={region}
         showsUserLocation
-        customMapStyle={[
-          {
-            featureType: "poi",
-            elementType: "all",
-            stylers: [{ visibility: "off" }],
-          },
-        ]}
+        customMapStyle={[{ featureType: "poi", stylers: [{ visibility: "off" }] }]}
       >
-        {/*Marcadores normales */}
+        {/* Marcadores */}
         {selectedMarkers.map((m) => (
-        <Marker
+          <Marker
             key={m.id}
             coordinate={{
-            latitude: Number(m.lat),
-            longitude: Number(m.lon),
+              latitude: Number(m.latitud),
+              longitude: Number(m.longitud),
             }}
             title={m.titulo}
             image={getMarkerImage(m.tipo)}
-        />
+          />
         ))}
 
-        {/*Ruta dibujada */}
+        {/* Ruta */}
         {routeCoords.length > 1 && (
-          <Polyline
-            coordinates={routeCoords}
-            strokeWidth={6}
-            strokeColor="#007AFF"
-          />
+          <Polyline coordinates={routeCoords} strokeWidth={6} strokeColor="#007AFF" />
         )}
       </MapView>
-
-      {/*Popup de proximidad */}
-      {activeMarker && (
-        <View style={styles.popupOverlay}>
-          <View style={styles.popup}>
-            <TouchableOpacity
-              style={styles.closeIcon}
-              onPress={() => {
-                setLastDismissed((prev) => ({
-                  ...prev,
-                  [activeMarker.id]: Date.now(),
-                }));
-                setActiveMarker(null);
-              }}
-            >
-              <Text style={styles.closeText}>✖</Text>
-            </TouchableOpacity>
-
-            <Text style={styles.popupTitle}>📍 {activeMarker.titulo}</Text>
-            <Text style={styles.popupText}>
-              Estás a {activeMarker.distance} metros de este lugar.
-            </Text>
-          </View>
-        </View>
-      )}
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: { flex: 1 },

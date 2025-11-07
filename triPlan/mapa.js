@@ -81,7 +81,6 @@ export default function Mapa({ ubicaciones = [] }) {
           let minDist = Infinity;
 
           ubicaciones.forEach((m) => {
-            console.log(m);
             const d = getDistance(
               loc.coords.latitude,
               loc.coords.longitude,
