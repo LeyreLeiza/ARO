@@ -17,7 +17,7 @@ export default function InformacionPunto({ punto, onBack }) {
         ) : null}
 
         <View style={styles.textosContainer}>
-          <Text style={styles.titulo}>{punto.titulo}</Text>
+          <Text style={styles.titulo}>{punto.nombre}</Text>
           <Text style={styles.tipo}>{punto.tipo}</Text>
         </View>
 
