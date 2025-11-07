@@ -4,37 +4,41 @@ import { NavigationContainer } from '@react-navigation/native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'; 
 import { createStackNavigator } from '@react-navigation/stack'; 
+
+// Importación de pantallas
 import PantallaMapa from './Pantallas/pantallaMapa';
 import PantallaBusqueda from './Pantallas/pantallaRutas';
-import PantallaEventos from './Pantallas/pantallaEventos'
-import PantallaConfiguracion from './Pantallas/pantallaConfiguracion'
+import PantallaEventos from './Pantallas/pantallaEventos';
+import PantallaConfiguracion from './Pantallas/pantallaConfiguracion';
+import LoginScreen from './Pantallas/loginPantalla';
+
+// Importación de iconos personalizados
 import SearchIcon from './assets/SearchIcon';
 import CalendarIcon from './assets/CalendarIcon';
 import MapIcon from './assets/MapIcon';
 import SettingsIcon from './assets/SettingsIcon';
-import LoginScreen from './Pantallas/loginPantalla';
-
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator(); 
 
-// Componente de navegación con Tabs
+// Navegación inferior (Tabs)
 const TabNavigation = () => {
   return (
     <Tab.Navigator 
-        initialRouteName="Mapa" 
-        screenOptions={{
-            tabBarActiveTintColor: 'tomato',     // Color cuando está activa la tab
-            tabBarInactiveTintColor: 'gray',     // Color cuando está inactiva
-        }}>
+      initialRouteName="Mapa" 
+      screenOptions={{
+        tabBarActiveTintColor: 'tomato',
+        tabBarInactiveTintColor: 'gray',
+      }}
+    >
       <Tab.Screen
         name="Mapa"
         component={PantallaMapa}
         options={{ 
-            title: 'Mapa',
-            tabBarIcon: ({ color, size }) => (
-                <MapIcon size={size} stroke={color} />            
-            )
+          title: 'Mapa',
+          tabBarIcon: ({ color, size }) => (
+            <MapIcon size={size} stroke={color} />            
+          ),
         }}
       />
 
@@ -42,10 +46,10 @@ const TabNavigation = () => {
         name="Eventos"
         component={PantallaEventos}
         options={{ 
-            title: 'Eventos',
-            tabBarIcon: ({ color, size }) => (
-                <CalendarIcon size={size} stroke={color} />            
-            )
+          title: 'Eventos',
+          tabBarIcon: ({ color, size }) => (
+            <CalendarIcon size={size} stroke={color} />            
+          ),
         }}
       />
 
@@ -53,9 +57,10 @@ const TabNavigation = () => {
         name="Rutas"
         component={PantallaBusqueda}
         options={{ 
-            title: 'Rutas',
-            tabBarIcon: ({ color, size }) => (
-<FontAwesome5 name="route" size={24} color={ color } />            )
+          title: 'Rutas',
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome5 name="route" size={24} color={color} />
+          ),
         }}
       />
 
@@ -63,16 +68,17 @@ const TabNavigation = () => {
         name="Configuracion"
         component={PantallaConfiguracion}
         options={{ 
-            title: 'Configuracion',
-            tabBarIcon: ({ color, size }) => (
-                <SettingsIcon size={size} stroke={color} />            
-            )
+          title: 'Configuración',
+          tabBarIcon: ({ color, size }) => (
+            <SettingsIcon size={size} stroke={color} />            
+          ),
         }}
       />
     </Tab.Navigator>
   );
 };
 
+// Navegación general con Login + Tabs
 const NavigationSetup = () => {
   return (
     <NavigationContainer>
@@ -93,4 +99,3 @@ const NavigationSetup = () => {
 };
 
 AppRegistry.registerComponent('main', () => NavigationSetup);
-

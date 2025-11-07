@@ -1,51 +1,66 @@
+// triPlan/Componentes/barraInferior.js
 import React from 'react';
-import {StyleSheet, Text, View, Pressable, Platform} from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
-export default function BarraInferior({ navigation }) {
-  const insets = useSafeAreaInsets();
+export default function BarraInferior({ navigation, activo }) {
   return (
-    <View style={[styles.bottomBar, { bottom: Platform.OS === 'ios' ? 0 : insets.bottom }]}>
-      <Pressable style={styles.button} onPress={() => navigation.navigate('Principal')}>
-          <Text style={styles.buttonText}>Opción 1</Text>
-      </Pressable>
+    <View style={styles.container}>
+      <TouchableOpacity onPress={() => navigation.navigate('Mapa')}>
+        <Ionicons
+          name="map-outline"
+          size={24}
+          color={activo === 'mapa' ? '#007AFF' : '#999'}
+        />
+        <Text style={[styles.texto, activo === 'mapa' && styles.textoActivo]}>Mapa</Text>
+      </TouchableOpacity>
 
-      <Pressable style={styles.button} onPress={() => navigation.navigate('Segunda')}>
-          <Text style={styles.buttonText}>Opción 2</Text>
-      </Pressable>
+      <TouchableOpacity onPress={() => navigation.navigate('Eventos')}>
+        <Ionicons
+          name="musical-notes-outline"
+          size={24}
+          color={activo === 'eventos' ? '#007AFF' : '#999'}
+        />
+        <Text style={[styles.texto, activo === 'eventos' && styles.textoActivo]}>Eventos</Text>
+      </TouchableOpacity>
 
-      <Pressable style={styles.button} onPress={() => alert('Opción 3')}>
-          <Text style={styles.buttonText}>Opción 3</Text>
-      </Pressable>
-      <Pressable style={styles.button} onPress={() => alert('Opción 4')}>
-          <Text style={styles.buttonText}>Opción 4</Text>
-      </Pressable>
+      <TouchableOpacity onPress={() => navigation.navigate('Rutas')}>
+        <Ionicons
+          name="navigate-outline"
+          size={24}
+          color={activo === 'rutas' ? '#007AFF' : '#999'}
+        />
+        <Text style={[styles.texto, activo === 'rutas' && styles.textoActivo]}>Rutas</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => navigation.navigate('Ajustes')}>
+        <Ionicons
+          name="settings-outline"
+          size={24}
+          color={activo === 'ajustes' ? '#007AFF' : '#999'}
+        />
+        <Text style={[styles.texto, activo === 'ajustes' && styles.textoActivo]}>Ajustes</Text>
+      </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  bottomBar: {
-    flexDirection: 'row', 
-    justifyContent: 'space-around', 
-    alignItems: 'center',
-    width: '100%',
-    height: 60,
-    backgroundColor: '#f1f1f1',
-    position: 'absolute',
+  container: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingVertical: 8,
     borderTopWidth: 1,
     borderTopColor: '#ddd',
-    zIndex: 999,
+    backgroundColor: '#fff',
   },
-  button: {
-    backgroundColor: '#007bff',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
+  texto: {
+    fontSize: 12,
+    textAlign: 'center',
+    color: '#999',
   },
-  buttonText: {
-    color: '#fff',
-    fontSize: 10,
-    fontWeight: 'bold',
+  textoActivo: {
+    color: '#007AFF',
+    fontWeight: '600',
   },
 });
