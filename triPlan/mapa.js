@@ -81,11 +81,12 @@ export default function Mapa({ ubicaciones = [] }) {
           let minDist = Infinity;
 
           ubicaciones.forEach((m) => {
+            console.log(m);
             const d = getDistance(
               loc.coords.latitude,
               loc.coords.longitude,
-              Number(m.lat),
-              Number(m.lon)
+              Number(m.latitud),
+              Number(m.longitud)
             );
             if (d < minDist) {
               minDist = d;
@@ -124,8 +125,8 @@ export default function Mapa({ ubicaciones = [] }) {
         {ubicaciones.map((m) => (
           <Marker
             key={m.id}
-            coordinate={{ latitude: Number(m.lat), longitude: Number(m.lon) }}
-            title={m.titulo}
+            coordinate={{ latitude: Number(m.latitud), longitude: Number(m.longitud) }}
+            title={m.nombre}
             image={getMarkerImage(m.tipo)} 
           />
         ))}

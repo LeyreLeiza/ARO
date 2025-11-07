@@ -1,17 +1,14 @@
 import React, { useEffect, useState } from "react";
 
-
-import { useState, useEffect } from 'react';
-
 export const useBuscaPuntos = (tiposFiltro) => {
-  const [puntos, setPuntos] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [puntosPorTipo, setPuntosPorTipo] = useState([]);
+  const [loadingPorTipo, setLoadingPorTipo] = useState(true);
+  const [errorPorTipo, setErrorPorTipo] = useState(null);
 
   useEffect(() => {
     const fetchPuntos = async () => {
       try {
-        setLoading(true);
+        setLoadingPorTipo(true);
 
         const url = tiposFiltro && tiposFiltro.length > 0 && !tiposFiltro.includes('Todos')
         ? `https://aro-1nwv.onrender.com/puntos/tipo/${tiposFiltro.join(',')}`
@@ -21,48 +18,53 @@ export const useBuscaPuntos = (tiposFiltro) => {
         if (!response.ok) throw new Error('Error en la respuesta del servidor');
         
         const data = await response.json();
-        setPuntos(data);
+        setPuntosPorTipo(data);
       } catch (err) {
         console.error("Error cargando puntos:", err);
-        setError(err.message);
+        setErrorPorTipo(err.message);
       } finally {
-        setLoading(false);
+        setLoadingPorTipo(false);
       }
     };
 
     fetchPuntos();
   }, [tiposFiltro]); 
 
-  return { puntos, loading, error };
+  return { puntosPorTipo, loadingPorTipo, errorPorTipo };
 };
 
 
 
 export const useBuscaPuntosPorNombre = (nombre) => {
-  const [puntos, setPuntos] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [puntosPorNombre, setPuntosPorNombre] = useState([]);
+  const [loadingPorNombre, setLoadingPorNombre] = useState(true);
+  const [errorPorNombre, setErrorPorNombre] = useState(null);
 
   useEffect(() => {
     const fetchPuntos = async () => {
       try {
-        setLoading(true);
-        const url = `https://aro-1nwv.onrender.com/puntos/nombre/${nombre}`;
+        setLoadingPorNombre(true);
+        let url = "";
+        if (!nombre.trim()) {
+            url = `https://aro-1nwv.onrender.com/puntos/`;
+        } else {
+            url = `https://aro-1nwv.onrender.com/puntos/nombre/${nombre}`;
+        }
           
         const response = await fetch(url);
         if (!response.ok) throw new Error('Error en la respuesta del servidor');
         const data = await response.json();
-        setPuntos(data);
+        setPuntosPorNombre(data);
       } catch (err) {
         console.error("Error cargando puntos:", err);
-        setError(err.message);
+        setErrorPorNombre(err.message);
       } finally {
-        setLoading(false);
+        setLoadingPorNombre(false);
       }
     };
 
     fetchPuntos();
   }, [nombre]);
 
-  return { puntos, loading, error };
+  return { puntosPorNombre, loadingPorNombre, errorPorNombre };
 };

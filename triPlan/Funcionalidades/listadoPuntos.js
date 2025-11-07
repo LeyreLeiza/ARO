@@ -11,7 +11,7 @@ export default function ListaPuntos({ filteredUbis, loading, error, onSelect }) 
                 <View style={styles.row}>
                     <Image style={styles.imagenUbi} source={imagenUbicacion} />
                     <View style={styles.textContainer}>
-                    <Text style={styles.titulo}>{item.titulo}</Text>
+                    <Text style={styles.titulo}>{item.nombre}</Text>
                     <Text style={styles.tipo}>{item.tipo}</Text>
                     </View>
                     <View style={styles.iconContainer}>

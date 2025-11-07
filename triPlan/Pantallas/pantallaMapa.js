@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, ScrollView } from 'react-native';
 import Mapa from "../mapa"; 
 import Layout from '../Componentes/layout';
 import BottomSheet from '../Componentes/BottomSheet'; 
-import { useBuscaPuntos } from "../Funcionalidades/busquedaPuntos";
-import { useBuscaPuntosPorNombre } from "../Funcionalidades/busquedaPuntos";
+import { useBuscaPuntos, useBuscaPuntosPorNombre } from "../Funcionalidades/busquedaPuntos";
 import InformacionPunto from './pantallaEspecificacionPunto';
 import ListaPuntos from "../Funcionalidades/listadoPuntos"
 
@@ -17,11 +16,12 @@ export default function PantallaMapa({ navigation }) {
   const [filteredUbis, setFilteredUbis] = useState([]);
   const [puntoSeleccionado, setPuntoSeleccionado] = useState(null);
  
-  const { puntosPorTipo, loadingPorTipo, error } = useBuscaPuntos(activos);
+  const { puntosPorTipo, loadingPorTipo, errorPorTipo } = useBuscaPuntos(activos);
   const { puntosPorNombre, loadingPorNombre, errorPorNombre } = useBuscaPuntosPorNombre(search); 
   
 useEffect(() => {
   if (!loadingPorTipo && !loadingPorNombre) {
+
     if (search.trim()) {
       const idsFiltradosPorNombre = puntosPorNombre.map(punto => punto.id);
 
@@ -105,8 +105,8 @@ useEffect(() => {
       ) : (
         <ListaPuntos
           filteredUbis={filteredUbis}
-          loading={loading}
-          error={error}
+          loading={loadingPorTipo || loadingPorNombre}
+          error={errorPorTipo || errorPorNombre}
           onSelect={(item) => setPuntoSeleccionado(item)}
         />
         )
