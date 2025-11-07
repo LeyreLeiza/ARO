@@ -4,65 +4,43 @@ import Mapa from "../mapa";
 import Layout from '../Componentes/layout';
 import BottomSheet from '../Componentes/BottomSheet'; 
 import { useBuscaPuntos } from "../Funcionalidades/busquedaPuntos";
+import { useBuscaPuntosPorNombre } from "../Funcionalidades/busquedaPuntos";
 import InformacionPunto from './pantallaEspecificacionPunto';
 import ListaPuntos from "../Funcionalidades/listadoPuntos"
 
 
 export default function PantallaMapa({ navigation }) {
   const [search, setSearch] = useState("");
+  const [activos, setActivos] = useState(['Todos']);
+  const categorias = ['Todos', 'Zonas', 'Monumentos', 'Edificios', 'Gastronomia', 'Zonas verdes', 'Arte', 'Deportes', 'Eventos'];
+
   const [filteredUbis, setFilteredUbis] = useState([]);
-  const [ubicaciones, setUbicaciones] = useState([]); 
   const [puntoSeleccionado, setPuntoSeleccionado] = useState(null);
+ 
+  const { puntosPorTipo, loadingPorTipo, error } = useBuscaPuntos(activos);
+  const { puntosPorNombre, loadingPorNombre, errorPorNombre } = useBuscaPuntosPorNombre(search); 
+  
+useEffect(() => {
+  if (!loadingPorTipo && !loadingPorNombre) {
+    if (search.trim()) {
+      const idsFiltradosPorNombre = puntosPorNombre.map(punto => punto.id);
 
-
-  const { puntos, loading, error } = useBuscaPuntos();
-
-  useEffect(() => {
-    // Solo ejecuta el mapeo cuando ya terminó de cargar
-    if (!loading && puntos.length > 0) {
-      const nuevasUbis = puntos.map((p) => ({
-        id: p.id.toString(),
-        titulo: p.nombre,
-        lon: Number(p.longitud),
-        lat: Number(p.latitud),
-        tipo: p.tipo,
-        descripcion: p.descripcion,
-        imagen: p.imagen
-      }));
-
-      setUbicaciones(nuevasUbis);
-      setFilteredUbis(nuevasUbis);
-    } else if (!loading && puntos.length === 0) {
-      console.log("No hay puntos disponibles");
+      const puntosFiltrados = puntosPorTipo.filter((punto) =>
+        idsFiltradosPorNombre.includes(punto.id) // Aseguramos que el punto esté en los resultados por nombre
+      );
+      
+      setFilteredUbis(puntosFiltrados);
+    } else {
+      setFilteredUbis(puntosPorTipo);
     }
-  }, [loading, puntos]);
-
-
-  const normalizarTexto = (str) => {
-    return str
-      .normalize("NFD") // descompone los caracteres acentuados
-      .replace(/[\u0300-\u036f]/g, "") // elimina los acentos
-      .toLowerCase(); // pasamos a minúsculas
-  };
-
-  const filtrarUbicaciones = (texto = search, categorias = activos) => {
-    const results = ubicaciones.filter((item) => {
-      const coincideTexto = normalizarTexto(item.titulo).includes(normalizarTexto(texto));
-
-      const coincideCategoria = categorias.includes("Todos") || categorias.includes(item.tipo);
-      return coincideTexto && coincideCategoria;
-  });
-
-    setFilteredUbis(results); 
   }
+}, [loadingPorTipo, loadingPorNombre, puntosPorTipo, puntosPorNombre, search, activos]);
+
 
   const handleSearch = (text) => {
     setSearch(text); 
-    filtrarUbicaciones(text, activos);
   };
 
-  const [activos, setActivos] = useState(['Todos']);
-  const categorias = ['Todos', 'Zonas', 'Monumentos', 'Edificios', 'Gastronomia', 'Zonas verdes', 'Arte', 'Deportes', 'Eventos'];
   const toggleCategoria = (cat) => {
     setActivos((prev) => {
       let nuevosActivos;
@@ -79,8 +57,6 @@ export default function PantallaMapa({ navigation }) {
         nuevosActivos = prev.includes('Todos') ? [cat] : [...prev, cat];
       }
       
-      filtrarUbicaciones(search, nuevosActivos);
-
       return nuevosActivos;
     });
   };
