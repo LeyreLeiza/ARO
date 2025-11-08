@@ -8,11 +8,12 @@ import PantallaMapa from './Pantallas/pantallaMapa';
 import PantallaBusqueda from './Pantallas/pantallaRutas';
 import PantallaEventos from './Pantallas/pantallaEventos'
 import PantallaConfiguracion from './Pantallas/pantallaConfiguracion'
-import SearchIcon from './assets/SearchIcon';
 import CalendarIcon from './assets/CalendarIcon';
 import MapIcon from './assets/MapIcon';
 import SettingsIcon from './assets/SettingsIcon';
-import LoginScreen from './Pantallas/loginPantalla';
+import LoginScreen from './Pantallas/pantallaLogin';
+import RegisterScreen from './Pantallas/pantallaRegistro';
+import ChangePasswordScreen from './Pantallas/pantallaCambiarContraseña';
 
 
 const Stack = createStackNavigator();
@@ -76,15 +77,25 @@ const TabNavigation = () => {
 const NavigationSetup = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Login">
+      <Stack.Navigator initialRouteName="App">
+        <Stack.Screen 
+          name="App" 
+          component={TabNavigation} 
+          options={{ headerShown: false }} 
+        />
         <Stack.Screen 
           name="Login" 
           component={LoginScreen} 
           options={{ headerShown: false }} 
         />
         <Stack.Screen 
-          name="App" 
-          component={TabNavigation} 
+          name="Register" 
+          component={RegisterScreen} 
+          options={{ headerShown: false }} 
+        />
+        <Stack.Screen 
+          name="Password change" 
+          component={ChangePasswordScreen} 
           options={{ headerShown: false }} 
         />
       </Stack.Navigator>
