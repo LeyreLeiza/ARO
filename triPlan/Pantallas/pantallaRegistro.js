@@ -20,7 +20,6 @@ export default function Register({ navigation }) {
 
 
   const handleCrearCuenta = async () => {
-    console.log(nombre_usuario, nombre, apellido, email, telefono, contraseña);
     if (!nombre_usuario.trim() || !nombre.trim() || !apellido.trim() || !email.trim() || !telefono.trim() || !contraseña.trim()) {
       Alert.alert("Campos obligatorios", "Por favor completa todos los campos");
       return;
