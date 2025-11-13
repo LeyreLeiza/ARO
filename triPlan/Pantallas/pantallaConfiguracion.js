@@ -6,6 +6,7 @@ import { FontAwesome5 } from '@expo/vector-icons';
 // 🔹 Variables globales compartidas
 global.usuarioLogueado = global.usuarioLogueado || false;
 global.nombreUsuario = global.nombreUsuario || "";
+global.idUsuario = global.idUsuario || "";
 global.modLetraValor = global.modLetraValor || 0; // Tamaño de letra global
 
 function BotonPersonalizado({ texto, color, onPress, icono, fontSize }) {

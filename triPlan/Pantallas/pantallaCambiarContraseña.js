@@ -5,18 +5,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 // 🔹 Aseguramos que la variable global exista
 global.modLetraValor = global.modLetraValor || 0;
+global.idUsuario = global.idUsuario || "";
 
 export default function ChangePasswordScreen({ navigation }) {
   const [vieja_contraseña, setViejaContraseña] = useState("");
-  const [id, setId] = useState("");
   const [nueva_contraseña, setNuevaContraseña] = useState("");
   const nuevaContraseñaRef = useRef();
 
   const handleCambioContraseña = async () => {
-    if (!id.trim()){
-      Alert.alert("Campos obligatorios", "Por favor rellene el id de quien quieras cambiar");
-      return;
-    }
     if (!vieja_contraseña.trim()){
       Alert.alert("Campos obligatorios", "Por favor rellene la contraseña anterior");
       return;
@@ -25,7 +21,7 @@ export default function ChangePasswordScreen({ navigation }) {
       Alert.alert("Campos obligatorios", "Por favor rellene la nueva contraseña");
       return;
     }
-    const result = await cambioContraseñaUsuario(id, nueva_contraseña, vieja_contraseña);
+    const result = await cambioContraseñaUsuario(global.idUsuario, nueva_contraseña, vieja_contraseña);
     if (result.success) {
       Alert.alert("Éxito", "Contraseña cambiada");
       navigation.goBack();
@@ -60,13 +56,6 @@ export default function ChangePasswordScreen({ navigation }) {
           <View style={styles.content}>
             <Image source={require("../assets/fotoPerfil.png")} style={styles.image} />
 
-            <TextInput
-              style={[styles.input, { fontSize: 16 + global.modLetraValor, height: 90 }]}
-              placeholder="ID (para borrar después)"
-              value={id}
-              onChangeText={setId}
-              multiline={true}
-            />
             <TextInput
               style={[styles.input, { fontSize: 16 + global.modLetraValor }]}
               placeholder="Contraseña anterior"

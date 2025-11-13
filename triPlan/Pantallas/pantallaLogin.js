@@ -5,6 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 // 🔹 Aseguramos que la variable global exista
 global.usuarioLogueado = global.usuarioLogueado || false;
+global.idUsuario = global.idUsuario || "";
 global.modLetraValor = global.modLetraValor || 0; // Tamaño de letra global
 
 export default function LoginScreen({ navigation }) {
@@ -28,6 +29,8 @@ export default function LoginScreen({ navigation }) {
       // 🔹 Guardar el estado global del usuario
       global.usuarioLogueado = true;
       global.nombreUsuario = result.data.nombre;
+      global.idUsuario = result.data.id;
+
 
       Alert.alert("Éxito", `Bienvenido, ${result.data.nombre}`);
       navigation.goBack();

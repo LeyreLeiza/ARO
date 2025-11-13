@@ -5,6 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 // 🔹 Aseguramos que la variable global exista
 global.usuarioLogueado = global.usuarioLogueado || false;
+global.idUsuario = global.idUsuario || "";
 global.modLetraValor = global.modLetraValor || 0; // Tamaño de letra global
 
 export default function Register({ navigation }) {
@@ -22,8 +23,6 @@ export default function Register({ navigation }) {
   const contraseñaRef = useRef();
 
   const handleCrearCuenta = async () => {
-    console.log(nombre_usuario, nombre, apellido, email, telefono, contraseña);
-
     if (!nombre_usuario.trim() || !nombre.trim() || !apellido.trim() || !email.trim() || !telefono.trim() || !contraseña.trim()) {
       Alert.alert("Campos obligatorios", "Por favor completa todos los campos");
       return;
@@ -41,6 +40,7 @@ export default function Register({ navigation }) {
 
       // 🔹 Guardar el estado global del usuario
       global.usuarioLogueado = true;
+      global.idUsuario = data.usuario.id;
       global.nombreUsuario = nombre_usuario;
 
       Alert.alert("Éxito", `Cuenta creada para ${nombre_usuario}`);
