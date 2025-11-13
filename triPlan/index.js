@@ -5,7 +5,8 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'; 
 import { createStackNavigator } from '@react-navigation/stack'; 
 import PantallaMapa from './Pantallas/pantallaMapa';
-import PantallaBusqueda from './Pantallas/pantallaRutas';
+import PantallaRutas from './Pantallas/pantallaRutas';
+import PantallaElegirRutas from './Pantallas/pantallaElegirRutas';
 import PantallaEventos from './Pantallas/pantallaEventos'
 import PantallaConfiguracion from './Pantallas/pantallaConfiguracion'
 import SearchIcon from './assets/SearchIcon';
@@ -51,7 +52,7 @@ const TabNavigation = () => {
 
       <Tab.Screen
         name="Rutas"
-        component={PantallaBusqueda}
+        component={PantallaElegirRutas}
         options={{ 
             title: 'Rutas',
             tabBarIcon: ({ color, size }) => (
@@ -85,6 +86,11 @@ const NavigationSetup = () => {
         <Stack.Screen 
           name="App" 
           component={TabNavigation} 
+          options={{ headerShown: false }} 
+        />
+        <Stack.Screen 
+          name="pantallaRutas" 
+          component={PantallaRutas} 
           options={{ headerShown: false }} 
         />
       </Stack.Navigator>
