@@ -63,7 +63,7 @@ export default function PantallaRutas({ navigation, route }) {
     return (
       <Layout navigation={navigation}>
         <View style={styles.center}>
-          <Text>No se encontraron datos de la ruta.</Text>
+          <Text>No se encontraron datos de la ruta</Text>
         </View>
       </Layout>
     );
