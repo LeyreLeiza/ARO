@@ -6,7 +6,6 @@ import BottomSheet from '../Componentes/BottomSheet';
 import { useBuscaPuntos, useBuscaPuntosPorNombre } from "../Funcionalidades/busquedaPuntos";
 import InformacionPunto from './pantallaEspecificacionPunto';
 import ListaPuntos from "../Funcionalidades/listadoPuntos"
-import useModLetra from '../modLetra'; 
 
 
 export default function PantallaMapa({ navigation }) {

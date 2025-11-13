@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from '../Componentes/layout';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
-import useModLetra from '../modLetra'; 
 
-// Botón personalizado reutilizable
+// 🔹 Variables globales compartidas
+global.usuarioLogueado = global.usuarioLogueado || false;
+global.nombreUsuario = global.nombreUsuario || "";
+global.modLetraValor = global.modLetraValor || 0; // Tamaño de letra global
+
 function BotonPersonalizado({ texto, color, onPress, icono, fontSize }) {
   return (
     <TouchableOpacity
@@ -20,65 +23,116 @@ function BotonPersonalizado({ texto, color, onPress, icono, fontSize }) {
 }
 
 export default function PantallaConfiguracion({ navigation }) {
-  const [modLetra, updateModLetra] = useModLetra();
+  const [estadoUsuario, setEstadoUsuario] = useState(global.usuarioLogueado);
+  const [nombre, setNombre] = useState(global.nombreUsuario);
 
-  // Tamaños base de los botones
-  const baseSizes = { login: 20, register: 20, password: 20 };
+  // 🔹 Estado local para tamaño de letra
+  const [modLetraValor, setModLetraValor] = useState(global.modLetraValor);
+
+  const baseSizes = { login: 20, register: 20, password: 20, cerrar: 20 };
+
+  // 🔹 Refresca datos de usuario cada medio segundo
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setEstadoUsuario(global.usuarioLogueado);
+      setNombre(global.nombreUsuario);
+    }, 500);
+    return () => clearInterval(interval);
+  }, []);
+
+  // 🔹 Función para actualizar tamaño de letra
+  const cambiarTamanioLetra = (valor) => {
+    global.modLetraValor = valor;   // actualizamos global
+    setModLetraValor(valor);        // actualizamos estado local para re-render
+  };
 
   return (
     <Layout navigation={navigation}>
       <View style={styles.container}>
-        {/* Botones principales */}
-        <BotonPersonalizado
-          texto="Iniciar sesión"
-          color="#4A90E2"
-          onPress={() => navigation.navigate('Login')}
-          icono="sign-in-alt"
-          fontSize={baseSizes.login + modLetra}
-        />
+        {/* 🔹 Botones si NO está logueado */}
+        {!estadoUsuario && (
+          <>
+            <BotonPersonalizado
+              texto="Iniciar sesión"
+              color="#4A90E2"
+              onPress={() => navigation.navigate('Login')}
+              icono="sign-in-alt"
+              fontSize={baseSizes.login + modLetraValor}
+            />
 
-        <BotonPersonalizado
-          texto="Registrar"
-          color="#4cd2b5ff"
-          onPress={() => navigation.navigate('Register')}
-          icono="user-plus"
-          fontSize={baseSizes.register + modLetra}
-        />
+            <BotonPersonalizado
+              texto="Registrar"
+              color="#4cd2b5ff"
+              onPress={() => navigation.navigate('Register')}
+              icono="user-plus"
+              fontSize={baseSizes.register + modLetraValor}
+            />
+          </>
+        )}
 
-        <BotonPersonalizado
-          texto="Cambiar contraseña"
-          color="#eba01eff"
-          onPress={() => navigation.navigate('Password change')}
-          icono="lock"
-          fontSize={baseSizes.password + modLetra}
-        />
+        {/* 🔹 Botones si está logueado */}
+        {estadoUsuario && (
+          <>
+            <View style={styles.saludoBox}>
+              <Text style={[styles.saludoTexto, { fontSize: 16 + modLetraValor }]}>
+                Hola: <Text style={{ fontWeight: 'bold', color: '#1e3a8a' }}>{nombre}</Text>
+              </Text>
+            </View>
 
-        {/* Selector de tamaño de letra dentro de un recuadro */}
+            {/* 🔹 Botón Cambiar contraseña */}
+            <BotonPersonalizado
+              texto="Cambiar contraseña"
+              color="#eba01eff"
+              onPress={() => navigation.navigate('Password change')}
+              icono="lock"
+              fontSize={baseSizes.password + modLetraValor}
+            />
+
+            {/* 🔹 Botón Cerrar sesión */}
+            <TouchableOpacity
+              style={[styles.boton, { backgroundColor: '#d9534f' }]}
+              onPress={() => {
+                global.usuarioLogueado = false;
+                global.nombreUsuario = "";
+                setEstadoUsuario(false);
+                setNombre("");
+                alert("Sesión cerrada");
+              }}
+            >
+              <Text style={[styles.textoBoton, { fontSize: baseSizes.cerrar + modLetraValor }]}>
+                Cerrar sesión
+              </Text>
+            </TouchableOpacity>
+          </>
+        )}
+
+        {/* 🔹 Selector de tamaño de letra */}
         <View style={styles.selectorContainer}>
           <View style={styles.selectorBox}>
-            {/* Frase incluida dentro del recuadro */}
-            <Text style={styles.selectorTitle}>Selecciona tamaño de letra:</Text>
-            
+            <Text style={[styles.selectorTitle, { fontSize: 18 + modLetraValor }]}>
+              Selecciona tamaño de letra:
+            </Text>
+
             <View style={styles.selectorButtons}>
               <TouchableOpacity
-                style={[styles.selectorButton, modLetra === -4 && styles.selectedButton]}
-                onPress={() => updateModLetra(-4)}
+                style={[styles.selectorButton, modLetraValor === -4 && styles.selectedButton]}
+                onPress={() => cambiarTamanioLetra(-4)}
               >
-                <Text style={styles.selectorText}>Pequeño</Text>
+                <Text style={[styles.selectorText, { fontSize: 14 + modLetraValor }]}>Pequeño</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={[styles.selectorButton, modLetra === 0 && styles.selectedButton]}
-                onPress={() => updateModLetra(0)}
+                style={[styles.selectorButton, modLetraValor === 0 && styles.selectedButton]}
+                onPress={() => cambiarTamanioLetra(0)}
               >
-                <Text style={styles.selectorText}>Medio</Text>
+                <Text style={[styles.selectorText, { fontSize: 14 + modLetraValor }]}>Medio</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={[styles.selectorButton, modLetra === 4 && styles.selectedButton]}
-                onPress={() => updateModLetra(4)}
+                style={[styles.selectorButton, modLetraValor === 4 && styles.selectedButton]}
+                onPress={() => cambiarTamanioLetra(4)}
               >
-                <Text style={styles.selectorText}>Grande</Text>
+                <Text style={[styles.selectorText, { fontSize: 14 + modLetraValor }]}>Grande</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -89,11 +143,7 @@ export default function PantallaConfiguracion({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: '#f0f0f0',
-  },
+  container: { flex: 1, padding: 16, backgroundColor: '#f0f0f0' },
   boton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -109,7 +159,6 @@ const styles = StyleSheet.create({
   },
   contenidoBoton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
   textoBoton: { color: 'white', fontWeight: 'bold' },
-
   selectorContainer: { marginTop: 30, alignItems: 'center', width: '100%' },
   selectorBox: {
     width: '100%',
@@ -122,7 +171,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 4,
   },
-  selectorTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 15, textAlign: 'center' },
+  selectorTitle: { fontWeight: 'bold', marginBottom: 15, textAlign: 'center' },
   selectorButtons: { flexDirection: 'row', justifyContent: 'space-around' },
   selectorButton: {
     backgroundColor: '#e0e0e0',
@@ -130,11 +179,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     borderRadius: 8,
   },
-  selectedButton: {
-    backgroundColor: '#4caf50',
+  selectedButton: { backgroundColor: '#4caf50' },
+  selectorText: { fontWeight: 'bold', color: '#333' },
+  saludoBox: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 15,
+    marginVertical: 10,
+    alignItems: 'center',
   },
-  selectorText: {
-    fontWeight: 'bold',
-    color: '#333',
-  },
+  saludoTexto: { color: '#333' },
 });
