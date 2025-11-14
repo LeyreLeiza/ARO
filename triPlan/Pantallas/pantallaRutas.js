@@ -59,6 +59,9 @@ export default function PantallaRutas({ navigation, route }) {
   return (
     <Layout navigation={navigation}>
       <View style={styles.container}>
+        <View style={styles.tituloContainer}>
+          <Text style={styles.tituloPantalla}>Rutas</Text>
+        </View>
         {navigationSteps.length > 0 && (
           <View style={styles.navContainer}>
             <Text style={styles.navTitle}>🧭 Próxima instrucción</Text>
@@ -105,7 +108,7 @@ const styles = StyleSheet.create({
   },
   navContainer: {
     position: "absolute",
-    top: 30,
+    top: 100,
     left: 10,
     right: 10,
     zIndex: 1000,
@@ -135,5 +138,13 @@ const styles = StyleSheet.create({
   errorText: {
     color: "red",
     fontSize: 16,
+  },
+  tituloPantalla: {
+    fontSize: 22,    
+    fontWeight: '500', 
+    marginTop: 50,  
+    marginBottom: 10,
+    marginLeft: 10, 
+    backgroundColor: '#f0f0f0',
   },
 });
