@@ -40,3 +40,22 @@ document.addEventListener('DOMContentLoaded', () => {
         animatedElements.forEach(el => el.classList.add('is-visible'));
     }
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+  const animatedTexts = document.querySelectorAll('.section-title, .section-subtitle');
+
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries, obs) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          obs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    animatedTexts.forEach(el => observer.observe(el));
+  } else {
+    animatedTexts.forEach(el => el.classList.add('is-visible'));
+  }
+});

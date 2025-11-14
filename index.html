@@ -5,23 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TriPlan - Descubre Pamplona con rutas inteligentes</title>
     
-    <!-- Fuentes -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     
-    <!-- Estilos -->
     <link rel="stylesheet" href="style.css">
     
-    <!-- Favicon -->
     <link rel="icon" type="image/png" href="assets/LogoCompleto.jpg">
 
-    <!-- JS -->
     <script src="animaciones.js" defer></script>
 </head>
 <body>
 
-<!-- HEADER -->
 <header class="header">
     <nav class="container nav">
         <a href="#hero" class="nav-logo">
@@ -32,13 +27,12 @@
             <li><a href="#features" class="nav-link">Características</a></li>
             <li><a href="#demo" class="nav-link">Demostración</a></li>
             <li><a href="#advantages" class="nav-link">Ventajas</a></li>
+            <li><a href="#team" class="nav-link">Equipo</a></li>
             <li><a href="#contact" class="nav-link">Contacto</a></li>
         </ul>
     </nav>
 </header>
 
-
-<!-- HERO -->
 <section id="hero" class="hero-section">
     <div class="container hero-content">
         <h1 class="animate-on-scroll">Descubre Pamplona con rutas inteligentes</h1>
@@ -46,101 +40,250 @@
     </div>
 </section>
 
-<!-- CARACTERÍSTICAS -->
-<!-- CARACTERÍSTICAS -->
-<section id="features" class="section bg-light">
+<section id="features" class="section">
     <div class="container">
-        <h2 class="section-title animate-on-scroll">¿Qué es TriPlan?</h2>
-        <p class="animate-on-scroll" style="text-align:center; max-width:700px; margin:0 auto 3rem;">
-            TriPlan es tu guía digital para explorar Pamplona de manera inteligente. Descubre rutas personalizadas, 
-            lugares culturales y eventos locales, todo adaptado a tus intereses y disponibilidad de tiempo.
+        <h2 class="section-title animate-on-scroll">Tu Viaje, Tus Reglas</h2>
+        <p class="animate-on-scroll section-subtitle">
+            Deja atrás los mapas genéricos. TriPlan diseña la experiencia de Pamplona <strong>perfecta para ti</strong>. 
+            No te pierdas nada, desde la Catedral hasta ese bar de pintxos secreto que solo los locales conocen.
         </p>
-
         <div class="features-grid">
-            <!-- Característica 1 -->
-            <div class="feature-card animate-on-scroll">
+            
+            <div class="feature-card-new animate-on-scroll">
+                <div class="feature-icon">✨</div>
                 <h3>Rutas Personalizadas</h3>
                 <p>
                     Crea tu propio itinerario según tus gustos: arte, historia, gastronomía o actividades al aire libre. 
                     TriPlan calcula automáticamente la ruta más eficiente para aprovechar tu tiempo al máximo.
                 </p>
             </div>
-
-            <!-- Característica 2 -->
-            <div class="feature-card animate-on-scroll">
-                <h3>Mapa Interactivo</h3>
+            
+            <div class="feature-card-new animate-on-scroll">
+                <div class="feature-icon">📍</div>
+                <h3>El Pulso de la Ciudad</h3>
                 <p>
-                    Explora la ciudad en un mapa dinámico y recibe información cultural y turística en tiempo real. 
-                    Cada punto de interés incluye descripciones, horarios, fotos y recomendaciones de otros usuarios.
+                    Ve qué está pasando ahora. Eventos, festivales y la mejor hora para visitar 
+                    cada monumento. Todo en un mapa vivo.
+                </p>
+            </div>
+            
+            <div class="feature-card-new animate-on-scroll">
+                <div class="feature-icon">💎</div>
+                <h3>Descubre Joyas Ocultas</h3>
+                <p>
+                    Encuentra fácilmente eventos, restaurantes y monumentos que se ajusten a tus preferencias y disponibilidad de tiempo. 
+                    Filtra por categorías, distancia o popularidad para planificar tu visita ideal.
                 </p>
             </div>
 
-            <!-- Característica 3 -->
-            <div class="feature-card animate-on-scroll">
-                <h3>Filtrado por Intereses</h3>
-                <p>
-                    Encuentra fácilmente eventos, restaurantes y monumentos que se ajusten a tus preferencias y 
-                    disponibilidad de tiempo. Filtra por categorías, distancia o popularidad para planificar tu visita ideal.
-                </p>
-            </div>
         </div>
     </div>
 </section>
-
-
-<!-- DEMOSTRACIÓN -->
-<section id="demo" class="section bg-light">
-    <div class="container">
-        <h2 class="section-title animate-on-scroll">Así funciona</h2>
-        <p class="animate-on-scroll">Navega la app fácilmente y descubre todos los puntos de interés de Pamplona desde la aplicacion de tu movil.</p>
-        <div class="demo-images animate-on-scroll">
-            <img src="assets/PantallaPrincipal.jpg" alt="Pantalla Principal" class="demo-img">
-            <img src="assets/PantallaEventos.jpg" alt="Pantalla Eventos" class="demo-img">
-            <img src="assets/PantallaRutas1.jpg" alt="Pantalla Rutas 1" class="demo-img">
-            <img src="assets/PantallaRutas2.jpg" alt="Pantalla Rutas 2" class="demo-img">
-        </div>
-    </div>
-</section>
-
-
-<!-- VENTAJAS -->
-<section id="advantages" class="section bg-light">
+<section id="demo" class="section">
     <div class="container-fluid">
-        <h2 class="section-title animate-on-scroll">Ventajas de usar TriPlan</h2>
-        <div class="advantages-circles-diagonal">
-            <div class="advantage-circle animate-on-scroll">
-                <h3>1. Optimiza tu tiempo</h3>
-                <p>TriPlan calcula la ruta más eficiente para que aproveches cada minuto de tu visita.</p>
+        <h2 class="section-title animate-on-scroll">Ve la Magia en Acción</h2>
+        <p class="animate-on-scroll section-subtitle">
+            Una interfaz limpia y potente. Planificar tu día nunca ha sido tan fácil (ni tan bonito).
+        </p>
+        
+        <div class="demo-images-container animate-on-scroll">
+            <a class="js-demo-lightbox demo-item" data-src="assets/PantallaPrincipal.jpg" title="Ver Pantalla Principal">
+                <img src="assets/PantallaPrincipal.jpg" alt="Pantalla Principal" class="demo-img">
+            </a>
+            <a class="js-demo-lightbox demo-item" data-src="assets/PantallaEventos.jpg" title="Ver Pantalla Eventos">
+                <img src="assets/PantallaEventos.jpg" alt="Pantalla Eventos" class="demo-img">
+            </a>
+            <a class="js-demo-lightbox demo-item" data-src="assets/PantallaRutas1.jpg" title="Ver Pantalla Rutas 1">
+                <img src="assets/PantallaRutas1.jpg" alt="Pantalla Rutas 1" class="demo-img">
+            </a>
+            <a class="js-demo-lightbox demo-item" data-src="assets/PantallaRutas2.jpg" title="Ver Pantalla Rutas 2">
+                <img src="assets/PantallaRutas2.jpg" alt="Pantalla Rutas 2" class="demo-img">
+            </a>
+        </div>
+    </div>
+</section>
+
+<section id="download" class="cta-section">
+    <div class="container">
+        <h2 class="section-title animate-on-scroll">Tu Aventura Comienza Aquí</h2>
+        <p class="animate-on-scroll section-subtitle">
+            ¿Listo para descubrir la verdadera Pamplona? Descarga la app y transforma tu visita.
+        </p>
+        <div class="download-buttons animate-on-scroll">
+            <a class="btn-download">
+                Descargar (App Store)
+            </a>
+            <a class="btn-download google-play">
+                Descargar (Google Play)
+            </a>
+        </div>
+    </div>
+</section>
+
+
+<section id="advantages" class="section">
+    <div class="container">
+        <h2 class="section-title animate-on-scroll">No solo planees, <em>Vive</em> la Experiencia</h2>
+        <p class="animate-on-scroll section-subtitle">
+            Disfruta de ventajas exclusivas que solo TriPlan te puede ofrecer.
+        </p>
+        
+        <div class="advantages-grid">
+            <div class="advantage-item new-card animate-on-scroll" style="margin-left:0rem">
+                <div class="advantage-icon-title">
+                    <div class="advantage-icon">⏰</div>
+                    <h3>Ahorra Tiempo Valioso</h3>
+                </div>
+                <p>Nuestros algoritmos optimizan tus rutas para que pases menos tiempo en el mapa y más tiempo disfrutando.</p>
             </div>
-            <div class="advantage-circle animate-on-scroll">
-                <h3>2. Descubre lugares únicos</h3>
-                <p>No solo los puntos turísticos, también rincones secretos y culturales que pocos conocen.</p>
+            <div class="advantage-item new-card animate-on-scroll" style="margin-left:2rem">
+                <div class="advantage-icon-title">
+                    <div class="advantage-icon">💎</div>
+                    <h3>Descubre Joyas Ocultas</h3>
+                </div>
+                <p>Accede a recomendaciones locales y lugares secretos que solo TriPlan conoce.</p>
             </div>
-            <div class="advantage-circle animate-on-scroll">
-                <h3>3. Interacción en tiempo real</h3>
-                <p>Actualizaciones de eventos y actividades en la ciudad directamente en tu mapa.</p>
-            </div>
-            <div class="advantage-circle animate-on-scroll">
-                <h3>4. Personalización total</h3>
-                <p>Filtra según tus gustos, intereses y duración de la visita.</p>
+            <div class="advantage-item new-card animate-on-scroll" style="margin-left:4rem">
+                <div class="advantage-icon-title">
+                    <div class="advantage-icon">🗺️</div>
+                    <h3>Todo en un Solo Lugar</h3>
+                </div>
+                <p>Olvídate de cambiar entre apps. Mapas, tickets, horarios y recomendaciones, todo integrado.</p>
             </div>
         </div>
     </div>
 </section>
 
 
-<!-- CONTACTO / FOOTER -->
+<section id="team" class="section">
+    <div class="container">
+        <h2 class="section-title animate-on-scroll">Los Arquitectos de tu Viaje</h2>
+        <p class="animate-on-scroll section-subtitle">
+            Un equipo de la UPNA apasionado por la tecnología y por mostrar la verdadera alma de Pamplona. 
+        </p>
+        
+        <div class="team-grid"> 
+            <div class="team-member animate-on-scroll">
+                <h3>Leyre Leiza</h3>
+            </div>
+            <div class="team-member animate-on-scroll">
+                <h3>Iñaki Pinillos</h3>
+            </div>
+            <div class="team-member animate-on-scroll">
+                <h3>Sarah Parrales</h3>
+            </div>
+            <div class="team-member animate-on-scroll">
+                <h3>Jon Iker Ormaetxea</h3>
+            </div>
+            <div class="team-member animate-on-scroll">
+                <h3>Asier Percaz</h3>
+            </div>
+            <div class="team-member animate-on-scroll">
+                <h3>Jorge Dabán</h3>
+            </div>
+            <div class="team-member animate-on-scroll">
+                <h3>Iker Fernández</h3>
+            </div>
+        </div>
+    </div>
+</section>
 <footer id="contact" class="footer">
     <div class="container">
-        <h2 class="section-title animate-on-scroll">Contacto</h2>
-        <p>Si quieres probar la app o tienes preguntas, contáctanos:</p>
+        <h2 class="section-title animate-on-scroll">¿Hablamos?</h2>
+        <p class="section-subtitle">Si quieres probar la beta, colaborar o simplemente saludar, aquí estamos:</p>
         <div class="footer-links animate-on-scroll">
-            <a href="https://github.com/LeyreLeiza/ARO.git">GitHub</a>
+            <a href="https://github.com/LeyreLeiza/ARO.git" target="_blank" rel="noopener noreferrer">GitHub</a>
             <a href="mailto:contacto@triplan.com">Email</a>
         </div>
-        <p>&copy; 2025 TriPlan. Proyecto de ARO - Universidad Publica de Navarra</p>
+        <p class="footer-copy">&copy; 2025 TriPlan. Proyecto de ARO - Universidad Publica de Navarra</p>
     </div>
 </footer>
+
+
+<div id="popup-modal" class="modal-overlay">
+    <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <h2>Próximamente</h2>
+        <p>¡Estamos trabajando en ello! TriPlan estará disponible muy pronto.</p>
+    </div>
+</div>
+
+<div id="demo-lightbox" class="modal-overlay">
+    <div class="modal-content lightbox-content">
+        <span class="modal-close lightbox-close">&times;</span>
+        <img src="" alt="Demo Image Lightbox" id="lightbox-img">
+    </div>
+</div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // --- Script para el Pop-up de Descarga ---
+    const modal = document.getElementById('popup-modal');
+    const closeBtn = document.querySelector('.modal-close');
+    const downloadButtons = document.querySelectorAll('.btn-download');
+
+    function showModal(event) {
+        event.preventDefault(); 
+        modal.classList.add('active');
+    }
+    function hideModal() {
+        modal.classList.remove('active');
+    }
+
+    downloadButtons.forEach(button => {
+        button.addEventListener('click', showModal);
+    });
+    closeBtn.addEventListener('click', hideModal);
+    modal.addEventListener('click', function(event) {
+        if (event.target === modal) {
+            hideModal();
+        }
+    });
+
+    // --- (MODIFICADO) Script del Header ELIMINADO ---
+
+    // --- Script para el Lightbox de Demo ---
+    const lightbox = document.getElementById('demo-lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    const lightboxClose = document.querySelector('.lightbox-close');
+    const demoLinks = document.querySelectorAll('.js-demo-lightbox');
+
+    function showLightbox(event) {
+        event.preventDefault();
+        const imgSrc = this.getAttribute('data-src');
+        lightboxImg.setAttribute('src', imgSrc);
+        lightbox.classList.add('active');
+    }
+
+    function hideLightbox() {
+        lightbox.classList.remove('active');
+        lightboxImg.setAttribute('src', '');
+    }
+
+    demoLinks.forEach(link => {
+        link.addEventListener('click', showLightbox);
+    });
+    
+    lightboxClose.addEventListener('click', hideLightbox);
+    
+    lightbox.addEventListener('click', function(event) {
+        if (event.target === lightbox) {
+            hideLightbox();
+        }
+    });
+
+    // --- Script de tecla Escape (cierra AMBOS modales) ---
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            hideModal();
+            hideLightbox();
+        }
+    });
+
+});
+</script>
 
 </body>
 </html>
