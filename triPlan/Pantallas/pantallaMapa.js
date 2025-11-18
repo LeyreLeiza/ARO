@@ -5,8 +5,7 @@ import Layout from '../Componentes/layout';
 import BottomSheet from '../Componentes/BottomSheet'; 
 import { useBuscaPuntos, useBuscaPuntosPorNombre } from "../Funcionalidades/busquedaPuntos";
 import InformacionPunto from './pantallaEspecificacionPunto';
-import ListaPuntos from "../Funcionalidades/listadoPuntos"
-
+import ListaPuntos from "../Funcionalidades/listadoPuntos";
 
 export default function PantallaMapa({ navigation }) {
   const [search, setSearch] = useState("");
@@ -19,23 +18,20 @@ export default function PantallaMapa({ navigation }) {
   const { puntosPorTipo, loadingPorTipo, errorPorTipo } = useBuscaPuntos(activos);
   const { puntosPorNombre, loadingPorNombre, errorPorNombre } = useBuscaPuntosPorNombre(search); 
   
-useEffect(() => {
-  if (!loadingPorTipo && !loadingPorNombre) {
+  useEffect(() => {
+    if (!loadingPorTipo && !loadingPorNombre) {
+      const listaTipo = puntosPorTipo || [];
+      const listaNombre = puntosPorNombre || [];
 
-    if (search.trim()) {
-      const idsFiltradosPorNombre = puntosPorNombre.map(punto => punto.id);
-
-      const puntosFiltrados = puntosPorTipo.filter((punto) =>
-        idsFiltradosPorNombre.includes(punto.id) // Aseguramos que el punto esté en los resultados por nombre
-      );
-      
-      setFilteredUbis(puntosFiltrados);
-    } else {
-      setFilteredUbis(puntosPorTipo);
+      if (search.trim()) {
+        const idsFiltradosPorNombre = listaNombre.map(p => p.id);
+        const puntosFiltrados = listaTipo.filter(p => idsFiltradosPorNombre.includes(p.id));
+        setFilteredUbis(puntosFiltrados);
+      } else {
+        setFilteredUbis(listaTipo);
+      }
     }
-  }
-}, [loadingPorTipo, loadingPorNombre, puntosPorTipo, puntosPorNombre, search, activos]);
-
+  }, [loadingPorTipo, loadingPorNombre, puntosPorTipo, puntosPorNombre, search, activos]);
 
   const handleSearch = (text) => {
     setSearch(text); 
@@ -61,11 +57,17 @@ useEffect(() => {
     });
   };
 
-
   return (
     <Layout navigation={navigation}>
       <View style={styles.container}>
-        <Mapa ubicaciones={filteredUbis}/>
+
+        {/* MAPA */}
+        <Mapa 
+          ubicaciones={filteredUbis || []}
+          onSelectPunto={(punto) => setPuntoSeleccionado(punto)}
+        />
+
+        {/* BUSCADOR */}
         <View style={styles.cajaBuscador}>
           <View style={styles.buscador}>
             <Image style={styles.imagenBusqueda} source={require("../assets/searchIcon.png")} />
@@ -76,6 +78,7 @@ useEffect(() => {
               placeholder="Buscar ubicacion..."
             />
           </View>
+
           <ScrollView 
             horizontal 
             showsHorizontalScrollIndicator={false} 
@@ -96,24 +99,26 @@ useEffect(() => {
           </ScrollView>
         </View>
       </View>
+
+      {/* BOTTOM SHEET */}
       <BottomSheet>
-      {puntoSeleccionado ? (
-      <InformacionPunto 
-        punto={puntoSeleccionado} 
-        onBack={() => setPuntoSeleccionado(null)} 
-      />
-      ) : (
-        <ListaPuntos
-          filteredUbis={filteredUbis}
-          loading={loadingPorTipo || loadingPorNombre}
-          error={errorPorTipo || errorPorNombre}
-          onSelect={(item) => setPuntoSeleccionado(item)}
-        />
-        )
-      }
+        {puntoSeleccionado ? (
+          <InformacionPunto 
+            punto={puntoSeleccionado} 
+            onBack={() => setPuntoSeleccionado(null)} 
+          />
+        ) : (
+          <ListaPuntos
+            filteredUbis={filteredUbis || []}
+            loading={loadingPorTipo || loadingPorNombre}
+            error={errorPorTipo || errorPorNombre}
+            onSelect={(item) => setPuntoSeleccionado(item)}
+          />
+        )}
       </BottomSheet>
     </Layout>
-)}
+  );
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -121,69 +126,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#f0f0f0',
   },
-  caja: {
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 10,
-    padding: 15,
-    margin: 10,
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-  },
-  imagenUbi: {
-    width: 50,
-    height: 50,
-  },
-  textContainer: {
-    flexDirection: 'column',
-    marginLeft: 15,
-    flex: 1,
-  },
-  iconContainer: {
-    marginTop: 10,
-    marginRight: 10,
-  },
-  titulo: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#333',
-    flexWrap: 'wrap',
-    overflowWrap: 'break-word',
-  },
-  tipo: {
-    color: '#555',
-    fontSize: 14,
-  },
-  descripcion: {
-    fontSize: 12,
-    color: '#777',
-    margin: 10,
-    textAlign: 'justify',
-  },
   cajaBuscador: {
     position: 'absolute',
     top: 50,
     left: 20,
     right: 20,
-    paddingLeft: 5,
-    paddingRight: 10,
     paddingVertical: 10,
     backgroundColor: '#fff',
     borderRadius: 10,
-    flexDirection: 'column',
-    alignItems: 'center', 
-
-    // Sombra iOS
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-
-    // Sombra Android
+    alignItems: 'center',
     elevation: 5,
   },
   buscador: {
@@ -198,8 +149,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: '#e8e8e8ff',
     fontSize: 16,
-    color: '#7a7a7aff',
-    fontWeight: '400',
+    marginRight: 10,      
+    maxWidth: "85%",      
   },
   scrollBotones: {
     width: '100%',
@@ -212,24 +163,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 20,
-    backgroundColor: '#f8f8f8', 
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
   },
   botonActivo: {
-    backgroundColor: '#4a90e2', 
+    backgroundColor: '#4a90e2',
     borderColor: '#357ABD',
-    shadowOpacity: 0.25,
-    shadowRadius: 3,
-    elevation: 3,
   },
   textoBoton: {
     fontSize: 14,
-    color: '#333',
-    fontWeight: '500',
   },
   textoBotonActivo: {
     color: '#fff',
@@ -239,10 +179,5 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     marginRight: 3,
-  },
-  icono: {
-    marginLeft: 'auto', 
-    alignSelf: 'center',
-    color: '#ccc',
-  },
+  }
 });
