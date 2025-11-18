@@ -1,60 +1,74 @@
 import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  FlatList,
-  Image,
-  ActivityIndicator,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  ScrollView,
-  Dimensions,
-} from 'react-native';
+import { View, Text, FlatList, Image, ActivityIndicator, StyleSheet, TextInput, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useBuscaEventos, useBuscaEventosPorNombre, obtenerTiposUnicos } from '../Funcionalidades/busquedaEventos';
 
 const PantallaEventos = () => {
-  const [eventos, setEventos] = useState([]);
-  const [eventosFiltrados, setEventosFiltrados] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [busqueda, setBusqueda] = useState('');
   const [tipos, setTipos] = useState(['Todos']);
-  const [tipoSeleccionado, setTipoSeleccionado] = useState('Todos');
 
-  const fetchEventos = async () => {
-    try {
-      const response = await fetch('https://aro-1nwv.onrender.com/eventos');
-      if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
-      const data = await response.json();
-      setEventos(data);
-      setEventosFiltrados(data);
 
-      const tiposUnicos = Array.from(new Set(data.map(e => e.tipo))).filter(Boolean);
-      setTipos(['Todos', ...tiposUnicos]);
-    } catch (error) {
-      console.error('Error al obtener eventos:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { eventosPorTipo, loadingPorTipo, errorPorTipo } = useBuscaEventos(tipos);
+  const {eventosPorNombre, loadingPorNombre, ErrorPorNombre } = useBuscaEventosPorNombre(busqueda);
+  
+  const [eventosFiltrados, setEventosFiltrados] = useState([]);
 
+  const [tiposUnicos, setTiposUnicos] = useState(['Todos']);
   useEffect(() => {
-    fetchEventos();
+    const fetchTipos = async () => {
+      try {
+        const tipos = await obtenerTiposUnicos();
+        setTiposUnicos(tipos);
+      } catch (err) {
+        console.error("Error al cargar tipos:", err);
+      }
+    };
+
+    fetchTipos();
   }, []);
 
+
+
   useEffect(() => {
-    let filtrados = eventos;
-    if (tipoSeleccionado !== 'Todos') {
-      filtrados = filtrados.filter(e => e.tipo === tipoSeleccionado);
-    }
-    if (busqueda.trim() !== '') {
-      filtrados = filtrados.filter(e =>
-        e.nombre?.toLowerCase().includes(busqueda.toLowerCase()) ||
-        e.descripcion?.toLowerCase().includes(busqueda.toLowerCase())
+  if (!loadingPorTipo && !loadingPorNombre) {
+
+    if (busqueda.trim()) {
+      const idsFiltradosPorNombre = eventosPorNombre.map(evento => evento.id);
+
+      const eventos2Filtrados = eventosPorTipo.filter((evento) =>
+        idsFiltradosPorNombre.includes(evento.id) // Aseguramos que el punto esté en los resultados por nombre
       );
+      
+      setEventosFiltrados(eventos2Filtrados);
+    } else {
+      setEventosFiltrados(eventosPorTipo);
     }
-    setEventosFiltrados(filtrados);
-  }, [busqueda, tipoSeleccionado, eventos]);
+  }
+}, [loadingPorTipo, loadingPorNombre, eventosPorTipo, eventosPorNombre, busqueda, tipos]);
+
+  const handleBusqueda = (text) => {
+    setBusqueda(text); 
+  };
+
+  const toggleCategoria = (cat) => {
+    setTipos((prev) => {
+      let nuevosActivos;
+
+      if (prev.includes(cat)) {
+        nuevosActivos = prev.filter((c) => c !== cat);
+
+        if (nuevosActivos.length === 0) {
+          nuevosActivos = ['Todos'];
+        }
+      } else if (cat === 'Todos') {
+        nuevosActivos = ['Todos'];
+      } else {
+        nuevosActivos = prev.includes('Todos') ? [cat] : [...prev, cat];
+      }
+      
+      return nuevosActivos;
+    });
+  };
 
   const renderEvento = ({ item }) => (
     <View style={styles.card}>
@@ -93,14 +107,6 @@ const PantallaEventos = () => {
     </View>
   );
 
-  if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#ff6347" />
-        <Text style={styles.loadingText}>Cargando eventos...</Text>
-      </View>
-    );
-  }
 
   const anchoBoton = Math.min(Dimensions.get('window').width / 4.5, 90);
 
@@ -109,13 +115,12 @@ const PantallaEventos = () => {
       <Text style={styles.titulo}>Eventos</Text>
       <Text style={styles.subtitulo}>Descubre eventos cerca de ti</Text>
 
-      {/* 🔍 Buscador */}
       <View style={styles.buscadorContainer}>
         <Ionicons name="search-outline" size={20} color="#666" style={{ marginRight: 6 }} />
         <TextInput
           placeholder="Buscar eventos..."
           value={busqueda}
-          onChangeText={setBusqueda}
+          onChangeText={handleBusqueda}
           style={styles.inputBusqueda}
           placeholderTextColor="#999"
         />
@@ -126,28 +131,27 @@ const PantallaEventos = () => {
         )}
       </View>
 
-      {/* 🟢 Filtros */}
       <View style={{ height: 50, marginBottom: 12 }}>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{ alignItems: 'center', paddingRight: 10 }}
         >
-          {tipos.map(tipo => (
+          {tiposUnicos.map(tipo => (
             <TouchableOpacity
               key={tipo}
               style={[
                 styles.filtro,
                 { width: anchoBoton },
-                tipoSeleccionado === tipo && styles.filtroActivo,
+                tipos.includes(tipo) && styles.filtroActivo
               ]}
-              onPress={() => setTipoSeleccionado(tipo)}
+              onPress={() => toggleCategoria(tipo)}
               activeOpacity={0.8}
             >
               <Text
                 style={[
                   styles.filtroTexto,
-                  tipoSeleccionado === tipo && styles.filtroTextoActivo,
+                  tipos.includes(tipo) && styles.filtroTextoActivo
                 ]}
                 numberOfLines={1}
               >
@@ -158,18 +162,22 @@ const PantallaEventos = () => {
         </ScrollView>
       </View>
 
-      {/* Lista de eventos */}
-      {eventosFiltrados.length === 0 ? (
-        <Text style={styles.sinResultados}>No hay eventos disponibles.</Text>
-      ) : (
-        <FlatList
-          style={{ flex: 1 }} 
-          data={eventosFiltrados}
-          renderItem={renderEvento}
-          keyExtractor={item => item.id.toString()}
-          contentContainerStyle={{ paddingBottom: 60 }}
-        />
-      )}
+        {loadingPorTipo || loadingPorNombre ? (
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingTop: 40 }}>
+            <ActivityIndicator size="large" color="#ff6347" />
+            <Text style={{ marginTop: 10, color: '#666' }}>Cargando eventos...</Text>
+          </View>
+        ) : eventosFiltrados.length === 0 ? (
+          <Text style={styles.sinResultados}>No hay eventos disponibles.</Text>
+        ) : (
+          <FlatList
+            style={{ flex: 1 }}
+            data={eventosFiltrados}
+            renderItem={renderEvento}
+            keyExtractor={item => item.id.toString()}
+            contentContainerStyle={{ paddingBottom: 60 }}
+          />
+        )}
     </View>
   );
 };
