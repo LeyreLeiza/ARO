@@ -1,19 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Image, ActivityIndicator, StyleSheet, TextInput, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
+import { View, Text, FlatList, Image, ActivityIndicator, StyleSheet, TextInput, TouchableOpacity, ScrollView, Dimensions, Modal  } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useBuscaEventos, useBuscaEventosPorNombre, obtenerTiposUnicos } from '../Funcionalidades/busquedaEventos';
+import { useBuscaEventos, useBuscaEventosPorNombre, obtenerTiposUnicos, obtenerEventosPorRango } from '../Funcionalidades/busquedaEventos';
+import MiSelectorRango from '../Componentes/calendario';
 
-const PantallaEventos = () => {
+const PantallaEventos = ({ navigation }) => {
   const [busqueda, setBusqueda] = useState('');
   const [tipos, setTipos] = useState(['Todos']);
+  const [rangoFiltro, setRangoFiltro] = useState({ start: null, end: null });
+  const [mostrarCalendario, setMostrarCalendario] = useState(false);
 
-
-  const { eventosPorTipo, loadingPorTipo, errorPorTipo } = useBuscaEventos(tipos);
-  const {eventosPorNombre, loadingPorNombre, ErrorPorNombre } = useBuscaEventosPorNombre(busqueda);
+  const { eventosPorTipo, loadingPorTipo } = useBuscaEventos(tipos);
+  const { eventosPorNombre, loadingPorNombre } = useBuscaEventosPorNombre(busqueda);
   
   const [eventosFiltrados, setEventosFiltrados] = useState([]);
-
   const [tiposUnicos, setTiposUnicos] = useState(['Todos']);
+
   useEffect(() => {
     const fetchTipos = async () => {
       try {
@@ -27,24 +29,39 @@ const PantallaEventos = () => {
     fetchTipos();
   }, []);
 
+  useEffect(() => {
+    const cargarEventosRango = async () => {
+      if (!rangoFiltro.start || !rangoFiltro.end) return;
 
+      const fechaIni = rangoFiltro.start.toISOString().split("T")[0];
+      const fechaFin = rangoFiltro.end.toISOString().split("T")[0];
+
+      const datos = await obtenerEventosPorRango(fechaIni, fechaFin);
+
+      setEventosFiltrados(datos);
+    };
+
+    cargarEventosRango();
+  }, [rangoFiltro]);
 
   useEffect(() => {
-  if (!loadingPorTipo && !loadingPorNombre) {
+    if (rangoFiltro.start && rangoFiltro.end) return; // esto por que no podemos hacer el doble filtro ambos se cogen de todos no de los que estan en pantalla cambiarlo para mas adelante
 
-    if (busqueda.trim()) {
-      const idsFiltradosPorNombre = eventosPorNombre.map(evento => evento.id);
+    if (!loadingPorTipo && !loadingPorNombre) {
 
-      const eventos2Filtrados = eventosPorTipo.filter((evento) =>
-        idsFiltradosPorNombre.includes(evento.id) // Aseguramos que el punto esté en los resultados por nombre
-      );
-      
-      setEventosFiltrados(eventos2Filtrados);
-    } else {
-      setEventosFiltrados(eventosPorTipo);
+      if (busqueda.trim()) {
+        const idsFiltradosPorNombre = eventosPorNombre.map(evento => evento.id);
+
+        const eventos2Filtrados = eventosPorTipo.filter((evento) =>
+          idsFiltradosPorNombre.includes(evento.id) // Aseguramos que el punto esté en los resultados por nombre
+        );
+        
+        setEventosFiltrados(eventos2Filtrados);
+      } else {
+        setEventosFiltrados(eventosPorTipo);
+      }
     }
-  }
-}, [loadingPorTipo, loadingPorNombre, eventosPorTipo, eventosPorNombre, busqueda, tipos]);
+  }, [loadingPorTipo, loadingPorNombre, eventosPorTipo, eventosPorNombre, busqueda, tipos]);
 
   const handleBusqueda = (text) => {
     setBusqueda(text); 
@@ -71,42 +88,46 @@ const PantallaEventos = () => {
   };
 
   const renderEvento = ({ item }) => (
-    <View style={styles.card}>
-      {item.imagen ? (
-        <Image source={{ uri: item.imagen }} style={styles.imagen} />
-      ) : (
-        <View style={[styles.imagen, styles.imagenPlaceholder]}>
-          <Ionicons name="image-outline" size={40} color="#888" />
-        </View>
-      )}
-      <TouchableOpacity style={styles.iconoFavorito}>
-        <Ionicons name="heart-outline" size={22} color="#000" />
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.iconoCompartir}>
-        <Ionicons name="share-social-outline" size={22} color="#000" />
-      </TouchableOpacity>
-
-      <View style={styles.info}>
-        <Text style={styles.etiqueta}>{item.tipo}</Text>
-        <Text style={styles.nombre}>{item.nombre}</Text>
-        <Text style={styles.descripcion}>{item.descripcion}</Text>
-        <View style={styles.infoFila}>
-          <Ionicons name="calendar-outline" size={16} color="#777" />
-          <Text style={styles.infoTexto}>
-            {new Date(item.fecha_ini).toLocaleDateString()} →{' '}
-            {new Date(item.fecha_fin).toLocaleDateString()}
-          </Text>
-        </View>
-        {item.punto?.nombre && (
-          <View style={styles.infoFila}>
-            <Ionicons name="location-outline" size={16} color="#777" />
-            <Text style={styles.infoTexto}>{item.punto.nombre}</Text>
+    <TouchableOpacity 
+      onPress={() => navigation.navigate('DetalleEvento', { evento: item })} 
+      activeOpacity={0.8}
+    >
+      <View style={styles.card}>
+        {item.imagen ? (
+          <Image source={{ uri: item.imagen }} style={styles.imagen} />
+        ) : (
+          <View style={[styles.imagen, styles.imagenPlaceholder]}>
+            <Ionicons name="image-outline" size={40} color="#888" />
           </View>
         )}
-      </View>
-    </View>
-  );
+        <TouchableOpacity style={styles.iconoFavorito}>
+          <Ionicons name="heart-outline" size={22} color="#000" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.iconoCompartir}>
+          <Ionicons name="share-social-outline" size={22} color="#000" />
+        </TouchableOpacity>
 
+        <View style={styles.info}>
+          <Text style={styles.etiqueta}>{item.tipo}</Text>
+          <Text style={styles.nombre}>{item.nombre}</Text>
+          <Text style={styles.descripcion}>{item.descripcion}</Text>
+          <View style={styles.infoFila}>
+            <Ionicons name="calendar-outline" size={16} color="#777" />
+            <Text style={styles.infoTexto}>
+              {new Date(item.fecha_ini).toLocaleDateString()} →{' '}
+              {new Date(item.fecha_fin).toLocaleDateString()}
+            </Text>
+          </View>
+          {item.punto?.nombre && (
+            <View style={styles.infoFila}>
+              <Ionicons name="location-outline" size={16} color="#777" />
+              <Text style={styles.infoTexto}>{item.punto.nombre}</Text>
+            </View>
+          )}
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
 
   const anchoBoton = Math.min(Dimensions.get('window').width / 4.5, 90);
 
@@ -124,6 +145,23 @@ const PantallaEventos = () => {
           style={styles.inputBusqueda}
           placeholderTextColor="#999"
         />
+
+        <TouchableOpacity onPress={() => setMostrarCalendario(true)}>
+          <Ionicons name="calendar-outline" size={22} color="#666" style={{ marginHorizontal: 6 }} />
+        </TouchableOpacity>
+
+        <Modal
+          visible={mostrarCalendario}
+          transparent={true}
+          animationType="slide"
+        >
+          <MiSelectorRango
+            visible={mostrarCalendario}
+            onClose={() => setMostrarCalendario(false)}
+            onChangeRange={(rango) => setRangoFiltro(rango)}
+          />
+        </Modal>
+
         {busqueda.length > 0 && (
           <TouchableOpacity onPress={() => setBusqueda('')}>
             <Ionicons name="close-circle" size={20} color="#999" />

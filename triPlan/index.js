@@ -14,6 +14,7 @@ import PantallaConfiguracion from './Pantallas/pantallaConfiguracion'
 import LoginScreen from './Pantallas/pantallaLogin';
 import RegisterScreen from './Pantallas/pantallaRegistro';
 import ChangePasswordScreen from './Pantallas/pantallaCambiarContraseña';
+import DetalleEvento from './Pantallas/pantallaDetalleEvento';
 
 import CalendarIcon from './assets/CalendarIcon';
 import MapIcon from './assets/MapIcon';
@@ -109,6 +110,11 @@ const NavigationSetup = () => {
           name="pantallaRutas" 
           component={PantallaRutas} 
           options={{ headerShown: false }} 
+        />
+         <Stack.Screen
+          name="DetalleEvento"
+          component={DetalleEvento}
+          options={{ title: 'Detalle del Evento' }} 
         />
       </Stack.Navigator>
     </NavigationContainer>
