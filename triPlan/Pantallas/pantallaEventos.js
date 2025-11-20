@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useBuscaEventos, useBuscaEventosPorNombre, obtenerTiposUnicos, obtenerEventosPorRango } from '../Funcionalidades/busquedaEventos';
 import MiSelectorRango from '../Componentes/calendario';
 
-const PantallaEventos = () => {
+const PantallaEventos = ({ navigation }) => {
   const [busqueda, setBusqueda] = useState('');
   const [tipos, setTipos] = useState(['Todos']);
   const [rangoFiltro, setRangoFiltro] = useState({ start: null, end: null });
@@ -88,42 +88,46 @@ const PantallaEventos = () => {
   };
 
   const renderEvento = ({ item }) => (
-    <View style={styles.card}>
-      {item.imagen ? (
-        <Image source={{ uri: item.imagen }} style={styles.imagen} />
-      ) : (
-        <View style={[styles.imagen, styles.imagenPlaceholder]}>
-          <Ionicons name="image-outline" size={40} color="#888" />
-        </View>
-      )}
-      <TouchableOpacity style={styles.iconoFavorito}>
-        <Ionicons name="heart-outline" size={22} color="#000" />
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.iconoCompartir}>
-        <Ionicons name="share-social-outline" size={22} color="#000" />
-      </TouchableOpacity>
-
-      <View style={styles.info}>
-        <Text style={styles.etiqueta}>{item.tipo}</Text>
-        <Text style={styles.nombre}>{item.nombre}</Text>
-        <Text style={styles.descripcion}>{item.descripcion}</Text>
-        <View style={styles.infoFila}>
-          <Ionicons name="calendar-outline" size={16} color="#777" />
-          <Text style={styles.infoTexto}>
-            {new Date(item.fecha_ini).toLocaleDateString()} →{' '}
-            {new Date(item.fecha_fin).toLocaleDateString()}
-          </Text>
-        </View>
-        {item.punto?.nombre && (
-          <View style={styles.infoFila}>
-            <Ionicons name="location-outline" size={16} color="#777" />
-            <Text style={styles.infoTexto}>{item.punto.nombre}</Text>
+    <TouchableOpacity 
+      onPress={() => navigation.navigate('DetalleEvento', { evento: item })} 
+      activeOpacity={0.8}
+    >
+      <View style={styles.card}>
+        {item.imagen ? (
+          <Image source={{ uri: item.imagen }} style={styles.imagen} />
+        ) : (
+          <View style={[styles.imagen, styles.imagenPlaceholder]}>
+            <Ionicons name="image-outline" size={40} color="#888" />
           </View>
         )}
-      </View>
-    </View>
-  );
+        <TouchableOpacity style={styles.iconoFavorito}>
+          <Ionicons name="heart-outline" size={22} color="#000" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.iconoCompartir}>
+          <Ionicons name="share-social-outline" size={22} color="#000" />
+        </TouchableOpacity>
 
+        <View style={styles.info}>
+          <Text style={styles.etiqueta}>{item.tipo}</Text>
+          <Text style={styles.nombre}>{item.nombre}</Text>
+          <Text style={styles.descripcion}>{item.descripcion}</Text>
+          <View style={styles.infoFila}>
+            <Ionicons name="calendar-outline" size={16} color="#777" />
+            <Text style={styles.infoTexto}>
+              {new Date(item.fecha_ini).toLocaleDateString()} →{' '}
+              {new Date(item.fecha_fin).toLocaleDateString()}
+            </Text>
+          </View>
+          {item.punto?.nombre && (
+            <View style={styles.infoFila}>
+              <Ionicons name="location-outline" size={16} color="#777" />
+              <Text style={styles.infoTexto}>{item.punto.nombre}</Text>
+            </View>
+          )}
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
 
   const anchoBoton = Math.min(Dimensions.get('window').width / 4.5, 90);
 
