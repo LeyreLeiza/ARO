@@ -1,19 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Image, ActivityIndicator, StyleSheet, TextInput, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
+import { View, Text, FlatList, Image, ActivityIndicator, StyleSheet, TextInput, TouchableOpacity, ScrollView, Dimensions, Modal  } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useBuscaEventos, useBuscaEventosPorNombre, obtenerTiposUnicos } from '../Funcionalidades/busquedaEventos';
+import { useBuscaEventos, useBuscaEventosPorNombre, obtenerTiposUnicos, obtenerEventosPorRango } from '../Funcionalidades/busquedaEventos';
+import MiSelectorRango from '../Componentes/calendario';
 
 const PantallaEventos = () => {
   const [busqueda, setBusqueda] = useState('');
   const [tipos, setTipos] = useState(['Todos']);
+  const [rangoFiltro, setRangoFiltro] = useState({ start: null, end: null });
+  const [mostrarCalendario, setMostrarCalendario] = useState(false);
 
-
-  const { eventosPorTipo, loadingPorTipo, errorPorTipo } = useBuscaEventos(tipos);
-  const {eventosPorNombre, loadingPorNombre, ErrorPorNombre } = useBuscaEventosPorNombre(busqueda);
+  const { eventosPorTipo, loadingPorTipo } = useBuscaEventos(tipos);
+  const { eventosPorNombre, loadingPorNombre } = useBuscaEventosPorNombre(busqueda);
   
   const [eventosFiltrados, setEventosFiltrados] = useState([]);
-
   const [tiposUnicos, setTiposUnicos] = useState(['Todos']);
+
   useEffect(() => {
     const fetchTipos = async () => {
       try {
@@ -27,24 +29,39 @@ const PantallaEventos = () => {
     fetchTipos();
   }, []);
 
+  useEffect(() => {
+    const cargarEventosRango = async () => {
+      if (!rangoFiltro.start || !rangoFiltro.end) return;
 
+      const fechaIni = rangoFiltro.start.toISOString().split("T")[0];
+      const fechaFin = rangoFiltro.end.toISOString().split("T")[0];
+
+      const datos = await obtenerEventosPorRango(fechaIni, fechaFin);
+
+      setEventosFiltrados(datos);
+    };
+
+    cargarEventosRango();
+  }, [rangoFiltro]);
 
   useEffect(() => {
-  if (!loadingPorTipo && !loadingPorNombre) {
+    if (rangoFiltro.start && rangoFiltro.end) return; // esto por que no podemos hacer el doble filtro ambos se cogen de todos no de los que estan en pantalla cambiarlo para mas adelante
 
-    if (busqueda.trim()) {
-      const idsFiltradosPorNombre = eventosPorNombre.map(evento => evento.id);
+    if (!loadingPorTipo && !loadingPorNombre) {
 
-      const eventos2Filtrados = eventosPorTipo.filter((evento) =>
-        idsFiltradosPorNombre.includes(evento.id) // Aseguramos que el punto esté en los resultados por nombre
-      );
-      
-      setEventosFiltrados(eventos2Filtrados);
-    } else {
-      setEventosFiltrados(eventosPorTipo);
+      if (busqueda.trim()) {
+        const idsFiltradosPorNombre = eventosPorNombre.map(evento => evento.id);
+
+        const eventos2Filtrados = eventosPorTipo.filter((evento) =>
+          idsFiltradosPorNombre.includes(evento.id) // Aseguramos que el punto esté en los resultados por nombre
+        );
+        
+        setEventosFiltrados(eventos2Filtrados);
+      } else {
+        setEventosFiltrados(eventosPorTipo);
+      }
     }
-  }
-}, [loadingPorTipo, loadingPorNombre, eventosPorTipo, eventosPorNombre, busqueda, tipos]);
+  }, [loadingPorTipo, loadingPorNombre, eventosPorTipo, eventosPorNombre, busqueda, tipos]);
 
   const handleBusqueda = (text) => {
     setBusqueda(text); 
@@ -124,6 +141,23 @@ const PantallaEventos = () => {
           style={styles.inputBusqueda}
           placeholderTextColor="#999"
         />
+
+        <TouchableOpacity onPress={() => setMostrarCalendario(true)}>
+          <Ionicons name="calendar-outline" size={22} color="#666" style={{ marginHorizontal: 6 }} />
+        </TouchableOpacity>
+
+        <Modal
+          visible={mostrarCalendario}
+          transparent={true}
+          animationType="slide"
+        >
+          <MiSelectorRango
+            visible={mostrarCalendario}
+            onClose={() => setMostrarCalendario(false)}
+            onChangeRange={(rango) => setRangoFiltro(rango)}
+          />
+        </Modal>
+
         {busqueda.length > 0 && (
           <TouchableOpacity onPress={() => setBusqueda('')}>
             <Ionicons name="close-circle" size={20} color="#999" />

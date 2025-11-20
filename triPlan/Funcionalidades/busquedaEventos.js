@@ -83,3 +83,18 @@ export const obtenerTiposUnicos = async () => {
     return ['Todos']; // fallback
   }
 };
+
+export const obtenerEventosPorRango = async (fechaIni, fechaFin) => {
+  try {
+    const response = await fetch(
+      `https://aro-1nwv.onrender.com/eventos/rango?fecha_ini=${fechaIni}&fecha_fin=${fechaFin}`
+    );
+
+    if (!response.ok) throw new Error("Error al obtener eventos por rango");
+
+    return await response.json();
+  } catch (err) {
+    console.error("Error obteniendo eventos por rango:", err);
+    return [];
+  }
+};
