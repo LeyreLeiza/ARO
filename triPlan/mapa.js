@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
+
 import zonaImg from "./assets/markerZona.png";
 import monumentoImg from "./assets/markerMonumento.png";
 import edificioImg from "./assets/markerEdificio.png";
@@ -11,7 +12,7 @@ import deporteImg from "./assets/markerDeporte.png";
 import eventoImg from "./assets/markerEventos.png";
 import zonaVerdeImg from "./assets/markerZonaVerde.png";
 
-// Función Haversine para calcular distancia (en metros)
+// Haversine
 function getDistance(lat1, lon1, lat2, lon2) {
   const R = 6371e3;
   const toRad = (v) => (v * Math.PI) / 180;
@@ -29,7 +30,6 @@ function getDistance(lat1, lon1, lat2, lon2) {
   return R * c;
 }
 
-//funcion para la imagen de los marcadores
 function getMarkerImage(tipo) {
   switch(tipo) {
     case "Zonas": return zonaImg;
@@ -44,22 +44,22 @@ function getMarkerImage(tipo) {
   }
 }
 
+export default function Mapa({ ubicaciones = [], onSelectPunto }) {
 
-export default function Mapa({ ubicaciones = [] }) {
   const [location, setLocation] = useState(null);
-  const [region, setRegion] = useState({
+  const [region] = useState({
     latitude: 42.8169,
     longitude: -1.6432,
     latitudeDelta: 0.05,
     longitudeDelta: 0.05,
   });
+
   const [activeMarker, setActiveMarker] = useState(null);
   const [lastDismissed, setLastDismissed] = useState({});
   const lastDismissedRef = useRef(lastDismissed);
 
-  const cooldown = 15 * 60 * 1000; // 2 min
+  const cooldown = 15 * 60 * 1000; 
 
-  // Mantener ref actualizado
   useEffect(() => {
     lastDismissedRef.current = lastDismissed;
   }, [lastDismissed]);
@@ -108,34 +108,40 @@ export default function Mapa({ ubicaciones = [] }) {
 
       return () => subscription.remove();
     })();
-  }, [ubicaciones]); 
+  }, [ubicaciones]);
 
   return (
     <View style={styles.container}>
-      <MapView style={styles.map} initialRegion={region} showsUserLocation
-      customMapStyle={[
-        {
-          featureType: "poi",
-          elementType: "all",
-          stylers: [{ visibility: "off" }]
-        }
-      ]}>
-       
-        {ubicaciones.map((m) => (
+      
+      <MapView 
+        style={styles.map}
+        initialRegion={region}
+        showsUserLocation
+        customMapStyle={[
+          {
+            featureType: "poi",
+            elementType: "all",
+            stylers: [{ visibility: "off" }]
+          }
+        ]}
+      >
+        {(ubicaciones || []).map((m) => (
           <Marker
             key={m.id}
-            coordinate={{ latitude: Number(m.latitud), longitude: Number(m.longitud) }}
+            coordinate={{
+              latitude: Number(m.latitud),
+              longitude: Number(m.longitud)
+            }}
             title={m.nombre}
-            image={getMarkerImage(m.tipo)} 
+            image={getMarkerImage(m.tipo)}
+            onPress={() => onSelectPunto && onSelectPunto(m)}
           />
         ))}
       </MapView>
 
-      {/* POPUP grande en el centro */}
       {activeMarker && (
         <View style={styles.popupOverlay}>
           <View style={styles.popup}>
-            {/* Botón cerrar en la esquina */}
             <TouchableOpacity
               style={styles.closeIcon}
               onPress={() => {
@@ -156,6 +162,7 @@ export default function Mapa({ ubicaciones = [] }) {
           </View>
         </View>
       )}
+
     </View>
   );
 }
@@ -174,36 +181,34 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+
   popup: {
     width: "80%",
     backgroundColor: "white",
     padding: 20,
     borderRadius: 20,
     elevation: 10,
-    shadowColor: "#000",
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    position: "relative",
   },
+
   popupTitle: {
     fontSize: 22,
     fontWeight: "bold",
-    marginBottom: 10,
     textAlign: "center",
   },
+
   popupText: {
     fontSize: 16,
+    marginTop: 10,
     textAlign: "center",
   },
+
   closeIcon: {
     position: "absolute",
     top: 10,
     right: 10,
-    zIndex: 1,
   },
+
   closeText: {
     fontSize: 22,
-    fontWeight: "bold",
-    color: "#333",
   },
 });

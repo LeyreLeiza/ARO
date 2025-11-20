@@ -1,20 +1,19 @@
 import React, { useRef } from 'react';
 import { View, StyleSheet, Animated, PanResponder } from 'react-native';
 
-const MIN_HEIGHT = 80;   // altura mínima (solo el asa)
-const MAX_HEIGHT = 600;  // altura máxima
+const MIN_HEIGHT = 80;
+const MAX_HEIGHT = 600;
 
 const BottomSheet = ({ children }) => {
   const sheetHeight = useRef(new Animated.Value(MIN_HEIGHT)).current;
-  const lastHeight = useRef(MIN_HEIGHT); // guardamos la última altura al soltar
+  const lastHeight = useRef(MIN_HEIGHT);
 
   const panResponder = useRef(
     PanResponder.create({
       onMoveShouldSetPanResponder: () => true,
 
       onPanResponderMove: (evt, gestureState) => {
-        let newHeight = lastHeight.current - gestureState.dy; 
-        // movimiento relativo al último valor
+        let newHeight = lastHeight.current - gestureState.dy;
 
         if (newHeight < MIN_HEIGHT) newHeight = MIN_HEIGHT;
         if (newHeight > MAX_HEIGHT) newHeight = MAX_HEIGHT;
@@ -23,22 +22,18 @@ const BottomSheet = ({ children }) => {
       },
 
       onPanResponderRelease: () => {
-        lastHeight.current = sheetHeight.__getValue(); // guardamos la altura final
+        lastHeight.current = sheetHeight.__getValue();
       },
     })
   ).current;
 
   return (
     <Animated.View style={[styles.sheet, { height: sheetHeight }]}>
-      {/* Asa (zona para arrastrar) */}
       <View style={styles.handleArea} {...panResponder.panHandlers}>
         <View style={styles.handle} />
       </View>
 
-      {/* Contenido */}
-      <View style={styles.content}>
-        {children}
-      </View>
+      <View style={styles.content}>{children}</View>
     </Animated.View>
   );
 };
@@ -46,21 +41,18 @@ const BottomSheet = ({ children }) => {
 const styles = StyleSheet.create({
   sheet: {
     position: 'absolute',
-    bottom: 0, // deja espacio para el TabNavigator
+    bottom: 0,
     left: 0,
     right: 0,
     backgroundColor: '#fff',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
     elevation: 5,
     overflow: 'hidden',
   },
   handleArea: {
     alignItems: 'center',
-    padding: 15, // área clicable más grande
+    padding: 15,
   },
   handle: {
     width: 80,
@@ -70,7 +62,7 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: -10,
+    padding: 10,
   },
 });
 
