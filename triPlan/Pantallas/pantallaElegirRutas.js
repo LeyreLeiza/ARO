@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, FlatList, Image, ActivityIndicator, Pressable } from "react-native";
+import { View, Text, StyleSheet, FlatList, Image, ActivityIndicator, Pressable, TextInput } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import DetalleRutaModal from "../Componentes/DetalleRutaModal";
 
 const imagenRuta = require("../assets/simboloUbicacion.png"); // o el icono que uses
 
@@ -8,6 +9,13 @@ export default function PantallaElegirRutas({ navigation }) {
   const [rutas, setRutas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Estados para el filtrado
+  const [searchName, setSearchName] = useState("");
+  const [maxDuration, setMaxDuration] = useState("");
+
+  // Estado para el modal
+  const [selectedRoute, setSelectedRoute] = useState(null);
 
   // 🚀 Cargar rutas del servidor
   useEffect(() => {
@@ -17,11 +25,13 @@ export default function PantallaElegirRutas({ navigation }) {
         if (!response.ok) throw new Error("Error al obtener rutas");
         const data = await response.json();
 
-        // Nos quedamos solo con nombre y descripción
+        // Nos quedamos solo con nombre, descripción, duración y puntos de interés
         const rutasSimplificadas = data.map(ruta => ({
           id: ruta.id,
           nombre: ruta.nombre,
-          descripcion: ruta.descripcion
+          descripcion: ruta.descripcion,
+          duracion: ruta.duracion, // ✅ Añadimos duración
+          puntos_interes: ruta.puntos_interes // ✅ Añadimos puntos de interés para el modal
         }));
 
         setRutas(rutasSimplificadas);
@@ -37,8 +47,22 @@ export default function PantallaElegirRutas({ navigation }) {
   }, []);
 
   const handlePress = (ruta) => {
-    navigation.navigate("pantallaRutas", { ruta });
+    setSelectedRoute(ruta);
   };
+
+  const handleStartRoute = () => {
+    if (selectedRoute) {
+      navigation.navigate("pantallaRutas", { ruta: selectedRoute });
+      setSelectedRoute(null);
+    }
+  };
+
+  // 🔍 Lógica de filtrado
+  const rutasFiltradas = rutas.filter(ruta => {
+    const matchesName = ruta.nombre.toLowerCase().includes(searchName.toLowerCase());
+    const matchesDuration = maxDuration ? ruta.duracion <= parseInt(maxDuration) : true;
+    return matchesName && matchesDuration;
+  });
 
   const renderItem = ({ item }) => (
     <Pressable onPress={() => handlePress(item)}>
@@ -48,6 +72,10 @@ export default function PantallaElegirRutas({ navigation }) {
           <View style={styles.textContainer}>
             <Text style={styles.titulo}>{item.nombre}</Text>
             <Text style={styles.descripcion}>{item.descripcion}</Text>
+            {/* Mostramos la duración si existe */}
+            {item.duracion !== undefined && (
+              <Text style={styles.duracion}>⏱️ {item.duracion} min</Text>
+            )}
           </View>
           <Ionicons name="chevron-forward" size={24} color="#aaa" />
         </View>
@@ -73,20 +101,64 @@ export default function PantallaElegirRutas({ navigation }) {
   }
 
   return (
-    <FlatList
-      data={rutas}
-      keyExtractor={(item) => item.id.toString()}
-      renderItem={renderItem}
-      ListEmptyComponent={
-        <View style={styles.center}>
-          <Text style={styles.emptyText}>No se encontraron rutas</Text>
-        </View>
-      }
-    />
+    <View style={styles.container}>
+      {/* 🔎 Sección de Filtros */}
+      <View style={styles.filterContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder="Buscar por nombre..."
+          value={searchName}
+          onChangeText={setSearchName}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Duración máx. (min)"
+          value={maxDuration}
+          onChangeText={setMaxDuration}
+          keyboardType="numeric"
+        />
+      </View>
+
+      <FlatList
+        data={rutasFiltradas}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={renderItem}
+        ListEmptyComponent={
+          <View style={styles.center}>
+            <Text style={styles.emptyText}>No se encontraron rutas</Text>
+          </View>
+        }
+      />
+
+      {/* Modal de Detalle de Ruta */}
+      <DetalleRutaModal
+        visible={!!selectedRoute}
+        ruta={selectedRoute}
+        onClose={() => setSelectedRoute(null)}
+        onStartRoute={handleStartRoute}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#f9f9f9",
+  },
+  filterContainer: {
+    padding: 15,
+    backgroundColor: "#fff",
+    borderBottomWidth: 1,
+    borderBottomColor: "#ddd",
+  },
+  input: {
+    backgroundColor: "#f0f0f0",
+    padding: 10,
+    borderRadius: 8,
+    marginBottom: 10,
+    fontSize: 16,
+  },
   caja: {
     flexDirection: "column",
     borderWidth: 1,
@@ -122,6 +194,12 @@ const styles = StyleSheet.create({
   descripcion: {
     fontSize: 14,
     color: "#666",
+    marginBottom: 5,
+  },
+  duracion: {
+    fontSize: 12,
+    color: "#007AFF",
+    fontWeight: "600",
   },
   center: {
     flex: 1,
@@ -141,5 +219,6 @@ const styles = StyleSheet.create({
   emptyText: {
     color: "#777",
     fontSize: 16,
+    marginTop: 20,
   },
 });

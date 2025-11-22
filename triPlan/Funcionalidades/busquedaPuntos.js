@@ -11,12 +11,12 @@ export const useBuscaPuntos = (tiposFiltro) => {
         setLoadingPorTipo(true);
 
         const url = tiposFiltro && tiposFiltro.length > 0 && !tiposFiltro.includes('Todos')
-        ? `https://aro-1nwv.onrender.com/puntos/tipo/${tiposFiltro.join(',')}`
-        : "https://aro-1nwv.onrender.com/puntos";  // Si tiposFiltro incluye 'Todos', no aplicamos ningún filtro, se traen todos los puntos
+          ? `https://aro-1nwv.onrender.com/puntos/tipo/${tiposFiltro.join(',')}`
+          : "https://aro-1nwv.onrender.com/puntos";  // Si tiposFiltro incluye 'Todos', no aplicamos ningún filtro, se traen todos los puntos
 
         const response = await fetch(url);
         if (!response.ok) throw new Error('Error en la respuesta del servidor');
-        
+
         const data = await response.json();
         setPuntosPorTipo(data);
       } catch (err) {
@@ -28,7 +28,7 @@ export const useBuscaPuntos = (tiposFiltro) => {
     };
 
     fetchPuntos();
-  }, [tiposFiltro]); 
+  }, [tiposFiltro]);
 
   return { puntosPorTipo, loadingPorTipo, errorPorTipo };
 };
@@ -46,11 +46,11 @@ export const useBuscaPuntosPorNombre = (nombre) => {
         setLoadingPorNombre(true);
         let url = "";
         if (!nombre.trim()) {
-            url = `https://aro-1nwv.onrender.com/puntos/`;
+          url = `https://aro-1nwv.onrender.com/puntos/`;
         } else {
-            url = `https://aro-1nwv.onrender.com/puntos/nombre/${nombre}`;
+          url = `https://aro-1nwv.onrender.com/puntos/nombre/${nombre}`;
         }
-          
+
         const response = await fetch(url);
         if (!response.ok) throw new Error('Error en la respuesta del servidor');
         const data = await response.json();
