@@ -46,7 +46,6 @@ const PantallaEventos = ({ navigation }) => {
 
           try {
             const eventosRango = await obtenerEventosPorRango(fechaIni, fechaFin);
-            console.log("DEBUG - obtenerEventosPorRango() devolvió:", eventosRango);
 
             const idsRango = Array.isArray(eventosRango) 
               ? eventosRango.map(e => e.id) 
