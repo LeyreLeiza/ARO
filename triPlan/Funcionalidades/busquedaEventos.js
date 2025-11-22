@@ -14,6 +14,7 @@ export const useBuscaEventos = (tiposFiltro) => {
         ? `https://aro-1nwv.onrender.com/eventos/tipo/${tiposFiltro.join(',')}`
         : "https://aro-1nwv.onrender.com/eventos";  // Si tiposFiltro incluye 'Todos', no aplicamos ningún filtro, se traen todos los eventos
 
+
         const response = await fetch(url);
         if (!response.ok) throw new Error('Error en la respuesta del servidor');
         
@@ -86,13 +87,20 @@ export const obtenerTiposUnicos = async () => {
 
 export const obtenerEventosPorRango = async (fechaIni, fechaFin) => {
   try {
-    const response = await fetch(
-      `https://aro-1nwv.onrender.com/eventos/rango?fecha_ini=${fechaIni}&fecha_fin=${fechaFin}`
-    );
+    let url;
 
-    if (!response.ok) throw new Error("Error al obtener eventos por rango");
+    if (!fechaIni || !fechaFin) {
+      url = "https://aro-1nwv.onrender.com/eventos";
+    } else {
+      url = `https://aro-1nwv.onrender.com/eventos/rango?fecha_ini=${fechaIni}&fecha_fin=${fechaFin}`;
+    }
 
-    return await response.json();
+    const response = await fetch(url);
+    if (!response.ok) throw new Error("Error en la respuesta del servidor");
+
+    const data = await response.json();
+
+    return data;  
   } catch (err) {
     console.error("Error obteniendo eventos por rango:", err);
     return [];

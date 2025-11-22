@@ -30,38 +30,48 @@ const PantallaEventos = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
-    const cargarEventosRango = async () => {
-      if (!rangoFiltro.start || !rangoFiltro.end) return;
-
-      const fechaIni = rangoFiltro.start.toISOString().split("T")[0];
-      const fechaFin = rangoFiltro.end.toISOString().split("T")[0];
-
-      const datos = await obtenerEventosPorRango(fechaIni, fechaFin);
-
-      setEventosFiltrados(datos);
-    };
-
-    cargarEventosRango();
-  }, [rangoFiltro]);
-
-  useEffect(() => {
-    if (rangoFiltro.start && rangoFiltro.end) return; // esto por que no podemos hacer el doble filtro ambos se cogen de todos no de los que estan en pantalla cambiarlo para mas adelante
-
     if (!loadingPorTipo && !loadingPorNombre) {
 
-      if (busqueda.trim()) {
-        const idsFiltradosPorNombre = eventosPorNombre.map(evento => evento.id);
+      const aplicarFiltros = async () => { 
+        let lista = eventosPorTipo;        
 
-        const eventos2Filtrados = eventosPorTipo.filter((evento) =>
-          idsFiltradosPorNombre.includes(evento.id) // Aseguramos que el punto esté en los resultados por nombre
-        );
-        
-        setEventosFiltrados(eventos2Filtrados);
-      } else {
-        setEventosFiltrados(eventosPorTipo);
-      }
+        if (busqueda.trim()) {
+          const idsPorNombre = eventosPorNombre.map(e => e.id);
+          lista = lista.filter(e => idsPorNombre.includes(e.id));
+        }
+
+        if (rangoFiltro.start && rangoFiltro.end) {
+          const fechaIni = rangoFiltro.start.toISOString().split("T")[0];
+          const fechaFin = rangoFiltro.end.toISOString().split("T")[0];
+
+          try {
+            const eventosRango = await obtenerEventosPorRango(fechaIni, fechaFin);
+            console.log("DEBUG - obtenerEventosPorRango() devolvió:", eventosRango);
+
+            const idsRango = Array.isArray(eventosRango) 
+              ? eventosRango.map(e => e.id) 
+              : [];
+
+            lista = lista.filter(e => idsRango.includes(e.id));
+
+          } catch (error) {
+            console.error("Error al obtener eventos por rango:", error);
+          }
+        }
+
+        if (!tipos.includes("Todos")) {
+          lista = lista.filter(e => tipos.includes(e.tipo));
+        }
+
+        setEventosFiltrados(lista);
+      };
+
+      aplicarFiltros(); 
     }
-  }, [loadingPorTipo, loadingPorNombre, eventosPorTipo, eventosPorNombre, busqueda, tipos]);
+
+  }, [ loadingPorTipo, loadingPorNombre, eventosPorTipo, eventosPorNombre, busqueda, tipos, rangoFiltro ]
+  );
+
 
   const handleBusqueda = (text) => {
     setBusqueda(text); 
@@ -200,6 +210,18 @@ const PantallaEventos = ({ navigation }) => {
         </ScrollView>
       </View>
 
+          {rangoFiltro.start && rangoFiltro.end && (
+            <View style={styles.filtroRangoActivo}>
+              <Text style={styles.filtroRangoTexto}>
+                {rangoFiltro.start.toLocaleDateString()} → {rangoFiltro.end.toLocaleDateString()}
+              </Text>
+
+              <TouchableOpacity onPress={() => setRangoFiltro({ start: null, end: null })}>
+                <Ionicons name="close-circle" size={20} color="#666" />
+              </TouchableOpacity>
+            </View>
+          )}
+
         {loadingPorTipo || loadingPorNombre ? (
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingTop: 40 }}>
             <ActivityIndicator size="large" color="#ff6347" />
@@ -292,6 +314,23 @@ const styles = StyleSheet.create({
   sinResultados: { textAlign: 'center', color: '#666', marginTop: 30 },
   loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   loadingText: { marginTop: 10, color: '#666' },
+  filtroRangoActivo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    backgroundColor: '#eee',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    marginBottom: 12,
+    marginLeft: 4,
+  },
+
+  filtroRangoTexto: {
+    color: '#333 ',
+    fontWeight: '600',
+    marginRight: 6,
+  },
 });
 
 export default PantallaEventos;
