@@ -60,3 +60,25 @@ export const cambioContraseñaUsuario = async (userId, nueva_contraseña, vieja_
     return { success: false, error: "No se pudo conectar con el servidor" };
   }
 };
+
+
+export const insertarRutaPersonalizada = async ({ userId, nombre, descripcion, puntos }) => {
+  try {
+    const response = await fetch(`https://aro-1nwv.onrender.com/usuarios/${userId}/rutas-personalizadas`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nombre, descripcion, puntos }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Error desconocido");
+    }
+
+    return data; 
+  } catch (err) {
+    console.error(err);
+    throw err; 
+  }
+};
