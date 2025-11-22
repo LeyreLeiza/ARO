@@ -38,7 +38,6 @@ export default function Register({ navigation }) {
         contraseña,
       });
 
-      // 🔹 Guardar el estado global del usuario
       global.usuarioLogueado = true;
       global.idUsuario = data.usuario.id;
       global.nombreUsuario = nombre_usuario;
@@ -52,7 +51,6 @@ export default function Register({ navigation }) {
 
   const volver = () => navigation.goBack();
 
-  // 🔹 Tamaño de letra global
   const modLetra = global.modLetraValor;
 
   return (
