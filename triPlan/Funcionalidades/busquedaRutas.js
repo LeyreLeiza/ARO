@@ -9,7 +9,13 @@ export const useBuscaRutas = () => {
     useEffect(() => {
         const fetchRutas = async () => {
         try {
-            const response = await fetch("https://aro-1nwv.onrender.com/rutas?api_key=GW1FKVKqydjW8K0AJBmwpRgVhjx0mnNN2EuQv19PNW77M"); 
+            const response = await fetch("https://aro-1nwv.onrender.com/rutas", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "x-api-key": "GW1FKVKqydjW8K0AJBmwpRgVhjx0mnNN2EuQv19PNW77M"
+                }
+            });
             if (!response.ok) throw new Error("Error al obtener rutas");
             const data = await response.json();
 
@@ -47,9 +53,13 @@ export const useBuscaRutas = () => {
         }
         try {
             setLoadingPersonalizadas(true);
-            const response = await fetch(
-                `https://aro-1nwv.onrender.com/usuarios/${usuario_id}/rutas-personalizadas?api_key=GW1FKVKqydjW8K0AJBmwpRgVhjx0mnNN2EuQv19PNW77M`
-            );
+            const response = await fetch("https://aro-1nwv.onrender.com/usuarios/${usuario_id}/rutas-personalizadas", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "x-api-key": "GW1FKVKqydjW8K0AJBmwpRgVhjx0mnNN2EuQv19PNW77M"
+                }
+            });
 
             if (!response.ok) throw new Error("Error al obtener rutas personalizadas");
 

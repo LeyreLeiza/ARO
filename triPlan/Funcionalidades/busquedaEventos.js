@@ -11,11 +11,17 @@ export const useBuscaEventos = (tiposFiltro) => {
         setLoadingPorTipo(true);
 
         const url = tiposFiltro && tiposFiltro.length > 0 && !tiposFiltro.includes('Todos')
-        ? `https://aro-1nwv.onrender.com/eventos/tipo/${tiposFiltro.join(',')}?api_key=GW1FKVKqydjW8K0AJBmwpRgVhjx0mnNN2EuQv19PNW77M`
-        : "https://aro-1nwv.onrender.com/eventos?api_key=GW1FKVKqydjW8K0AJBmwpRgVhjx0mnNN2EuQv19PNW77M";  // Si tiposFiltro incluye 'Todos', no aplicamos ningún filtro, se traen todos los eventos
+        ? `https://aro-1nwv.onrender.com/eventos/tipo/${tiposFiltro.join(',')}`
+        : "https://aro-1nwv.onrender.com/eventos";  // Si tiposFiltro incluye 'Todos', no aplicamos ningún filtro, se traen todos los eventos
 
 
-        const response = await fetch(url);
+        const response = await fetch(url, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": "GW1FKVKqydjW8K0AJBmwpRgVhjx0mnNN2EuQv19PNW77M"
+          }
+        });
         if (!response.ok) throw new Error('Error en la respuesta del servidor');
         
         const data = await response.json();
@@ -46,12 +52,18 @@ export const useBuscaEventosPorNombre = (nombre) => {
         setLoadingPorNombre(true);
         let url = "";
         if (!nombre.trim()) {
-            url = `https://aro-1nwv.onrender.com/eventos/?api_key=GW1FKVKqydjW8K0AJBmwpRgVhjx0mnNN2EuQv19PNW77M`;
+            url = `https://aro-1nwv.onrender.com/eventos/?`;
         } else {
-            url = `https://aro-1nwv.onrender.com/eventos/nombre/${nombre}?api_key=GW1FKVKqydjW8K0AJBmwpRgVhjx0mnNN2EuQv19PNW77M`;
+            url = `https://aro-1nwv.onrender.com/eventos/nombre/${nombre}`;
         }
           
-        const response = await fetch(url);
+        const response = await fetch(url, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": "GW1FKVKqydjW8K0AJBmwpRgVhjx0mnNN2EuQv19PNW77M"
+          }
+        });
         if (!response.ok) throw new Error('Error en la respuesta del servidor');
         const data = await response.json();
         setEventosPorNombre(data);
@@ -71,7 +83,13 @@ export const useBuscaEventosPorNombre = (nombre) => {
 
 export const obtenerTiposUnicos = async () => {
   try {
-    const response = await fetch("https://aro-1nwv.onrender.com/eventos?api_key=GW1FKVKqydjW8K0AJBmwpRgVhjx0mnNN2EuQv19PNW77M");
+    const response = await fetch("https://aro-1nwv.onrender.com/eventos", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": "GW1FKVKqydjW8K0AJBmwpRgVhjx0mnNN2EuQv19PNW77M"
+      }
+    });
     if (!response.ok) throw new Error("Error al obtener eventos");
 
     const data = await response.json();
@@ -90,12 +108,18 @@ export const obtenerEventosPorRango = async (fechaIni, fechaFin) => {
     let url;
 
     if (!fechaIni || !fechaFin) {
-      url = "https://aro-1nwv.onrender.com/eventos?api_key=GW1FKVKqydjW8K0AJBmwpRgVhjx0mnNN2EuQv19PNW77M";
+      url = "https://aro-1nwv.onrender.com/eventos";
     } else {
-      url = `https://aro-1nwv.onrender.com/eventos/rango?fecha_ini=${fechaIni}&fecha_fin=${fechaFin}?api_key=GW1FKVKqydjW8K0AJBmwpRgVhjx0mnNN2EuQv19PNW77M`;
+      url = `https://aro-1nwv.onrender.com/eventos/rango?fecha_ini=${fechaIni}&fecha_fin=${fechaFin}`;
     }
 
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": "GW1FKVKqydjW8K0AJBmwpRgVhjx0mnNN2EuQv19PNW77M"
+      }
+    });
     if (!response.ok) throw new Error("Error en la respuesta del servidor");
 
     const data = await response.json();
@@ -119,7 +143,6 @@ export const obtenerEventosFavoritos = async (usuario_id) => {
     if (!res.ok) return [];
 
     const data = await res.json();
-    console.log(data);
     return data.map(e => e.evento_id); 
   } catch (err) {
     console.error("Error obteniendo eventos favoritos:", err);
@@ -139,10 +162,7 @@ export const añadirEventoFavorito = async (usuario_id, evento_id) => {
       body: JSON.stringify({ usuario_id, evento_id })
     });
 
-    const data = await res.json(); // ← parsear JSON de respuesta
-    console.log("Respuesta backend:", data);
-
-    console.log(res.ok);
+    const data = await res.json(); 
 
     if (!res.ok || data.error) {
       console.error("Error backend:", data.error || "Unknown");

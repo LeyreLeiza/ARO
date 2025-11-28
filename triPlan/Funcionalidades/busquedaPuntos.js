@@ -11,10 +11,16 @@ export const useBuscaPuntos = (tiposFiltro) => {
         setLoadingPorTipo(true);
 
         const url = tiposFiltro && tiposFiltro.length > 0 && !tiposFiltro.includes('Todos')
-          ? `https://aro-1nwv.onrender.com/puntos/tipo/${tiposFiltro.join(',')}?api_key=GW1FKVKqydjW8K0AJBmwpRgVhjx0mnNN2EuQv19PNW77M`
-          : "https://aro-1nwv.onrender.com/puntos?api_key=GW1FKVKqydjW8K0AJBmwpRgVhjx0mnNN2EuQv19PNW77M";  // Si tiposFiltro incluye 'Todos', no aplicamos ningún filtro, se traen todos los puntos
+          ? `https://aro-1nwv.onrender.com/puntos/tipo/${tiposFiltro.join(',')}`
+          : "https://aro-1nwv.onrender.com/puntos";  // Si tiposFiltro incluye 'Todos', no aplicamos ningún filtro, se traen todos los puntos
 
-        const response = await fetch(url);
+        const response = await fetch(url, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": "GW1FKVKqydjW8K0AJBmwpRgVhjx0mnNN2EuQv19PNW77M"
+          }
+        });
         if (!response.ok) throw new Error('Error en la respuesta del servidor');
 
         const data = await response.json();
@@ -46,12 +52,18 @@ export const useBuscaPuntosPorNombre = (nombre) => {
         setLoadingPorNombre(true);
         let url = "";
         if (!nombre.trim()) {
-          url = `https://aro-1nwv.onrender.com/puntos/?api_key=GW1FKVKqydjW8K0AJBmwpRgVhjx0mnNN2EuQv19PNW77M`;
+          url = `https://aro-1nwv.onrender.com/puntos/`;
         } else {
-          url = `https://aro-1nwv.onrender.com/puntos/nombre/${nombre}?api_key=GW1FKVKqydjW8K0AJBmwpRgVhjx0mnNN2EuQv19PNW77M`;
+          url = `https://aro-1nwv.onrender.com/puntos/nombre/${nombre}`;
         }
 
-        const response = await fetch(url);
+        const response = await fetch(url, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": "GW1FKVKqydjW8K0AJBmwpRgVhjx0mnNN2EuQv19PNW77M"
+          }
+        });
         if (!response.ok) throw new Error('Error en la respuesta del servidor');
         const data = await response.json();
         setPuntosPorNombre(data);

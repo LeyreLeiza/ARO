@@ -135,18 +135,12 @@ const PantallaEventos = ({ navigation }) => {
               const usuario_id = global.idUsuario;
               const evento_id = item.id;
               const esFavorito = favoritos.includes(evento_id);
-              console.log(esFavorito);
-              console.log(usuario_id);
-              console.log(evento_id);
               let ok = false;
 
               if (esFavorito) {
-                console.log("Se elimina evento");
                 ok = await eliminarEventoFavorito(usuario_id, evento_id);
               } else {
-                console.log("Se añade evento");
                 ok = await añadirEventoFavorito(usuario_id, evento_id);
-                console.log("Termina");
               }
 
               if (ok) {

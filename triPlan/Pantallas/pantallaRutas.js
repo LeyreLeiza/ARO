@@ -28,11 +28,17 @@ export default function PantallaRutas({ navigation, route }) {
   useEffect(() => {
     const fetchRuta = async () => {
       if (!rutaSeleccionada || haCargadoRuta.current) return;
-      haCargadoRuta.current = true; // ✅ bloquea futuras ejecuciones
+      haCargadoRuta.current = true; 
 
       try {
         setLoadingRuta(true);
-        const response = await fetch(`https://aro-1nwv.onrender.com/rutas/${rutaSeleccionada.id}`);
+        const response = await fetch(`https://aro-1nwv.onrender.com/rutas/${rutaSeleccionada.id}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": "GW1FKVKqydjW8K0AJBmwpRgVhjx0mnNN2EuQv19PNW77M"
+          }
+        });
         if (!response.ok) throw new Error("Error al obtener datos de la ruta");
 
         const data = await response.json();
@@ -48,7 +54,6 @@ export default function PantallaRutas({ navigation, route }) {
     fetchRuta();
   }, [rutaSeleccionada]);
 
-  // 🗺️ Si no hay ruta seleccionada, mostramos todos los puntos
   useEffect(() => {
     if (!rutaSeleccionada && !loadingPorTipo && puntosPorTipo?.length > 0) {
       setUbicaciones(puntosPorTipo);
