@@ -28,7 +28,12 @@ export default function PantallaRutas({ navigation, route }) {
   useEffect(() => {
     const fetchRuta = async () => {
       if (!rutaSeleccionada || haCargadoRuta.current) return;
-      haCargadoRuta.current = true; 
+      haCargadoRuta.current = true;
+
+      if (rutaSeleccionada.puntos_interes) {
+        setUbicaciones(rutaSeleccionada.puntos_interes);
+        return;
+      }
 
       try {
         setLoadingRuta(true);

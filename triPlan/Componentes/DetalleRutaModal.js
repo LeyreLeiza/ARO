@@ -14,7 +14,16 @@ export default function DetalleRutaModal({ visible, onClose, ruta, onStartRoute,
             (async () => {
                 try {
                     const { status } = await Location.requestForegroundPermissionsAsync();
-                    if (status !== 'granted') return;
+                    if (status !== 'granted') {
+                        setTotalDuration(ruta.duracion);
+                        return;
+                    }
+
+                    const enabled = await Location.hasServicesEnabledAsync();
+                    if (!enabled) {
+                        setTotalDuration(ruta.duracion);
+                        return;
+                    }
 
                     const location = await Location.getCurrentPositionAsync({});
                     const userLoc = {
