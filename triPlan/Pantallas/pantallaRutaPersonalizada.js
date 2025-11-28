@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvo
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useBuscaPuntos } from "../Funcionalidades/busquedaPuntos";
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { insertarRutaPersonalizada } from "../Funcionalidades/busquedaUsuarios";
+import { insertarRutaPersonalizada, actualizarRutaPersonalizada } from "../Funcionalidades/busquedaUsuarios";
 
 global.idUsuario = global.idUsuario || "";
 global.modLetraValor = global.modLetraValor || 0;
@@ -21,6 +21,21 @@ export default function RutaPersonalizada({ navigation }) {
   const modLetra = global.modLetraValor;
   const { puntosPorTipo, loadingPorTipo, error } = useBuscaPuntos(['Todos']);
   const [puntosFiltrados, setPuntosFiltrados] = useState([]);
+
+  const rutaEditar = navigation.getState().routes.find(r => r.name === "RutaPersonalizada")?.params?.ruta;
+
+  useEffect(() => {
+    if (rutaEditar) {
+      setNombre(rutaEditar.nombre);
+      setDescripcion(rutaEditar.descripcion);
+      const puntosMapeados = rutaEditar.puntos_interes.map(p => ({
+        id: p.id,
+        nombre: p.nombre,
+        tipo: p.tipo || p.descripcion
+      }));
+      setPuntos(puntosMapeados);
+    }
+  }, [rutaEditar]);
 
   useEffect(() => {
     if (!loadingPorTipo) {
@@ -50,13 +65,35 @@ export default function RutaPersonalizada({ navigation }) {
       return;
     }
     const puntosIds = puntos.map(p => p.id);
-    const data = await insertarRutaPersonalizada({userId: global.idUsuario, nombre, descripcion, puntos: puntosIds});
-    Alert.alert("Guardado", "Ruta personalizada guardada correctamente");
-    navigation.goBack();
+
+    try {
+      if (rutaEditar) {
+        await actualizarRutaPersonalizada({
+          userId: global.idUsuario,
+          rutaId: rutaEditar.id,
+          nombre,
+          descripcion,
+          puntos: puntosIds
+        });
+        Alert.alert("Actualizado", "Ruta personalizada actualizada correctamente");
+      } else {
+        await insertarRutaPersonalizada({
+          userId: global.idUsuario,
+          nombre,
+          descripcion,
+          puntos: puntosIds
+        });
+        Alert.alert("Guardado", "Ruta personalizada guardada correctamente");
+      }
+      navigation.goBack();
+    } catch (error) {
+      Alert.alert("Error", "Hubo un problema al guardar la ruta");
+      console.error(error);
+    }
   };
 
   const seleccionarPunto = (punto) => {
-  if (!puntos.some(p => p.id === punto.id)) {
+    if (!puntos.some(p => p.id === punto.id)) {
       setPuntos([...puntos, { id: punto.id, nombre: punto.nombre, tipo: punto.tipo }]);
     }
     setMostrarLista(false);
@@ -81,7 +118,7 @@ export default function RutaPersonalizada({ navigation }) {
 
           <View style={styles.header}>
             <Text style={[styles.title, { fontSize: 40 + modLetra }]}>
-              Rutas personalizadas
+              {rutaEditar ? "Editar ruta" : "Rutas personalizadas"}
             </Text>
             <View style={styles.linea}></View>
           </View>
@@ -135,7 +172,7 @@ export default function RutaPersonalizada({ navigation }) {
                 </View>
               </>
             )}
-            
+
             <TouchableOpacity
               onPress={() => setMostrarLista(!mostrarLista)}
               style={[styles.input, { justifyContent: "center" }]}
@@ -179,7 +216,7 @@ export default function RutaPersonalizada({ navigation }) {
 
             <TouchableOpacity style={styles.button} onPress={handleInsertadoRuta}>
               <Text style={[styles.buttonText, { fontSize: 24 + modLetra }]}>
-                Insertar ruta
+                {rutaEditar ? "Actualizar ruta" : "Insertar ruta"}
               </Text>
             </TouchableOpacity>
           </View>
@@ -241,7 +278,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     borderColor: "#d1e0ff",
-    alignSelf: 'center', 
+    alignSelf: 'center',
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
@@ -249,9 +286,9 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   pointItem: {
-    flexDirection: 'row',      
-    alignItems: 'center',      
-    justifyContent: 'space-between', 
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingVertical: 10,
     paddingHorizontal: 12,
     borderBottomWidth: 1,
@@ -260,14 +297,14 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   pointInfo: {
-    flex: 1,                   
+    flex: 1,
   },
   deleteButton: {
     marginLeft: 10,
   },
   pointName: {
     fontWeight: '600',
-    color: '#000', 
+    color: '#000',
     textAlign: 'center'
   },
   pointType: {

@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Pressable, TextInput } from "react-native";
 import DetalleRutaModal from "../Componentes/DetalleRutaModal";
 import { useBuscaRutas, useBuscaRutasPersonalizadas } from "../Funcionalidades/busquedaRutas";
+import { eliminarRutaPersonalizada } from "../Funcionalidades/busquedaUsuarios";
+import { Alert } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import ListaRutas from "../Funcionalidades/listadoRutas";
 
@@ -14,7 +16,7 @@ export default function PantallaElegirRutas({ navigation }) {
   const [usuarioId, setUsuarioId] = useState(global.idUsuario);
   useFocusEffect(
     React.useCallback(() => {
-        setUsuarioId(global.idUsuario);
+      setUsuarioId(global.idUsuario);
     }, [])
   );
 
@@ -27,7 +29,7 @@ export default function PantallaElegirRutas({ navigation }) {
   );
 
   const { rutas, loading, error } = useBuscaRutas();
-  const {rutasPersonalizadas, loadingPersonalizadas, errorPersonalizadas} = useBuscaRutasPersonalizadas(usuarioId, navigation);
+  const { rutasPersonalizadas, loadingPersonalizadas, errorPersonalizadas } = useBuscaRutasPersonalizadas(usuarioId, navigation);
 
   const [tipoSeleccionado, setTipoSeleccionado] = useState('predeterminadas');
 
@@ -36,6 +38,36 @@ export default function PantallaElegirRutas({ navigation }) {
       navigation.navigate("pantallaRutas", { ruta: selectedRoute });
       setSelectedRoute(null);
     }
+  };
+
+  const handleDelete = async (rutaId) => {
+    try {
+      Alert.alert(
+        "Eliminar ruta",
+        "¿Estás seguro de que quieres eliminar esta ruta?",
+        [
+          { text: "Cancelar", style: "cancel" },
+          {
+            text: "Eliminar",
+            style: "destructive",
+            onPress: async () => {
+              await eliminarRutaPersonalizada({ userId: usuarioId, rutaId });
+              setReloadFlag(prev => !prev);
+              setSelectedRoute(null);
+              Alert.alert("Éxito", "Ruta eliminada correctamente");
+            }
+          }
+        ]
+      );
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Error", "No se pudo eliminar la ruta");
+    }
+  };
+
+  const handleEdit = (ruta) => {
+    setSelectedRoute(null);
+    navigation.navigate("RutaPersonalizada", { ruta });
   };
   const getRutasFiltradas = (rutas) => {
     return rutas.filter(ruta => {
@@ -65,15 +97,15 @@ export default function PantallaElegirRutas({ navigation }) {
 
       <View style={styles.tipos}>
         <Pressable style={[
-          styles.tipoBoton,     
+          styles.tipoBoton,
           tipoSeleccionado === 'predeterminadas' && { backgroundColor: '#fff' }]}
           onPress={() => setTipoSeleccionado('predeterminadas')}>
           <Text style={styles.tipoTexto}>Predeterminadas</Text>
         </Pressable>
         <Pressable style={[
-          styles.tipoBoton,     
+          styles.tipoBoton,
           tipoSeleccionado === 'personalizadas' && { backgroundColor: '#fff' }]}
-          onPress={() => setTipoSeleccionado('personalizadas')}>          
+          onPress={() => setTipoSeleccionado('personalizadas')}>
           <Text style={styles.tipoTexto}>Personalizadas</Text>
         </Pressable>
       </View>
@@ -95,6 +127,9 @@ export default function PantallaElegirRutas({ navigation }) {
         ruta={selectedRoute}
         onClose={() => setSelectedRoute(null)}
         onStartRoute={handleStartRoute}
+        isCustom={tipoSeleccionado === 'personalizadas'}
+        onDelete={() => handleDelete(selectedRoute?.id)}
+        onEdit={() => handleEdit(selectedRoute)}
       />
     </View>
   );
@@ -120,7 +155,7 @@ const styles = StyleSheet.create({
   },
   tipos: {
     flexDirection: 'row',
-    alignSelf: 'center',      
+    alignSelf: 'center',
     margin: 10,
     padding: 2,
     backgroundColor: '#e0e0e0',
