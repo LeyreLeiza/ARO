@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View, Text, Alert } from "react-native";
 import MapView, { Marker, Polyline } from "react-native-maps";
 import * as Location from "expo-location";
 
@@ -16,7 +16,7 @@ function getDistance(lat1, lon1, lat2, lon2) {
   const R = 6371e3;
   const toRad = v => (v * Math.PI) / 180;
   const dLat = toRad(lat2 - lat1);
-  const dLon = toRad(lat2 - lon1);
+  const dLon = toRad(lon2 - lon1);
   const a =
     Math.sin(dLat / 2) ** 2 +
     Math.cos(toRad(lat1)) *
@@ -60,6 +60,7 @@ export default function MapaRutas({
   const [selectedMarkers, setSelectedMarkers] = useState([]);
   const [routeCoords, setRouteCoords] = useState([]);
   const [totalDuration, setTotalDuration] = useState(0);
+  const [popupShown, setPopupShown] = useState(false);
 
   const selectedMarkersRef = useRef([]);
 
@@ -74,7 +75,7 @@ export default function MapaRutas({
     selectedMarkersRef.current = selectedMarkers;
   }, [selectedMarkers]);
 
-  // Tomar primeros 5 puntos e inicializar visitado = false
+  // Tomar primeros 5 puntos e inicializar "visitado"
   useEffect(() => {
     if (ubicaciones.length > 0) {
       const primeros5 = ubicaciones.slice(0, 5).map(p => ({
@@ -126,6 +127,28 @@ export default function MapaRutas({
     })();
   }, []);
 
+  // 🔥 POP-UP cuando desaparece el círculo (totalDuration === 0)
+  useEffect(() => {
+    if (
+      totalDuration === 0 &&   // La ruta terminó de verdad
+      selectedMarkers.some(p => p.visitado) && // Que realmente hayamos empezado
+      !popupShown
+    ) {
+      setPopupShown(true);
+
+      Alert.alert(
+        "Ruta finalizada",
+        "¡Has completado todos los puntos de la ruta!",
+        [
+          {
+            text: "Aceptar",
+            onPress: () => setPopupShown(false)
+          }
+        ]
+      );
+    }
+  }, [totalDuration, selectedMarkers, popupShown]);
+
   // Generar ruta con puntos NO visitados
   useEffect(() => {
     if (!location) return;
@@ -152,6 +175,7 @@ export default function MapaRutas({
       onStepsUpdate && onStepsUpdate(steps);
     })();
   }, [location, selectedMarkers]);
+
 
   const formatDuration = (seconds) => {
     if (!seconds) return "";
@@ -187,6 +211,7 @@ export default function MapaRutas({
 
       </MapView>
 
+      {/* Círculo solo aparece cuando totalDuration > 0 */}
       {totalDuration > 0 && (
         <View style={styles.floatingTime}>
           <Text style={styles.floatingTimeText}>
