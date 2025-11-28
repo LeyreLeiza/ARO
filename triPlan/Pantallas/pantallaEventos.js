@@ -26,27 +26,51 @@ const PantallaEventos = ({ navigation }) => {
         setFavoritos([]);
         return;
       }
-      setReloadFlag(prev => !prev); // al volver aquí recarga todo
+
+      // Cambiar reloadFlag para disparar efecto de recarga
+      setReloadFlag(prev => !prev);
     }, [])
   );
-  
-  useEffect(() => {
-    const fetchTipos = async () => {
-      try {
-        let tipos = await obtenerTiposUnicos();
-        if(global.usuarioLogueado){
-          if (!tipos.includes("Favoritos")) {
-            tipos = ['Todos', 'Favoritos', ...tipos.filter(t => t !== 'Todos')];
-          }
+
+  const fetchTipos = async () => {
+    try {
+      let tipos = await obtenerTiposUnicos();
+      if (global.usuarioLogueado) {
+        if (!tipos.includes("Favoritos")) {
+          tipos = ['Todos', 'Favoritos', ...tipos.filter(t => t !== 'Todos')];
         }
-        setTiposUnicos(tipos);
-      } catch (err) {
-        console.error("Error al cargar tipos:", err);
       }
-    };
+      setTiposUnicos(tipos);
+    } catch (err) {
+      console.error("Error al cargar tipos:", err);
+    }
+  };
+
+  const refrescarTodo = () => {
+    if (!global.usuarioLogueado) {
+      setFavoritos([]);
+      return;
+    }
+    // Resetea filtros
+    setBusqueda('');
+    setTipos(['Todos']);
+    setRangoFiltro({ start: null, end: null });
 
     fetchTipos();
+
+    // Cambia reloadFlag para disparar el useEffect de filtros
+    setReloadFlag(prev => !prev);
+  };
+
+  useEffect(() => {
+    fetchTipos();
   }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchTipos(); 
+    }, [])
+  );
 
   useEffect(() => {
     if (!loadingPorTipo && !loadingPorNombre) {
@@ -305,6 +329,8 @@ const PantallaEventos = ({ navigation }) => {
             keyExtractor={item => (item.id || item.evento_id).toString()}
             extraData={favoritos}
             contentContainerStyle={{ paddingBottom: 60 }}
+            refreshing={loadingPorTipo || loadingPorNombre}
+            onRefresh={refrescarTodo}
           />
         )}
     </View>
