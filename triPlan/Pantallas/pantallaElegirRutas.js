@@ -5,6 +5,7 @@ import { useBuscaRutas, useBuscaRutasPersonalizadas } from "../Funcionalidades/b
 import { eliminarRutaPersonalizada } from "../Funcionalidades/busquedaUsuarios";
 import { Alert } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
+import * as Location from 'expo-location';
 import ListaRutas from "../Funcionalidades/listadoRutas";
 
 export default function PantallaElegirRutas({ navigation }) {
@@ -29,14 +30,31 @@ export default function PantallaElegirRutas({ navigation }) {
   );
 
   const { rutas, loading, error } = useBuscaRutas();
-  const { rutasPersonalizadas, loadingPersonalizadas, errorPersonalizadas } = useBuscaRutasPersonalizadas(usuarioId, navigation);
+  const { rutasPersonalizadas, loadingPersonalizadas, errorPersonalizadas } = useBuscaRutasPersonalizadas(usuarioId, navigation, reloadFlag);
 
   const [tipoSeleccionado, setTipoSeleccionado] = useState('predeterminadas');
 
-  const handleStartRoute = () => {
+  const handleStartRoute = async () => {
     if (selectedRoute) {
-      navigation.navigate("pantallaRutas", { ruta: selectedRoute });
-      setSelectedRoute(null);
+      try {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          Alert.alert("Permiso denegado", "Necesitas activar la ubicación para iniciar la ruta.");
+          return;
+        }
+
+        const enabled = await Location.hasServicesEnabledAsync();
+        if (!enabled) {
+          Alert.alert("Ubicación desactivada", "Por favor, activa la ubicación del dispositivo para continuar.");
+          return;
+        }
+
+        navigation.navigate("pantallaRutas", { ruta: selectedRoute });
+        setSelectedRoute(null);
+      } catch (error) {
+        console.error("Error checking location:", error);
+        Alert.alert("Error", "No se pudo verificar la ubicación.");
+      }
     }
   };
 

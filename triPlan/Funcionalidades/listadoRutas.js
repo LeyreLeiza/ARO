@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, Image, FlatList, ActivityIndicator, Pressable } from 'react-native'; 
-import { Ionicons, FontAwesome  } from '@expo/vector-icons'; 
+import { StyleSheet, Text, View, Image, FlatList, ActivityIndicator, Pressable } from 'react-native';
+import { Ionicons, FontAwesome } from '@expo/vector-icons';
 
 const imagenRuta = require("../assets/simboloUbicacion.png");
 global.usuarioLogueado = global.usuarioLogueado || false;
@@ -25,9 +25,9 @@ export default function ListaRutas({ rutasFiltradas, personalizadas, loading, er
   );
 
   const handlePress = (item) => {
-    if(onSelect){
-      onSelect(item); 
-    } 
+    if (onSelect) {
+      onSelect(item);
+    }
   };
 
   if (loading) {
@@ -40,10 +40,10 @@ export default function ListaRutas({ rutasFiltradas, personalizadas, loading, er
   }
 
   if (personalizadas && !global.usuarioLogueado) {
-      return (
-        <View style = {styles.noIniciadaSesion}>
-          <Text style={styles.noIniciadaSesionTexto}>Inicia sesión para acceder a tus rutas personalizadas</Text>
-        </View>
+    return (
+      <View style={styles.noIniciadaSesion}>
+        <Text style={styles.noIniciadaSesionTexto}>Inicia sesión para acceder a tus rutas personalizadas</Text>
+      </View>
     );
   }
 
@@ -64,10 +64,10 @@ export default function ListaRutas({ rutasFiltradas, personalizadas, loading, er
             <Text style={styles.emptyText}>No se encontraron rutas</Text>
           </View>
         }
-        ListFooterComponent={
+        ListHeaderComponent={
           personalizadas ? (
             <Pressable style={styles.botonFooter} onPress={() => navigation.navigate("RutaPersonalizada")}>
-              <FontAwesome name="plus-circle" size={48} color="#126baaff" style={ styles.botonAdd} />
+              <FontAwesome name="plus-circle" size={48} color="#126baaff" style={styles.botonAdd} />
               <Text style={styles.botonFooterTitulo}>Crear nueva ruta</Text>
               <Text style={styles.botonFooterDescripcion}>Personaliza tu propia ruta con tus puntos favoritos</Text>
             </Pressable>
@@ -134,30 +134,30 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 20,
   },
-noIniciadaSesion: {
-  backgroundColor: "#e6f0ff",
-  alignSelf: "center",
-  borderRadius: 12,
-  borderWidth: 1,
-  borderColor: "#99c2ff",
-  paddingVertical: 30,
-  paddingHorizontal: 20,
-  margin: 20,
-  alignItems: "center",
-  justifyContent: "center",
-  shadowColor: "#000",
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 0.1,
-  shadowRadius: 4,
-  elevation: 3,
-},
-noIniciadaSesionTexto: {
-  fontSize: 22,
-  fontWeight: "bold",
-  color: "#000",
-  textAlign: "center",
-  lineHeight: 28,
-},
+  noIniciadaSesion: {
+    backgroundColor: "#e6f0ff",
+    alignSelf: "center",
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#99c2ff",
+    paddingVertical: 30,
+    paddingHorizontal: 20,
+    margin: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  noIniciadaSesionTexto: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#000",
+    textAlign: "center",
+    lineHeight: 28,
+  },
   loadingText: {
     marginTop: 10,
     fontSize: 16,
@@ -176,17 +176,17 @@ noIniciadaSesionTexto: {
   },
   botonFooter: {
     backgroundColor: '#fff',
-    alignSelf: 'center',  
+    alignSelf: 'center',
     borderRadius: 12,
     borderWidth: 1,
-    borderStyle: 'dashed', 
+    borderStyle: 'dashed',
     borderColor: '#ccc',
     padding: 25,
     margin: 10,
     alignItems: 'center',
   },
   botonAdd: {
-    marginBottom: 10, 
+    marginBottom: 10,
   },
   botonFooterTitulo: {
     fontSize: 24,

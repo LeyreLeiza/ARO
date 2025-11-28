@@ -41,7 +41,7 @@ export const useBuscaRutas = () => {
     return { rutas, loading, error };
 }
 
-export const useBuscaRutasPersonalizadas = (usuario_id, navigation) => {
+export const useBuscaRutasPersonalizadas = (usuario_id, navigation, reload) => {
     const [rutasPersonalizadas, setRutasPersonalizadas] = useState([]);
     const [loadingPersonalizadas, setLoadingPersonalizadas] = useState(true);
     const [errorPersonalizadas, setErrorPersonalizadas] = useState(null);
@@ -84,7 +84,7 @@ export const useBuscaRutasPersonalizadas = (usuario_id, navigation) => {
     useFocusEffect(
         useCallback(() => {
             fetchRutas();
-        }, [usuario_id])
+        }, [usuario_id, reload])
     );
 
     return { rutasPersonalizadas, loadingPersonalizadas, errorPersonalizadas };
