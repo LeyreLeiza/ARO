@@ -131,7 +131,7 @@ export const obtenerEventosPorRango = async (fechaIni, fechaFin) => {
   }
 };
 
-export const obtenerEventosFavoritos = async (usuario_id) => {
+export const obtenerEventosFavoritos = async (usuario_id, soloIds = false) => {
   try {  
     const res = await fetch(`https://aro-1nwv.onrender.com/usuarios/eventos-favoritos/${usuario_id}`, {
       method: "GET",
@@ -143,7 +143,10 @@ export const obtenerEventosFavoritos = async (usuario_id) => {
     if (!res.ok) return [];
 
     const data = await res.json();
-    return data.map(e => e.evento_id); 
+    if (soloIds) {
+      return data.map(e => e.evento_id);
+    }
+    return data; 
   } catch (err) {
     console.error("Error obteniendo eventos favoritos:", err);
     return [];
@@ -152,7 +155,6 @@ export const obtenerEventosFavoritos = async (usuario_id) => {
 
 export const añadirEventoFavorito = async (usuario_id, evento_id) => {
   try {
-    console.log("Llega");
     const res = await fetch(`https://aro-1nwv.onrender.com/usuarios/eventos-favoritos`, {
       method: "POST",
       headers: {
