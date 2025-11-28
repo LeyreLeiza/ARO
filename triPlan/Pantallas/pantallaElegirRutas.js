@@ -26,7 +26,6 @@ export default function PantallaElegirRutas({ navigation }) {
     }, [])
   );
 
-
   const { rutas, loading, error } = useBuscaRutas();
   const {rutasPersonalizadas, loadingPersonalizadas, errorPersonalizadas} = useBuscaRutasPersonalizadas(usuarioId, navigation);
 

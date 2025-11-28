@@ -1,6 +1,6 @@
 export const registrarUsuario = async ({ nombre_usuario, nombre, apellido, email, telefono, contraseña }) => {
   try {
-    const response = await fetch("https://aro-1nwv.onrender.com/usuarios", {
+    const response = await fetch("https://aro-1nwv.onrender.com/usuarios?api_key=GW1FKVKqydjW8K0AJBmwpRgVhjx0mnNN2EuQv19PNW77M", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ nombre_usuario, nombre, apellido, email, telefono, contraseña }),
@@ -21,7 +21,7 @@ export const registrarUsuario = async ({ nombre_usuario, nombre, apellido, email
 
 export const loginUsuario = async (email, password) => {
   try {
-    const response = await fetch("https://aro-1nwv.onrender.com/login", {
+    const response = await fetch("https://aro-1nwv.onrender.com/login?api_key=GW1FKVKqydjW8K0AJBmwpRgVhjx0mnNN2EuQv19PNW77M", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
@@ -42,7 +42,7 @@ export const loginUsuario = async (email, password) => {
 
 export const cambioContraseñaUsuario = async (userId, nueva_contraseña, vieja_contraseña) => {
   try {
-    const response = await fetch(`https://aro-1nwv.onrender.com/usuarios/${userId}/cambiar-contrasena`, {
+    const response = await fetch(`https://aro-1nwv.onrender.com/usuarios/${userId}/cambiar-contrasena?api_key=GW1FKVKqydjW8K0AJBmwpRgVhjx0mnNN2EuQv19PNW77M`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ nueva_contraseña, vieja_contraseña }),
@@ -64,7 +64,7 @@ export const cambioContraseñaUsuario = async (userId, nueva_contraseña, vieja_
 
 export const insertarRutaPersonalizada = async ({ userId, nombre, descripcion, puntos }) => {
   try {
-    const response = await fetch(`https://aro-1nwv.onrender.com/usuarios/${userId}/rutas-personalizadas`, {
+    const response = await fetch(`https://aro-1nwv.onrender.com/usuarios/${userId}/rutas-personalizadas?api_key=GW1FKVKqydjW8K0AJBmwpRgVhjx0mnNN2EuQv19PNW77M`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ nombre, descripcion, puntos }),

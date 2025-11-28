@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Image, ActivityIndicator, StyleSheet, TextInput, TouchableOpacity, ScrollView, Dimensions, Modal  } from 'react-native';
+import { View, Text, FlatList, Image, ActivityIndicator, StyleSheet, TextInput, TouchableOpacity, ScrollView, Dimensions, Modal, Pressable  } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useBuscaEventos, useBuscaEventosPorNombre, obtenerTiposUnicos, obtenerEventosPorRango } from '../Funcionalidades/busquedaEventos';
+import { useBuscaEventos, useBuscaEventosPorNombre, obtenerTiposUnicos, obtenerEventosPorRango, añadirEventoFavorito, eliminarEventoFavorito, obtenerEventosFavoritos } from '../Funcionalidades/busquedaEventos';
 import MiSelectorRango from '../Componentes/calendario';
 
 const PantallaEventos = ({ navigation }) => {
@@ -9,6 +9,7 @@ const PantallaEventos = ({ navigation }) => {
   const [tipos, setTipos] = useState(['Todos']);
   const [rangoFiltro, setRangoFiltro] = useState({ start: null, end: null });
   const [mostrarCalendario, setMostrarCalendario] = useState(false);
+  const [favoritos, setFavoritos] = useState([]);
 
   const { eventosPorTipo, loadingPorTipo } = useBuscaEventos(tipos);
   const { eventosPorNombre, loadingPorNombre } = useBuscaEventosPorNombre(busqueda);
@@ -71,6 +72,16 @@ const PantallaEventos = ({ navigation }) => {
   }, [ loadingPorTipo, loadingPorNombre, eventosPorTipo, eventosPorNombre, busqueda, tipos, rangoFiltro ]
   );
 
+  useEffect(() => {
+    const cargarFavoritos = async () => {
+      if (!global.usuarioLogueado) return;
+
+      const ids = await obtenerEventosFavoritos(global.idUsuario);
+      setFavoritos(ids);
+    };
+
+    cargarFavoritos();
+  }, [global.usuarioLogueado]);
 
   const handleBusqueda = (text) => {
     setBusqueda(text); 
@@ -96,47 +107,91 @@ const PantallaEventos = ({ navigation }) => {
     });
   };
 
-  const renderEvento = ({ item }) => (
-    <TouchableOpacity 
-      onPress={() => navigation.navigate('DetalleEvento', { evento: item })} 
-      activeOpacity={0.8}
-    >
-      <View style={styles.card}>
-        {item.imagen ? (
-          <Image source={{ uri: item.imagen }} style={styles.imagen} />
-        ) : (
-          <View style={[styles.imagen, styles.imagenPlaceholder]}>
-            <Ionicons name="image-outline" size={40} color="#888" />
-          </View>
-        )}
-        <TouchableOpacity style={styles.iconoFavorito}>
-          <Ionicons name="heart-outline" size={22} color="#000" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.iconoCompartir}>
-          <Ionicons name="share-social-outline" size={22} color="#000" />
-        </TouchableOpacity>
-
-        <View style={styles.info}>
-          <Text style={styles.etiqueta}>{item.tipo}</Text>
-          <Text style={styles.nombre}>{item.nombre}</Text>
-          <Text style={styles.descripcion}>{item.descripcion}</Text>
-          <View style={styles.infoFila}>
-            <Ionicons name="calendar-outline" size={16} color="#777" />
-            <Text style={styles.infoTexto}>
-              {new Date(item.fecha_ini).toLocaleDateString()} →{' '}
-              {new Date(item.fecha_fin).toLocaleDateString()}
-            </Text>
-          </View>
-          {item.punto?.nombre && (
-            <View style={styles.infoFila}>
-              <Ionicons name="location-outline" size={16} color="#777" />
-              <Text style={styles.infoTexto}>{item.punto.nombre}</Text>
+  const renderEvento = ({ item }) => {
+    const esFavorito = favoritos.includes(item.id);
+    return(
+      <TouchableOpacity 
+        onPress={() => navigation.navigate('DetalleEvento', { evento: item })} 
+        activeOpacity={0.8}
+      >
+        <View style={styles.card}>
+          {item.imagen ? (
+            <Image source={{ uri: item.imagen }} style={styles.imagen} />
+          ) : (
+            <View style={[styles.imagen, styles.imagenPlaceholder]}>
+              <Ionicons name="image-outline" size={40} color="#888" />
             </View>
           )}
+          <Pressable
+            style={styles.iconoFavorito}
+            onPress={async (e) => {
+              console.log("Se ha hecho click en el corazon");
+
+              if (!global.usuarioLogueado) {
+                alert("Debes iniciar sesión para guardar favoritos");
+                return;
+              }
+
+              const usuario_id = global.idUsuario;
+              const evento_id = item.id;
+              const esFavorito = favoritos.includes(evento_id);
+              console.log(esFavorito);
+              console.log(usuario_id);
+              console.log(evento_id);
+              let ok = false;
+
+              if (esFavorito) {
+                console.log("Se elimina evento");
+                ok = await eliminarEventoFavorito(usuario_id, evento_id);
+              } else {
+                console.log("Se añade evento");
+                ok = await añadirEventoFavorito(usuario_id, evento_id);
+                console.log("Termina");
+              }
+
+              if (ok) {
+                setFavoritos(prev =>
+                  esFavorito
+                    ? prev.filter(id => id !== evento_id)
+                    : [...prev, evento_id]
+                );
+              } else {
+                alert("No se pudo actualizar favorito");
+              }
+            }}
+          >
+            <Ionicons
+              name={esFavorito ? "heart" : "heart-outline"}
+              size={22}
+              color={esFavorito ? "gold" : "#000"}
+            />
+          </Pressable>
+          <TouchableOpacity style={styles.iconoCompartir}>
+            <Ionicons name="share-social-outline" size={22} color="#000" />
+          </TouchableOpacity>
+
+          <View style={styles.info}>
+            <Text style={styles.etiqueta}>{item.tipo}</Text>
+            <Text style={styles.nombre}>{item.nombre}</Text>
+            <Text style={styles.descripcion}>{item.descripcion}</Text>
+            <View style={styles.infoFila}>
+              <Ionicons name="calendar-outline" size={16} color="#777" />
+              <Text style={styles.infoTexto}>
+                {new Date(item.fecha_ini).toLocaleDateString()} →{' '}
+                {new Date(item.fecha_fin).toLocaleDateString()}
+              </Text>
+            </View>
+            {item.punto?.nombre && (
+              <View style={styles.infoFila}>
+                <Ionicons name="location-outline" size={16} color="#777" />
+                <Text style={styles.infoTexto}>{item.punto.nombre}</Text>
+              </View>
+            )}
+          </View>
         </View>
-      </View>
-    </TouchableOpacity>
-  );
+      </TouchableOpacity>
+    )
+  };
 
   const anchoBoton = Math.min(Dimensions.get('window').width / 4.5, 90);
 
@@ -234,6 +289,7 @@ const PantallaEventos = ({ navigation }) => {
             data={eventosFiltrados}
             renderItem={renderEvento}
             keyExtractor={item => item.id.toString()}
+            extraData={favoritos}
             contentContainerStyle={{ paddingBottom: 60 }}
           />
         )}

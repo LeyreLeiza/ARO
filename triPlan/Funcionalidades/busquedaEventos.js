@@ -11,8 +11,8 @@ export const useBuscaEventos = (tiposFiltro) => {
         setLoadingPorTipo(true);
 
         const url = tiposFiltro && tiposFiltro.length > 0 && !tiposFiltro.includes('Todos')
-        ? `https://aro-1nwv.onrender.com/eventos/tipo/${tiposFiltro.join(',')}`
-        : "https://aro-1nwv.onrender.com/eventos";  // Si tiposFiltro incluye 'Todos', no aplicamos ningún filtro, se traen todos los eventos
+        ? `https://aro-1nwv.onrender.com/eventos/tipo/${tiposFiltro.join(',')}?api_key=GW1FKVKqydjW8K0AJBmwpRgVhjx0mnNN2EuQv19PNW77M`
+        : "https://aro-1nwv.onrender.com/eventos?api_key=GW1FKVKqydjW8K0AJBmwpRgVhjx0mnNN2EuQv19PNW77M";  // Si tiposFiltro incluye 'Todos', no aplicamos ningún filtro, se traen todos los eventos
 
 
         const response = await fetch(url);
@@ -46,9 +46,9 @@ export const useBuscaEventosPorNombre = (nombre) => {
         setLoadingPorNombre(true);
         let url = "";
         if (!nombre.trim()) {
-            url = `https://aro-1nwv.onrender.com/eventos/`;
+            url = `https://aro-1nwv.onrender.com/eventos/?api_key=GW1FKVKqydjW8K0AJBmwpRgVhjx0mnNN2EuQv19PNW77M`;
         } else {
-            url = `https://aro-1nwv.onrender.com/eventos/nombre/${nombre}`;
+            url = `https://aro-1nwv.onrender.com/eventos/nombre/${nombre}?api_key=GW1FKVKqydjW8K0AJBmwpRgVhjx0mnNN2EuQv19PNW77M`;
         }
           
         const response = await fetch(url);
@@ -71,7 +71,7 @@ export const useBuscaEventosPorNombre = (nombre) => {
 
 export const obtenerTiposUnicos = async () => {
   try {
-    const response = await fetch("https://aro-1nwv.onrender.com/eventos");
+    const response = await fetch("https://aro-1nwv.onrender.com/eventos?api_key=GW1FKVKqydjW8K0AJBmwpRgVhjx0mnNN2EuQv19PNW77M");
     if (!response.ok) throw new Error("Error al obtener eventos");
 
     const data = await response.json();
@@ -90,9 +90,9 @@ export const obtenerEventosPorRango = async (fechaIni, fechaFin) => {
     let url;
 
     if (!fechaIni || !fechaFin) {
-      url = "https://aro-1nwv.onrender.com/eventos";
+      url = "https://aro-1nwv.onrender.com/eventos?api_key=GW1FKVKqydjW8K0AJBmwpRgVhjx0mnNN2EuQv19PNW77M";
     } else {
-      url = `https://aro-1nwv.onrender.com/eventos/rango?fecha_ini=${fechaIni}&fecha_fin=${fechaFin}`;
+      url = `https://aro-1nwv.onrender.com/eventos/rango?fecha_ini=${fechaIni}&fecha_fin=${fechaFin}?api_key=GW1FKVKqydjW8K0AJBmwpRgVhjx0mnNN2EuQv19PNW77M`;
     }
 
     const response = await fetch(url);
@@ -104,5 +104,71 @@ export const obtenerEventosPorRango = async (fechaIni, fechaFin) => {
   } catch (err) {
     console.error("Error obteniendo eventos por rango:", err);
     return [];
+  }
+};
+
+export const obtenerEventosFavoritos = async (usuario_id) => {
+  try {  
+    const res = await fetch(`https://aro-1nwv.onrender.com/usuarios/eventos-favoritos/${usuario_id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": "GW1FKVKqydjW8K0AJBmwpRgVhjx0mnNN2EuQv19PNW77M"
+      }
+    });
+    if (!res.ok) return [];
+
+    const data = await res.json();
+    console.log(data);
+    return data.map(e => e.evento_id); 
+  } catch (err) {
+    console.error("Error obteniendo eventos favoritos:", err);
+    return [];
+  }
+};
+
+export const añadirEventoFavorito = async (usuario_id, evento_id) => {
+  try {
+    console.log("Llega");
+    const res = await fetch(`https://aro-1nwv.onrender.com/usuarios/eventos-favoritos`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": "GW1FKVKqydjW8K0AJBmwpRgVhjx0mnNN2EuQv19PNW77M"
+      },
+      body: JSON.stringify({ usuario_id, evento_id })
+    });
+
+    const data = await res.json(); // ← parsear JSON de respuesta
+    console.log("Respuesta backend:", data);
+
+    console.log(res.ok);
+
+    if (!res.ok || data.error) {
+      console.error("Error backend:", data.error || "Unknown");
+      return false;
+    }
+
+    return res.ok;
+  } catch (err) {
+    console.error("Error al añadir evento favorito:", err);
+    return false;
+  }
+};
+
+export const eliminarEventoFavorito = async (usuario_id, evento_id) => {
+  try {
+    const res = await fetch(`https://aro-1nwv.onrender.com/usuarios/eventos-favoritos/${usuario_id}/${evento_id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": "GW1FKVKqydjW8K0AJBmwpRgVhjx0mnNN2EuQv19PNW77M"
+      }
+    });
+    console.log(res.ok);
+    return res.ok;
+  } catch (err) {
+    console.error("Error al eliminar evento favorito:", err);
+    return false;
   }
 };
