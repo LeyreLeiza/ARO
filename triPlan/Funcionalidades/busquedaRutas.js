@@ -5,43 +5,43 @@ export const useBuscaRutas = () => {
     const [rutas, setRutas] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    
+
     useEffect(() => {
         const fetchRutas = async () => {
-        try {
-            const response = await fetch("https://aro-1nwv.onrender.com/rutas", {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    "x-api-key": "GW1FKVKqydjW8K0AJBmwpRgVhjx0mnNN2EuQv19PNW77M"
-                }
-            });
-            if (!response.ok) throw new Error("Error al obtener rutas");
-            const data = await response.json();
+            try {
+                const response = await fetch("https://aro-1nwv.onrender.com/rutas", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "x-api-key": "GW1FKVKqydjW8K0AJBmwpRgVhjx0mnNN2EuQv19PNW77M"
+                    }
+                });
+                if (!response.ok) throw new Error("Error al obtener rutas");
+                const data = await response.json();
 
-            const rutasSimplificadas = data.map(ruta => ({
-            id: ruta.id,
-            nombre: ruta.nombre,
-            descripcion: ruta.descripcion,
-            duracion: ruta.duracion, 
-            puntos_interes: ruta.puntos_interes
-            }));
+                const rutasSimplificadas = data.map(ruta => ({
+                    id: ruta.id,
+                    nombre: ruta.nombre,
+                    descripcion: ruta.descripcion,
+                    duracion: ruta.duracion,
+                    puntos_interes: ruta.puntos_interes
+                }));
 
-            setRutas(rutasSimplificadas);
+                setRutas(rutasSimplificadas);
 
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
         };
 
         fetchRutas();
     }, []);
     return { rutas, loading, error };
- }
+}
 
- export const useBuscaRutasPersonalizadas = (usuario_id, navigation) => {
+export const useBuscaRutasPersonalizadas = (usuario_id, navigation) => {
     const [rutasPersonalizadas, setRutasPersonalizadas] = useState([]);
     const [loadingPersonalizadas, setLoadingPersonalizadas] = useState(true);
     const [errorPersonalizadas, setErrorPersonalizadas] = useState(null);
@@ -53,7 +53,7 @@ export const useBuscaRutas = () => {
         }
         try {
             setLoadingPersonalizadas(true);
-            const response = await fetch(`https://aro-1nwv.onrender.com/usuarios/${usuario_id}/rutas-personalizadas`, {
+            const response = await fetch(`https://aro-1nwv.onrender.com/usuarios/${usuario_id}/rutas-personalizadas?t=${new Date().getTime()}`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",

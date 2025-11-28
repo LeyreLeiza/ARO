@@ -65,10 +65,7 @@ export default function PantallaElegirRutas({ navigation }) {
     }
   };
 
-  const handleEdit = (ruta) => {
-    setSelectedRoute(null);
-    navigation.navigate("RutaPersonalizada", { ruta });
-  };
+
   const getRutasFiltradas = (rutas) => {
     return rutas.filter(ruta => {
       const matchesName = ruta.nombre.toLowerCase().includes(searchName.toLowerCase());
@@ -129,7 +126,6 @@ export default function PantallaElegirRutas({ navigation }) {
         onStartRoute={handleStartRoute}
         isCustom={tipoSeleccionado === 'personalizadas'}
         onDelete={() => handleDelete(selectedRoute?.id)}
-        onEdit={() => handleEdit(selectedRoute)}
       />
     </View>
   );

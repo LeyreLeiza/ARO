@@ -6,7 +6,7 @@ import { obtenerRutaOSRM, generarRutaConCalles, ordenarRutaPorDistancia } from '
 
 const { height } = Dimensions.get('window');
 
-export default function DetalleRutaModal({ visible, onClose, ruta, onStartRoute, isCustom, onDelete, onEdit }) {
+export default function DetalleRutaModal({ visible, onClose, ruta, onStartRoute, isCustom, onDelete }) {
     const [totalDuration, setTotalDuration] = useState(null);
 
     useEffect(() => {
@@ -97,10 +97,6 @@ export default function DetalleRutaModal({ visible, onClose, ruta, onStartRoute,
                     <View style={styles.footer}>
                         {isCustom && (
                             <View style={styles.actionButtons}>
-                                <TouchableOpacity style={[styles.actionButton, styles.editButton]} onPress={onEdit}>
-                                    <Ionicons name="create-outline" size={20} color="white" />
-                                    <Text style={styles.actionButtonText}>Editar</Text>
-                                </TouchableOpacity>
                                 <TouchableOpacity style={[styles.actionButton, styles.deleteButton]} onPress={onDelete}>
                                     <Ionicons name="trash-outline" size={20} color="white" />
                                     <Text style={styles.actionButtonText}>Eliminar</Text>
@@ -260,9 +256,6 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         borderRadius: 12,
         marginHorizontal: 5,
-    },
-    editButton: {
-        backgroundColor: '#4A90E2',
     },
     deleteButton: {
         backgroundColor: '#E24A4A',

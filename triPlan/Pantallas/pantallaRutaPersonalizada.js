@@ -8,7 +8,7 @@ import { insertarRutaPersonalizada, actualizarRutaPersonalizada } from "../Funci
 global.idUsuario = global.idUsuario || "";
 global.modLetraValor = global.modLetraValor || 0;
 
-export default function RutaPersonalizada({ navigation }) {
+export default function RutaPersonalizada({ navigation, route }) {
   const [nombre, setNombre] = useState("");
   const [descripcion, setDescripcion] = useState("");
   const [puntos, setPuntos] = useState([]);
@@ -22,7 +22,7 @@ export default function RutaPersonalizada({ navigation }) {
   const { puntosPorTipo, loadingPorTipo, error } = useBuscaPuntos(['Todos']);
   const [puntosFiltrados, setPuntosFiltrados] = useState([]);
 
-  const rutaEditar = navigation.getState().routes.find(r => r.name === "RutaPersonalizada")?.params?.ruta;
+  const rutaEditar = route.params?.ruta;
 
   useEffect(() => {
     if (rutaEditar) {
