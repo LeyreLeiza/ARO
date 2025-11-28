@@ -53,7 +53,7 @@ export const useBuscaRutas = () => {
         }
         try {
             setLoadingPersonalizadas(true);
-            const response = await fetch("https://aro-1nwv.onrender.com/usuarios/${usuario_id}/rutas-personalizadas", {
+            const response = await fetch(`https://aro-1nwv.onrender.com/usuarios/${usuario_id}/rutas-personalizadas`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
