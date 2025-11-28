@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, View } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
 
@@ -12,7 +12,7 @@ import deporteImg from "./assets/markerDeporte.png";
 import eventoImg from "./assets/markerEventos.png";
 import zonaVerdeImg from "./assets/markerZonaVerde.png";
 
-// Haversine
+// Función Haversine para calcular distancia (en metros)
 function getDistance(lat1, lon1, lat2, lon2) {
   const R = 6371e3;
   const toRad = (v) => (v * Math.PI) / 180;
@@ -45,38 +45,16 @@ function getMarkerImage(tipo) {
 }
 
 export default function Mapa({ ubicaciones = [], onSelectPunto }) {
-
-  const [location, setLocation] = useState(null);
-  const [region] = useState({
-    latitude: 42.8169,
-    longitude: -1.6432,
-    latitudeDelta: 0.05,
-    longitudeDelta: 0.05,
-  });
-
-  const [activeMarker, setActiveMarker] = useState(null);
-  const [lastDismissed, setLastDismissed] = useState({});
-  const lastDismissedRef = useRef(lastDismissed);
-
-  const cooldown = 15 * 60 * 1000; 
-
-  useEffect(() => {
-    lastDismissedRef.current = lastDismissed;
-  }, [lastDismissed]);
+  const lastPointId = useRef(null); // 👉 RECORDAR EL ÚLTIMO PUNTO
 
   useEffect(() => {
     (async () => {
       const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        console.log("Permiso de ubicación denegado");
-        return;
-      }
+      if (status !== "granted") return;
 
       const subscription = await Location.watchPositionAsync(
         { accuracy: Location.Accuracy.High, distanceInterval: 1 },
         (loc) => {
-          setLocation(loc.coords);
-
           let nearest = null;
           let minDist = Infinity;
 
@@ -89,19 +67,21 @@ export default function Mapa({ ubicaciones = [], onSelectPunto }) {
             );
             if (d < minDist) {
               minDist = d;
-              nearest = { ...m, distance: Math.round(d) };
+              nearest = { ...m, distance: d };
             }
           });
 
-          if (nearest && nearest.distance < 15) {
-            const lastTime = lastDismissedRef.current[nearest.id] || 0;
-            const now = Date.now();
+          if (!nearest) return;
 
-            if (now - lastTime > cooldown) {
-              setActiveMarker(nearest);
-            }
-          } else {
-            setActiveMarker(null);
+          // 👉 Cambiar el número para ajustar la distancia
+          const DISTANCIA_ACTIVACION = 20; // metros
+
+          // ➤ SOLO ENTRA SI TE ACERCAS A UN PUNTO DIFERENTE
+          if (nearest.distance < DISTANCIA_ACTIVACION &&
+              nearest.id !== lastPointId.current) {
+
+            lastPointId.current = nearest.id;
+            if (onSelectPunto) onSelectPunto(nearest);
           }
         }
       );
@@ -112,19 +92,7 @@ export default function Mapa({ ubicaciones = [], onSelectPunto }) {
 
   return (
     <View style={styles.container}>
-      
-      <MapView 
-        style={styles.map}
-        initialRegion={region}
-        showsUserLocation
-        customMapStyle={[
-          {
-            featureType: "poi",
-            elementType: "all",
-            stylers: [{ visibility: "off" }]
-          }
-        ]}
-      >
+      <MapView style={styles.map} showsUserLocation>
         {(ubicaciones || []).map((m) => (
           <Marker
             key={m.id}
@@ -138,77 +106,11 @@ export default function Mapa({ ubicaciones = [], onSelectPunto }) {
           />
         ))}
       </MapView>
-
-      {activeMarker && (
-        <View style={styles.popupOverlay}>
-          <View style={styles.popup}>
-            <TouchableOpacity
-              style={styles.closeIcon}
-              onPress={() => {
-                setLastDismissed((prev) => ({
-                  ...prev,
-                  [activeMarker.id]: Date.now(),
-                }));
-                setActiveMarker(null);
-              }}
-            >
-              <Text style={styles.closeText}>✖</Text>
-            </TouchableOpacity>
-
-            <Text style={styles.popupTitle}>📍 {activeMarker.titulo}</Text>
-            <Text style={styles.popupText}>
-              Estás a {activeMarker.distance} metros de este lugar.
-            </Text>
-          </View>
-        </View>
-      )}
-
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  map: { flex: 1 },
-
-  popupOverlay: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "rgba(0,0,0,0.4)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  popup: {
-    width: "80%",
-    backgroundColor: "white",
-    padding: 20,
-    borderRadius: 20,
-    elevation: 10,
-  },
-
-  popupTitle: {
-    fontSize: 22,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-
-  popupText: {
-    fontSize: 16,
-    marginTop: 10,
-    textAlign: "center",
-  },
-
-  closeIcon: {
-    position: "absolute",
-    top: 10,
-    right: 10,
-  },
-
-  closeText: {
-    fontSize: 22,
-  },
+  map: { flex: 1 }
 });
