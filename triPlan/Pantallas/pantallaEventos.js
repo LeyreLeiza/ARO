@@ -3,6 +3,7 @@ import { View, Text, FlatList, Image, ActivityIndicator, StyleSheet, TextInput, 
 import { Ionicons } from '@expo/vector-icons';
 import { useBuscaEventos, useBuscaEventosPorNombre, obtenerTiposUnicos, obtenerEventosPorRango, añadirEventoFavorito, eliminarEventoFavorito, obtenerEventosFavoritos } from '../Funcionalidades/busquedaEventos';
 import MiSelectorRango from '../Componentes/calendario';
+import { useFocusEffect } from "@react-navigation/native";
 
 const PantallaEventos = ({ navigation }) => {
   const [busqueda, setBusqueda] = useState('');
@@ -17,10 +18,27 @@ const PantallaEventos = ({ navigation }) => {
   const [eventosFiltrados, setEventosFiltrados] = useState([]);
   const [tiposUnicos, setTiposUnicos] = useState(['Todos']);
 
+  const [reloadFlag, setReloadFlag] = useState(false);
+  
+  useFocusEffect(
+    React.useCallback(() => {
+      if (!global.usuarioLogueado) {
+        setFavoritos([]);
+        return;
+      }
+      setReloadFlag(prev => !prev); // al volver aquí recarga todo
+    }, [])
+  );
+  
   useEffect(() => {
     const fetchTipos = async () => {
       try {
-        const tipos = await obtenerTiposUnicos();
+        let tipos = await obtenerTiposUnicos();
+        if(global.usuarioLogueado){
+          if (!tipos.includes("Favoritos")) {
+            tipos = ['Todos', 'Favoritos', ...tipos.filter(t => t !== 'Todos')];
+          }
+        }
         setTiposUnicos(tipos);
       } catch (err) {
         console.error("Error al cargar tipos:", err);
@@ -63,25 +81,29 @@ const PantallaEventos = ({ navigation }) => {
           lista = lista.filter(e => tipos.includes(e.tipo));
         }
 
+        if(tipos.includes("Favoritos")){
+          lista = await obtenerEventosFavoritos(global.idUsuario);
+        }
+
         setEventosFiltrados(lista);
       };
 
       aplicarFiltros(); 
     }
 
-  }, [ loadingPorTipo, loadingPorNombre, eventosPorTipo, eventosPorNombre, busqueda, tipos, rangoFiltro ]
+  }, [ loadingPorTipo, loadingPorNombre, eventosPorTipo, eventosPorNombre, busqueda, tipos, rangoFiltro, reloadFlag  ]
   );
 
   useEffect(() => {
     const cargarFavoritos = async () => {
       if (!global.usuarioLogueado) return;
 
-      const ids = await obtenerEventosFavoritos(global.idUsuario);
+      const ids = await obtenerEventosFavoritos(global.idUsuario, true);
       setFavoritos(ids);
     };
 
     cargarFavoritos();
-  }, [global.usuarioLogueado]);
+  }, [global.usuarioLogueado, reloadFlag]);
 
   const handleBusqueda = (text) => {
     setBusqueda(text); 
@@ -125,8 +147,6 @@ const PantallaEventos = ({ navigation }) => {
           <Pressable
             style={styles.iconoFavorito}
             onPress={async (e) => {
-              console.log("Se ha hecho click en el corazon");
-
               if (!global.usuarioLogueado) {
                 alert("Debes iniciar sesión para guardar favoritos");
                 return;
@@ -155,9 +175,9 @@ const PantallaEventos = ({ navigation }) => {
             }}
           >
             <Ionicons
-              name={esFavorito ? "heart" : "heart-outline"}
+              name={esFavorito || tipos.includes("Favoritos") ? "heart" : "heart-outline"}
               size={22}
-              color={esFavorito ? "gold" : "#000"}
+              color={esFavorito || tipos.includes("Favoritos") ? "gold" : "#000"}
             />
           </Pressable>
           <TouchableOpacity style={styles.iconoCompartir}>
@@ -282,7 +302,7 @@ const PantallaEventos = ({ navigation }) => {
             style={{ flex: 1 }}
             data={eventosFiltrados}
             renderItem={renderEvento}
-            keyExtractor={item => item.id.toString()}
+            keyExtractor={item => (item.id || item.evento_id).toString()}
             extraData={favoritos}
             contentContainerStyle={{ paddingBottom: 60 }}
           />
