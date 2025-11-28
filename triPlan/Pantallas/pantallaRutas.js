@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import Mapa from "../mapaRutas"; 
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import Mapa from "../mapaRutas";
 import Layout from '../Componentes/layout';
-import BottomSheet from '../Componentes/BottomSheet'; 
+import BottomSheet from '../Componentes/BottomSheet';
 import { useBuscaPuntos } from "../Funcionalidades/busquedaPuntos";
 import InformacionPunto from './pantallaEspecificacionPunto';
 import ListaPuntos from "../Funcionalidades/listadoPuntos";
 
 export default function PantallaRutas({ navigation, route }) {
-  const [ubicaciones, setUbicaciones] = useState([]); 
+  const [ubicaciones, setUbicaciones] = useState([]);
   const [puntoSeleccionado, setPuntoSeleccionado] = useState(null);
   const [puntosRutas, setPuntosRutas] = useState([]);
   const [navigationSteps, setNavigationSteps] = useState([]);
@@ -27,11 +28,17 @@ export default function PantallaRutas({ navigation, route }) {
   useEffect(() => {
     const fetchRuta = async () => {
       if (!rutaSeleccionada || haCargadoRuta.current) return;
-      haCargadoRuta.current = true; // ✅ bloquea futuras ejecuciones
+      haCargadoRuta.current = true; 
 
       try {
         setLoadingRuta(true);
-        const response = await fetch(`https://aro-1nwv.onrender.com/rutas/${rutaSeleccionada.id}`);
+        const response = await fetch(`https://aro-1nwv.onrender.com/rutas/${rutaSeleccionada.id}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": "GW1FKVKqydjW8K0AJBmwpRgVhjx0mnNN2EuQv19PNW77M"
+          }
+        });
         if (!response.ok) throw new Error("Error al obtener datos de la ruta");
 
         const data = await response.json();
@@ -47,7 +54,6 @@ export default function PantallaRutas({ navigation, route }) {
     fetchRuta();
   }, [rutaSeleccionada]);
 
-  // 🗺️ Si no hay ruta seleccionada, mostramos todos los puntos
   useEffect(() => {
     if (!rutaSeleccionada && !loadingPorTipo && puntosPorTipo?.length > 0) {
       setUbicaciones(puntosPorTipo);
@@ -56,11 +62,28 @@ export default function PantallaRutas({ navigation, route }) {
 
   const handleMarkersUpdate = (markers) => setPuntosRutas(markers);
 
+  const handleExitRoute = () => {
+    navigation.setParams({ ruta: null });
+    haCargadoRuta.current = false;
+    setUbicaciones(puntosPorTipo);
+    setNavigationSteps([]);
+    setErrorRuta(null);
+    navigation.goBack();
+  };
+
   return (
     <Layout navigation={navigation}>
       <View style={styles.container}>
         <View style={styles.tituloContainer}>
-          <Text style={styles.tituloPantalla}>Rutas</Text>
+          <View>
+            <Text style={styles.tituloPantalla}>Rutas</Text>
+          </View>
+          {rutaSeleccionada && (
+            <TouchableOpacity onPress={handleExitRoute} style={styles.exitButton}>
+              <Ionicons name="close-circle" size={24} color="red" />
+              <Text style={styles.exitText}>Salir de ruta</Text>
+            </TouchableOpacity>
+          )}
         </View>
         {navigationSteps.length > 0 && (
           <View style={styles.navContainer}>
@@ -75,8 +98,8 @@ export default function PantallaRutas({ navigation, route }) {
           </View>
         )}
 
-        <Mapa 
-          ubicaciones={ubicaciones} 
+        <Mapa
+          ubicaciones={ubicaciones}
           onMarkersUpdate={handleMarkersUpdate}
           onStepsUpdate={setNavigationSteps}
         />
@@ -84,9 +107,9 @@ export default function PantallaRutas({ navigation, route }) {
 
       <BottomSheet>
         {puntoSeleccionado ? (
-          <InformacionPunto 
-            punto={puntoSeleccionado} 
-            onBack={() => setPuntoSeleccionado(null)} 
+          <InformacionPunto
+            punto={puntoSeleccionado}
+            onBack={() => setPuntoSeleccionado(null)}
           />
         ) : (
           <ListaPuntos
@@ -139,12 +162,33 @@ const styles = StyleSheet.create({
     color: "red",
     fontSize: 16,
   },
-  tituloPantalla: {
-    fontSize: 22,    
-    fontWeight: '500', 
-    marginTop: 50,  
+  tituloContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 50,
     marginBottom: 10,
-    marginLeft: 10, 
+    marginHorizontal: 10,
+  },
+  tituloPantalla: {
+    fontSize: 22,
+    fontWeight: '500',
     backgroundColor: '#f0f0f0',
+  },
+  exitButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    padding: 8,
+    borderRadius: 20,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  exitText: {
+    color: 'red',
+    fontWeight: 'bold',
+    marginLeft: 5,
   },
 });

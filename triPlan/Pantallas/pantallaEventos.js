@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Image, ActivityIndicator, StyleSheet, TextInput, TouchableOpacity, ScrollView, Dimensions, Modal  } from 'react-native';
+import { View, Text, FlatList, Image, ActivityIndicator, StyleSheet, TextInput, TouchableOpacity, ScrollView, Dimensions, Modal, Pressable  } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useBuscaEventos, useBuscaEventosPorNombre, obtenerTiposUnicos, obtenerEventosPorRango } from '../Funcionalidades/busquedaEventos';
+import { useBuscaEventos, useBuscaEventosPorNombre, obtenerTiposUnicos, obtenerEventosPorRango, añadirEventoFavorito, eliminarEventoFavorito, obtenerEventosFavoritos } from '../Funcionalidades/busquedaEventos';
 import MiSelectorRango from '../Componentes/calendario';
 
 const PantallaEventos = ({ navigation }) => {
@@ -9,6 +9,7 @@ const PantallaEventos = ({ navigation }) => {
   const [tipos, setTipos] = useState(['Todos']);
   const [rangoFiltro, setRangoFiltro] = useState({ start: null, end: null });
   const [mostrarCalendario, setMostrarCalendario] = useState(false);
+  const [favoritos, setFavoritos] = useState([]);
 
   const { eventosPorTipo, loadingPorTipo } = useBuscaEventos(tipos);
   const { eventosPorNombre, loadingPorNombre } = useBuscaEventosPorNombre(busqueda);
@@ -30,38 +31,57 @@ const PantallaEventos = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
-    const cargarEventosRango = async () => {
-      if (!rangoFiltro.start || !rangoFiltro.end) return;
-
-      const fechaIni = rangoFiltro.start.toISOString().split("T")[0];
-      const fechaFin = rangoFiltro.end.toISOString().split("T")[0];
-
-      const datos = await obtenerEventosPorRango(fechaIni, fechaFin);
-
-      setEventosFiltrados(datos);
-    };
-
-    cargarEventosRango();
-  }, [rangoFiltro]);
-
-  useEffect(() => {
-    if (rangoFiltro.start && rangoFiltro.end) return; // esto por que no podemos hacer el doble filtro ambos se cogen de todos no de los que estan en pantalla cambiarlo para mas adelante
-
     if (!loadingPorTipo && !loadingPorNombre) {
 
-      if (busqueda.trim()) {
-        const idsFiltradosPorNombre = eventosPorNombre.map(evento => evento.id);
+      const aplicarFiltros = async () => { 
+        let lista = eventosPorTipo;        
 
-        const eventos2Filtrados = eventosPorTipo.filter((evento) =>
-          idsFiltradosPorNombre.includes(evento.id) // Aseguramos que el punto esté en los resultados por nombre
-        );
-        
-        setEventosFiltrados(eventos2Filtrados);
-      } else {
-        setEventosFiltrados(eventosPorTipo);
-      }
+        if (busqueda.trim()) {
+          const idsPorNombre = eventosPorNombre.map(e => e.id);
+          lista = lista.filter(e => idsPorNombre.includes(e.id));
+        }
+
+        if (rangoFiltro.start && rangoFiltro.end) {
+          const fechaIni = rangoFiltro.start.toISOString().split("T")[0];
+          const fechaFin = rangoFiltro.end.toISOString().split("T")[0];
+
+          try {
+            const eventosRango = await obtenerEventosPorRango(fechaIni, fechaFin);
+
+            const idsRango = Array.isArray(eventosRango) 
+              ? eventosRango.map(e => e.id) 
+              : [];
+
+            lista = lista.filter(e => idsRango.includes(e.id));
+
+          } catch (error) {
+            console.error("Error al obtener eventos por rango:", error);
+          }
+        }
+
+        if (!tipos.includes("Todos")) {
+          lista = lista.filter(e => tipos.includes(e.tipo));
+        }
+
+        setEventosFiltrados(lista);
+      };
+
+      aplicarFiltros(); 
     }
-  }, [loadingPorTipo, loadingPorNombre, eventosPorTipo, eventosPorNombre, busqueda, tipos]);
+
+  }, [ loadingPorTipo, loadingPorNombre, eventosPorTipo, eventosPorNombre, busqueda, tipos, rangoFiltro ]
+  );
+
+  useEffect(() => {
+    const cargarFavoritos = async () => {
+      if (!global.usuarioLogueado) return;
+
+      const ids = await obtenerEventosFavoritos(global.idUsuario);
+      setFavoritos(ids);
+    };
+
+    cargarFavoritos();
+  }, [global.usuarioLogueado]);
 
   const handleBusqueda = (text) => {
     setBusqueda(text); 
@@ -87,47 +107,85 @@ const PantallaEventos = ({ navigation }) => {
     });
   };
 
-  const renderEvento = ({ item }) => (
-    <TouchableOpacity 
-      onPress={() => navigation.navigate('DetalleEvento', { evento: item })} 
-      activeOpacity={0.8}
-    >
-      <View style={styles.card}>
-        {item.imagen ? (
-          <Image source={{ uri: item.imagen }} style={styles.imagen} />
-        ) : (
-          <View style={[styles.imagen, styles.imagenPlaceholder]}>
-            <Ionicons name="image-outline" size={40} color="#888" />
-          </View>
-        )}
-        <TouchableOpacity style={styles.iconoFavorito}>
-          <Ionicons name="heart-outline" size={22} color="#000" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.iconoCompartir}>
-          <Ionicons name="share-social-outline" size={22} color="#000" />
-        </TouchableOpacity>
-
-        <View style={styles.info}>
-          <Text style={styles.etiqueta}>{item.tipo}</Text>
-          <Text style={styles.nombre}>{item.nombre}</Text>
-          <Text style={styles.descripcion}>{item.descripcion}</Text>
-          <View style={styles.infoFila}>
-            <Ionicons name="calendar-outline" size={16} color="#777" />
-            <Text style={styles.infoTexto}>
-              {new Date(item.fecha_ini).toLocaleDateString()} →{' '}
-              {new Date(item.fecha_fin).toLocaleDateString()}
-            </Text>
-          </View>
-          {item.punto?.nombre && (
-            <View style={styles.infoFila}>
-              <Ionicons name="location-outline" size={16} color="#777" />
-              <Text style={styles.infoTexto}>{item.punto.nombre}</Text>
+  const renderEvento = ({ item }) => {
+    const esFavorito = favoritos.includes(item.id);
+    return(
+      <TouchableOpacity 
+        onPress={() => navigation.navigate('DetalleEvento', { evento: item })} 
+        activeOpacity={0.8}
+      >
+        <View style={styles.card}>
+          {item.imagen ? (
+            <Image source={{ uri: item.imagen }} style={styles.imagen} />
+          ) : (
+            <View style={[styles.imagen, styles.imagenPlaceholder]}>
+              <Ionicons name="image-outline" size={40} color="#888" />
             </View>
           )}
+          <Pressable
+            style={styles.iconoFavorito}
+            onPress={async (e) => {
+              console.log("Se ha hecho click en el corazon");
+
+              if (!global.usuarioLogueado) {
+                alert("Debes iniciar sesión para guardar favoritos");
+                return;
+              }
+
+              const usuario_id = global.idUsuario;
+              const evento_id = item.id;
+              const esFavorito = favoritos.includes(evento_id);
+              let ok = false;
+
+              if (esFavorito) {
+                ok = await eliminarEventoFavorito(usuario_id, evento_id);
+              } else {
+                ok = await añadirEventoFavorito(usuario_id, evento_id);
+              }
+
+              if (ok) {
+                setFavoritos(prev =>
+                  esFavorito
+                    ? prev.filter(id => id !== evento_id)
+                    : [...prev, evento_id]
+                );
+              } else {
+                alert("No se pudo actualizar favorito");
+              }
+            }}
+          >
+            <Ionicons
+              name={esFavorito ? "heart" : "heart-outline"}
+              size={22}
+              color={esFavorito ? "gold" : "#000"}
+            />
+          </Pressable>
+          <TouchableOpacity style={styles.iconoCompartir}>
+            <Ionicons name="share-social-outline" size={22} color="#000" />
+          </TouchableOpacity>
+
+          <View style={styles.info}>
+            <Text style={styles.etiqueta}>{item.tipo}</Text>
+            <Text style={styles.nombre}>{item.nombre}</Text>
+            <Text style={styles.descripcion}>{item.descripcion}</Text>
+            <View style={styles.infoFila}>
+              <Ionicons name="calendar-outline" size={16} color="#777" />
+              <Text style={styles.infoTexto}>
+                {new Date(item.fecha_ini).toLocaleDateString()} →{' '}
+                {new Date(item.fecha_fin).toLocaleDateString()}
+              </Text>
+            </View>
+            {item.punto?.nombre && (
+              <View style={styles.infoFila}>
+                <Ionicons name="location-outline" size={16} color="#777" />
+                <Text style={styles.infoTexto}>{item.punto.nombre}</Text>
+              </View>
+            )}
+          </View>
         </View>
-      </View>
-    </TouchableOpacity>
-  );
+      </TouchableOpacity>
+    )
+  };
 
   const anchoBoton = Math.min(Dimensions.get('window').width / 4.5, 90);
 
@@ -200,6 +258,18 @@ const PantallaEventos = ({ navigation }) => {
         </ScrollView>
       </View>
 
+          {rangoFiltro.start && rangoFiltro.end && (
+            <View style={styles.filtroRangoActivo}>
+              <Text style={styles.filtroRangoTexto}>
+                {rangoFiltro.start.toLocaleDateString()} → {rangoFiltro.end.toLocaleDateString()}
+              </Text>
+
+              <TouchableOpacity onPress={() => setRangoFiltro({ start: null, end: null })}>
+                <Ionicons name="close-circle" size={20} color="#666" />
+              </TouchableOpacity>
+            </View>
+          )}
+
         {loadingPorTipo || loadingPorNombre ? (
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingTop: 40 }}>
             <ActivityIndicator size="large" color="#ff6347" />
@@ -213,6 +283,7 @@ const PantallaEventos = ({ navigation }) => {
             data={eventosFiltrados}
             renderItem={renderEvento}
             keyExtractor={item => item.id.toString()}
+            extraData={favoritos}
             contentContainerStyle={{ paddingBottom: 60 }}
           />
         )}
@@ -292,6 +363,23 @@ const styles = StyleSheet.create({
   sinResultados: { textAlign: 'center', color: '#666', marginTop: 30 },
   loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   loadingText: { marginTop: 10, color: '#666' },
+  filtroRangoActivo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    backgroundColor: '#eee',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    marginBottom: 12,
+    marginLeft: 4,
+  },
+
+  filtroRangoTexto: {
+    color: '#333 ',
+    fontWeight: '600',
+    marginRight: 6,
+  },
 });
 
 export default PantallaEventos;

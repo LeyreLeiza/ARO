@@ -31,11 +31,12 @@ const MiSelectorRango = ({ visible, onClose, onChangeRange }) => {
     <View style={styles.modalFondo}>
       <View style={[styles.modalContenido, { height: Dimensions.get('window').height * 0.6 }]}>
         <Calendar
-          startDate={rango.startDate ? rango.startDate.toISOString().split('T')[0] : undefined}
-          endDate={rango.endDate ? rango.endDate.toISOString().split('T')[0] : undefined}
+          startDate={rango.startDate ? rango.startDate.toISOString().split('T')[0] : ''}
+          endDate={rango.endDate ? rango.endDate.toISOString().split('T')[0] : ''}
           onChange={({ startDate, endDate }) =>
             setRango({ startDate: new Date(startDate), endDate: new Date(endDate) })
           }
+
           style={{ flex: 1 }}
         />
 
@@ -65,7 +66,7 @@ const styles = StyleSheet.create({
   modalContenido: { backgroundColor: '#fff', borderRadius: 12, padding: 16, width: '90%' },
   textoRango: { marginTop: 10, fontSize: 16, textAlign: 'center' },
   botonesContainer: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 16 },
-  boton: { flex: 1, marginHorizontal: 5, padding: 10, backgroundColor: '#007AFF', borderRadius: 6 },
+  boton: { flex: 1, marginHorizontal: 5, padding: 10, backgroundColor: '#ff6347', borderRadius: 6 },
   botonTexto: { color: '#fff', textAlign: 'center', fontWeight: '600' }
 });
 
