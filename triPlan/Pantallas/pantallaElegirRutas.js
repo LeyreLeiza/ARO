@@ -8,7 +8,13 @@ import { useFocusEffect } from "@react-navigation/native";
 import * as Location from 'expo-location';
 import ListaRutas from "../Funcionalidades/listadoRutas";
 
+// 🔹 Importamos el hook para acceder al tamaño de letra
+import { useFontSize } from '../Componentes/FontSizeContext'; 
+
 export default function PantallaElegirRutas({ navigation }) {
+  // 🔹 Obtenemos el modificador de tamaño de letra del contexto
+  const { fontSizeMod } = useFontSize(); 
+  
   const [searchName, setSearchName] = useState("");
   const [maxDuration, setMaxDuration] = useState("");
 
@@ -96,13 +102,13 @@ export default function PantallaElegirRutas({ navigation }) {
     <View style={styles.container}>
       <View style={styles.filterContainer}>
         <TextInput
-          style={styles.input}
+          style={[styles.input, { fontSize: 16 + fontSizeMod }]} // 🔹 Aplicamos fontSizeMod
           placeholder="Buscar por nombre..."
           value={searchName}
           onChangeText={setSearchName}
         />
         <TextInput
-          style={styles.input}
+          style={[styles.input, { fontSize: 16 + fontSizeMod }]} // 🔹 Aplicamos fontSizeMod
           placeholder="Duración máx. (min)"
           value={maxDuration}
           onChangeText={setMaxDuration}
@@ -115,13 +121,13 @@ export default function PantallaElegirRutas({ navigation }) {
           styles.tipoBoton,
           tipoSeleccionado === 'predeterminadas' && { backgroundColor: '#fff' }]}
           onPress={() => setTipoSeleccionado('predeterminadas')}>
-          <Text style={styles.tipoTexto}>Predeterminadas</Text>
+          <Text style={[styles.tipoTexto, { fontSize: 16 + fontSizeMod }]}>Predeterminadas</Text> {/* 🔹 Aplicamos fontSizeMod */}
         </Pressable>
         <Pressable style={[
           styles.tipoBoton,
           tipoSeleccionado === 'personalizadas' && { backgroundColor: '#fff' }]}
           onPress={() => setTipoSeleccionado('personalizadas')}>
-          <Text style={styles.tipoTexto}>Personalizadas</Text>
+          <Text style={[styles.tipoTexto, { fontSize: 16 + fontSizeMod }]}>Personalizadas</Text> {/* 🔹 Aplicamos fontSizeMod */}
         </Pressable>
       </View>
 
@@ -165,7 +171,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 8,
     marginBottom: 10,
-    fontSize: 16,
+    // fontSize: 16, // 🔹 Eliminado para usar el estilo en línea
   },
   tipos: {
     flexDirection: 'row',
@@ -186,6 +192,6 @@ const styles = StyleSheet.create({
   tipoTexto: {
     color: '#000',
     fontWeight: 'bold',
-    fontSize: 16,
+    // fontSize: 16, // 🔹 Eliminado para usar el estilo en línea
   },
 });

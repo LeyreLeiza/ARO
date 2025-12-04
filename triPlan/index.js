@@ -21,6 +21,8 @@ import CalendarIcon from './assets/CalendarIcon';
 import MapIcon from './assets/MapIcon';
 import SettingsIcon from './assets/SettingsIcon';
 
+// 🔹 IMPORTACIÓN NUEVA: El proveedor de contexto
+import { FontSizeProvider } from './Componentes/FontSizeContext'; 
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator(); 
@@ -85,45 +87,48 @@ const TabNavigation = () => {
 // Navegación general con Login + Tabs
 const NavigationSetup = () => {
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="App">
-        <Stack.Screen 
-          name="App" 
-          component={TabNavigation} 
-          options={{ headerShown: false }} 
-        />
-        <Stack.Screen 
-          name="Login" 
-          component={LoginScreen} 
-          options={{ headerShown: false }} 
-        />
-        <Stack.Screen 
-          name="Register" 
-          component={RegisterScreen} 
-          options={{ headerShown: false }} 
-        />
-        <Stack.Screen 
-          name="Password change" 
-          component={ChangePasswordScreen} 
-          options={{ headerShown: false }} 
-        />
-        <Stack.Screen 
-          name="pantallaRutas" 
-          component={PantallaRutas} 
-          options={{ headerShown: false }} 
-        />
-         <Stack.Screen
-          name="DetalleEvento"
-          component={DetalleEvento}
-          options={{ title: 'Detalle del Evento' }} 
-        />
-        <Stack.Screen
-          name="RutaPersonalizada"
-          component={RutaPersonalizada}
-          options={{ headerShown: false }} 
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    // 🔹 CAMBIO AQUÍ: Envolvemos toda la app con FontSizeProvider
+    <FontSizeProvider>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="App">
+          <Stack.Screen 
+            name="App" 
+            component={TabNavigation} 
+            options={{ headerShown: false }} 
+          />
+          <Stack.Screen 
+            name="Login" 
+            component={LoginScreen} 
+            options={{ headerShown: false }} 
+          />
+          <Stack.Screen 
+            name="Register" 
+            component={RegisterScreen} 
+            options={{ headerShown: false }} 
+          />
+          <Stack.Screen 
+            name="Password change" 
+            component={ChangePasswordScreen} 
+            options={{ headerShown: false }} 
+          />
+          <Stack.Screen 
+            name="pantallaRutas" 
+            component={PantallaRutas} 
+            options={{ headerShown: false }} 
+          />
+           <Stack.Screen
+            name="DetalleEvento"
+            component={DetalleEvento}
+            options={{ title: 'Detalle del Evento' }} 
+          />
+          <Stack.Screen
+            name="RutaPersonalizada"
+            component={RutaPersonalizada}
+            options={{ headerShown: false }} 
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </FontSizeProvider>
   );
 };
 

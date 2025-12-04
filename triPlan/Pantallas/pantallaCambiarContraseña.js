@@ -1,17 +1,34 @@
 import React, { useState, useRef } from "react";
-import { View, Text, TextInput, Image, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, ScrollView, Platform } from "react-native";
+import { 
+  View, 
+  Text, 
+  TextInput, 
+  Image, 
+  TouchableOpacity, 
+  StyleSheet, 
+  Alert, 
+  KeyboardAvoidingView, 
+  ScrollView, 
+  Platform 
+} from "react-native";
 import { cambioContraseñaUsuario } from "../Funcionalidades/busquedaUsuarios";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-// 🔹 Aseguramos que la variable global exista
-global.modLetraValor = global.modLetraValor || 0;
+// 🔹 Importamos el hook para acceder al tamaño de letra
+import { useFontSize } from '../Componentes/FontSizeContext'; 
+
+// Aseguramos que la variable global exista (manteniendo solo idUsuario, ya que el tamaño de letra se mueve al Context)
 global.idUsuario = global.idUsuario || "";
 
 export default function ChangePasswordScreen({ navigation }) {
+  // 🔹 Obtenemos el modificador de tamaño de letra del contexto
+  const { fontSizeMod } = useFontSize(); 
+
   const [vieja_contraseña, setViejaContraseña] = useState("");
   const [nueva_contraseña, setNuevaContraseña] = useState("");
   const nuevaContraseñaRef = useRef();
 
+  // NOTA: Se recomienda usar una modal o mensaje flotante en lugar de Alert para mejorar la UX.
   const handleCambioContraseña = async () => {
     if (!vieja_contraseña.trim()){
       Alert.alert("Campos obligatorios", "Por favor rellene la contraseña anterior");
@@ -45,19 +62,26 @@ export default function ChangePasswordScreen({ navigation }) {
           keyboardShouldPersistTaps="handled"
         >
           <TouchableOpacity style={styles.botonVolver} onPress={volver}>
-            <Text style={[styles.textoVolver, { fontSize: 22 + global.modLetraValor }]}>←</Text>
+            {/* 🔹 Aplicamos fontSizeMod */}
+            <Text style={[styles.textoVolver, { fontSize: 22 + fontSizeMod }]}>←</Text>
           </TouchableOpacity>
 
           <View style={styles.header}>
-            <Text style={[styles.title, { fontSize: 40 + global.modLetraValor }]}>Cambiar contraseña</Text>
+            {/* 🔹 Aplicamos fontSizeMod */}
+            <Text style={[styles.title, { fontSize: 40 + fontSizeMod }]}>Cambiar contraseña</Text>
             <View style={styles.linea}></View>
           </View>
 
           <View style={styles.content}>
-            <Image source={require("../assets/fotoPerfil.png")} style={styles.image} />
+            <Image 
+              // Asegúrate de que esta ruta sea correcta
+              source={require("../assets/fotoPerfil.png")} 
+              style={styles.image} 
+            />
 
             <TextInput
-              style={[styles.input, { fontSize: 16 + global.modLetraValor }]}
+              // 🔹 Aplicamos fontSizeMod
+              style={[styles.input, { fontSize: 16 + fontSizeMod }]}
               placeholder="Contraseña anterior"
               value={vieja_contraseña}
               onChangeText={setViejaContraseña}
@@ -66,7 +90,8 @@ export default function ChangePasswordScreen({ navigation }) {
               onSubmitEditing={() => nuevaContraseñaRef.current.focus()}
             />
             <TextInput
-              style={[styles.input, { fontSize: 16 + global.modLetraValor }]}
+              // 🔹 Aplicamos fontSizeMod
+              style={[styles.input, { fontSize: 16 + fontSizeMod }]}
               ref={nuevaContraseñaRef}
               placeholder="Contraseña nueva"
               value={nueva_contraseña}
@@ -74,7 +99,8 @@ export default function ChangePasswordScreen({ navigation }) {
               secureTextEntry
             />
             <TouchableOpacity style={styles.button} onPress={handleCambioContraseña}>
-              <Text style={[styles.buttonText, { fontSize: 24 + global.modLetraValor }]}>Cambiar</Text>
+              {/* 🔹 Aplicamos fontSizeMod */}
+              <Text style={[styles.buttonText, { fontSize: 24 + fontSizeMod }]}>Cambiar</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -117,6 +143,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     backgroundColor: "#1e3a8a",
     borderRadius: 8,
+    zIndex: 10, // Para asegurar que esté por encima de otros elementos
   },
   textoVolver: { color: "#fff", fontWeight: "600" },
 });

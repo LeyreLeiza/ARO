@@ -7,14 +7,20 @@ import { useBuscaPuntos, useBuscaPuntosPorNombre } from "../Funcionalidades/busq
 import InformacionPunto from './pantallaEspecificacionPunto';
 import ListaPuntos from "../Funcionalidades/listadoPuntos";
 
+// 🔹 Importamos el hook para acceder al tamaño de letra
+import { useFontSize } from '../Componentes/FontSizeContext'; 
+
 export default function PantallaMapa({ navigation }) {
+  // 🔹 Obtenemos el modificador de tamaño de letra del contexto
+  const { fontSizeMod } = useFontSize(); 
+
   const [search, setSearch] = useState("");
   const [activos, setActivos] = useState(['Todos']);
   const categorias = ['Todos', 'Zonas', 'Monumentos', 'Edificios', 'Gastronomia', 'Zonas verdes', 'Arte', 'Deportes', 'Eventos'];
 
   const [filteredUbis, setFilteredUbis] = useState([]);
   const [puntoSeleccionado, setPuntoSeleccionado] = useState(null);
- 
+  
   const { puntosPorTipo, loadingPorTipo, errorPorTipo } = useBuscaPuntos(activos);
   const { puntosPorNombre, loadingPorNombre, errorPorNombre } = useBuscaPuntosPorNombre(search); 
   
@@ -72,7 +78,8 @@ export default function PantallaMapa({ navigation }) {
           <View style={styles.buscador}>
             <Image style={styles.imagenBusqueda} source={require("../assets/searchIcon.png")} />
             <TextInput
-              style={styles.input}
+              // 🔹 Aplicamos fontSizeMod
+              style={[styles.input, { fontSize: 16 + fontSizeMod }]} 
               value={search}
               onChangeText={handleSearch} 
               placeholder="Buscar ubicacion..."
@@ -91,7 +98,14 @@ export default function PantallaMapa({ navigation }) {
                 onPress={() => toggleCategoria(cat)}
                 style={[styles.boton, activos.includes(cat) && styles.botonActivo]}
               >
-                <Text style={[styles.textoBoton, activos.includes(cat) && styles.textoBotonActivo]}>
+                <Text 
+                  style={[
+                    styles.textoBoton, 
+                    activos.includes(cat) && styles.textoBotonActivo,
+                    // 🔹 Aplicamos fontSizeMod
+                    { fontSize: 14 + fontSizeMod } 
+                  ]}
+                >
                   {cat}
                 </Text>
               </TouchableOpacity>
@@ -148,8 +162,9 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderRadius: 10,
     backgroundColor: '#e8e8e8ff',
-    fontSize: 16,
-    marginRight: 10,      
+    // 🔹 Se elimina el fontSize fijo de aquí para que solo se use el del estilo en línea
+    // fontSize: 16, 
+    marginRight: 10,       
     maxWidth: "85%",      
   },
   scrollBotones: {
@@ -169,7 +184,8 @@ const styles = StyleSheet.create({
     borderColor: '#357ABD',
   },
   textoBoton: {
-    fontSize: 14,
+    // 🔹 Se elimina el fontSize fijo de aquí para que solo se use el del estilo en línea
+    // fontSize: 14, 
   },
   textoBotonActivo: {
     color: '#fff',

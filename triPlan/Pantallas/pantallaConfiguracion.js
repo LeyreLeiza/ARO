@@ -3,11 +3,14 @@ import Layout from '../Componentes/layout';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 
-// 🔹 Variables globales compartidas
+// 🔹 1. IMPORTAR EL HOOK DEL CONTEXTO (IMPORTANTE)
+// Asegúrate de que la ruta '../Context/FontSizeContext' sea correcta según tu estructura de carpetas
+import { useFontSize } from '../Componentes/FontSizeContext';
+
+// Variables globales (se mantienen por compatibilidad si las usas en otro lado fuera de React)
 global.usuarioLogueado = global.usuarioLogueado || false;
 global.nombreUsuario = global.nombreUsuario || "";
 global.idUsuario = global.idUsuario || "";
-global.modLetraValor = global.modLetraValor || 0; // Tamaño de letra global
 
 function BotonPersonalizado({ texto, color, onPress, icono, fontSize }) {
   return (
@@ -27,12 +30,13 @@ export default function PantallaConfiguracion({ navigation }) {
   const [estadoUsuario, setEstadoUsuario] = useState(global.usuarioLogueado);
   const [nombre, setNombre] = useState(global.nombreUsuario);
 
-  // 🔹 Estado local para tamaño de letra
-  const [modLetraValor, setModLetraValor] = useState(global.modLetraValor);
+  // 🔹 2. USAR EL HOOK DENTRO DEL COMPONENTE
+  // Esto nos da acceso a la variable 'fontSizeMod' y a la función 'cambiarTamano'
+  const { fontSizeMod, cambiarTamano } = useFontSize();
 
   const baseSizes = { login: 20, register: 20, password: 20, cerrar: 20 };
 
-  // 🔹 Refresca datos de usuario cada medio segundo
+  // Refresca datos de usuario cada medio segundo (para login/logout)
   useEffect(() => {
     const interval = setInterval(() => {
       setEstadoUsuario(global.usuarioLogueado);
@@ -40,12 +44,6 @@ export default function PantallaConfiguracion({ navigation }) {
     }, 500);
     return () => clearInterval(interval);
   }, []);
-
-  // 🔹 Función para actualizar tamaño de letra
-  const cambiarTamanioLetra = (valor) => {
-    global.modLetraValor = valor;   // actualizamos global
-    setModLetraValor(valor);        // actualizamos estado local para re-render
-  };
 
   return (
     <Layout navigation={navigation}>
@@ -58,7 +56,8 @@ export default function PantallaConfiguracion({ navigation }) {
               color="#4A90E2"
               onPress={() => navigation.navigate('Login')}
               icono="sign-in-alt"
-              fontSize={baseSizes.login + modLetraValor}
+              // Usamos fontSizeMod del contexto
+              fontSize={baseSizes.login + fontSizeMod} 
             />
 
             <BotonPersonalizado
@@ -66,7 +65,7 @@ export default function PantallaConfiguracion({ navigation }) {
               color="#4cd2b5ff"
               onPress={() => navigation.navigate('Register')}
               icono="user-plus"
-              fontSize={baseSizes.register + modLetraValor}
+              fontSize={baseSizes.register + fontSizeMod}
             />
           </>
         )}
@@ -75,7 +74,7 @@ export default function PantallaConfiguracion({ navigation }) {
         {estadoUsuario && (
           <>
             <View style={styles.saludoBox}>
-              <Text style={[styles.saludoTexto, { fontSize: 16 + modLetraValor }]}>
+              <Text style={[styles.saludoTexto, { fontSize: 16 + fontSizeMod }]}>
                 Hola: <Text style={{ fontWeight: 'bold', color: '#1e3a8a' }}>{nombre}</Text>
               </Text>
             </View>
@@ -86,7 +85,7 @@ export default function PantallaConfiguracion({ navigation }) {
               color="#eba01eff"
               onPress={() => navigation.navigate('Password change')}
               icono="lock"
-              fontSize={baseSizes.password + modLetraValor}
+              fontSize={baseSizes.password + fontSizeMod}
             />
 
             {/* 🔹 Botón Cerrar sesión */}
@@ -100,7 +99,7 @@ export default function PantallaConfiguracion({ navigation }) {
                 alert("Sesión cerrada");
               }}
             >
-              <Text style={[styles.textoBoton, { fontSize: baseSizes.cerrar + modLetraValor }]}>
+              <Text style={[styles.textoBoton, { fontSize: baseSizes.cerrar + fontSizeMod }]}>
                 Cerrar sesión
               </Text>
             </TouchableOpacity>
@@ -110,30 +109,30 @@ export default function PantallaConfiguracion({ navigation }) {
         {/* 🔹 Selector de tamaño de letra */}
         <View style={styles.selectorContainer}>
           <View style={styles.selectorBox}>
-            <Text style={[styles.selectorTitle, { fontSize: 18 + modLetraValor }]}>
+            <Text style={[styles.selectorTitle, { fontSize: 18 + fontSizeMod }]}>
               Selecciona tamaño de letra:
             </Text>
 
             <View style={styles.selectorButtons}>
               <TouchableOpacity
-                style={[styles.selectorButton, modLetraValor === -4 && styles.selectedButton]}
-                onPress={() => cambiarTamanioLetra(-4)}
+                style={[styles.selectorButton, fontSizeMod === -4 && styles.selectedButton]}
+                onPress={() => cambiarTamano(-4)} // 🔹 Usamos la función del contexto
               >
-                <Text style={[styles.selectorText, { fontSize: 14 + modLetraValor }]}>Pequeño</Text>
+                <Text style={[styles.selectorText, { fontSize: 14 + fontSizeMod }]}>Pequeño</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={[styles.selectorButton, modLetraValor === 0 && styles.selectedButton]}
-                onPress={() => cambiarTamanioLetra(0)}
+                style={[styles.selectorButton, fontSizeMod === 0 && styles.selectedButton]}
+                onPress={() => cambiarTamano(0)}
               >
-                <Text style={[styles.selectorText, { fontSize: 14 + modLetraValor }]}>Medio</Text>
+                <Text style={[styles.selectorText, { fontSize: 14 + fontSizeMod }]}>Medio</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={[styles.selectorButton, modLetraValor === 4 && styles.selectedButton]}
-                onPress={() => cambiarTamanioLetra(4)}
+                style={[styles.selectorButton, fontSizeMod === 4 && styles.selectedButton]}
+                onPress={() => cambiarTamano(4)}
               >
-                <Text style={[styles.selectorText, { fontSize: 14 + modLetraValor }]}>Grande</Text>
+                <Text style={[styles.selectorText, { fontSize: 14 + fontSizeMod }]}>Grande</Text>
               </TouchableOpacity>
             </View>
           </View>
