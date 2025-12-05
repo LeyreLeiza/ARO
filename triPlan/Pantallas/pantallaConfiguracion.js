@@ -2,14 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import Layout from '../Componentes/layout';
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Animated, LayoutAnimation, Platform, UIManager, Switch, Alert } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
+import { useFontSize } from '../Componentes/FontSizeContext'; 
 
 // 🔹 Variables globales compartidas
 global.usuarioLogueado = global.usuarioLogueado || false;
 global.nombreUsuario = global.nombreUsuario || "";
 global.idUsuario = global.idUsuario || "";
 global.emailUsuario = global.emailUsuario || "";
-global.modLetraValor = global.modLetraValor || 0; // Tamaño de letra global
-
 const isFabric = global.nativeFabricUIManager != null;
 
 if (Platform.OS === 'android' && !isFabric) {
@@ -58,7 +57,7 @@ export default function PantallaConfiguracion({ navigation }) {
   const [estadoUsuario, setEstadoUsuario] = useState(global.usuarioLogueado);
   const [nombre, setNombre] = useState(global.nombreUsuario);
   const [email, setEmail] = useState(global.emailUsuario);
-  const [modLetraValor, setModLetraValor] = useState(global.modLetraValor);
+  const { fontSizeMod, cambiarTamano } = useFontSize();
   const [isFontAccordionOpen, setIsFontAccordionOpen] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
 
@@ -74,11 +73,6 @@ export default function PantallaConfiguracion({ navigation }) {
     return () => clearInterval(interval);
   }, []);
 
-  // 🔹 Función para actualizar tamaño de letra
-  const cambiarTamanioLetra = (valor) => {
-    global.modLetraValor = valor;
-    setModLetraValor(valor);
-  };
 
   const toggleFontAccordion = () => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -112,13 +106,13 @@ export default function PantallaConfiguracion({ navigation }) {
             <View style={styles.profileInfo}>
               {estadoUsuario ? (
                 <>
-                  <Text style={[styles.profileName, { fontSize: 18 + modLetraValor }]}>{nombre}</Text>
-                  <Text style={[styles.profileEmail, { fontSize: 14 + modLetraValor }]}>{email || "Usuario registrado"}</Text>
+                  <Text style={[styles.profileName, { fontSize: 18 + fontSizeMod  }]}>{nombre}</Text>
+                  <Text style={[styles.profileEmail, { fontSize: 14 + fontSizeMod  }]}>{email || "Usuario registrado"}</Text>
                 </>
               ) : (
                 <>
-                  <Text style={[styles.profileName, { fontSize: 18 + modLetraValor }]}>Invitado</Text>
-                  <Text style={[styles.profileEmail, { fontSize: 14 + modLetraValor }]}>Inicia sesión para más opciones</Text>
+                  <Text style={[styles.profileName, { fontSize: 18 + fontSizeMod  }]}>Invitado</Text>
+                  <Text style={[styles.profileEmail, { fontSize: 14 + fontSizeMod  }]}>Inicia sesión para más opciones</Text>
                 </>
               )}
             </View>
@@ -126,7 +120,7 @@ export default function PantallaConfiguracion({ navigation }) {
         </View>
 
         {/* 🔹 Configuración General */}
-        <Text style={[styles.sectionTitle, { fontSize: 14 + modLetraValor }]}>GENERAL</Text>
+        <Text style={[styles.sectionTitle, { fontSize: 14 + fontSizeMod  }]}>GENERAL</Text>
 
         <View style={styles.card}>
           {/* Acordeón de Tamaño de Letra */}
@@ -135,7 +129,7 @@ export default function PantallaConfiguracion({ navigation }) {
               <View style={[styles.iconContainer, { backgroundColor: '#e3f2fd' }]}>
                 <FontAwesome5 name="text-height" size={18} color="#1976d2" />
               </View>
-              <Text style={[styles.optionText, { fontSize: baseFontSize + modLetraValor }]}>Tamaño de letra</Text>
+              <Text style={[styles.optionText, { fontSize: baseFontSize + fontSizeMod  }]}>Tamaño de letra</Text>
             </View>
             <FontAwesome5 name={isFontAccordionOpen ? "chevron-up" : "chevron-down"} size={14} color="#ccc" />
           </TouchableOpacity>
@@ -144,26 +138,26 @@ export default function PantallaConfiguracion({ navigation }) {
             <View style={styles.accordionContent}>
               <View style={styles.fontSelector}>
                 <TouchableOpacity
-                  style={[styles.fontBtn, modLetraValor === -4 && styles.fontBtnSelected]}
-                  onPress={() => cambiarTamanioLetra(-4)}
+                  style={[styles.fontBtn, fontSizeMod  === -4 && styles.fontBtnSelected]}
+                  onPress={() => cambiarTamano(-4)}
                 >
-                  <Text style={[styles.fontBtnText, modLetraValor === -4 && styles.fontBtnTextSelected]}>A</Text>
+                  <Text style={[styles.fontBtnText, fontSizeMod  === -4 && styles.fontBtnTextSelected]}>A</Text>
                   <Text style={styles.fontLabel}>Pequeño</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  style={[styles.fontBtn, modLetraValor === 0 && styles.fontBtnSelected]}
-                  onPress={() => cambiarTamanioLetra(0)}
+                  style={[styles.fontBtn, fontSizeMod  === 0 && styles.fontBtnSelected]}
+                  onPress={() => cambiarTamano(0)}
                 >
-                  <Text style={[styles.fontBtnText, { fontSize: 18 }, modLetraValor === 0 && styles.fontBtnTextSelected]}>A</Text>
+                  <Text style={[styles.fontBtnText, { fontSize: 18 }, fontSizeMod  === 0 && styles.fontBtnTextSelected]}>A</Text>
                   <Text style={styles.fontLabel}>Medio</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  style={[styles.fontBtn, modLetraValor === 4 && styles.fontBtnSelected]}
-                  onPress={() => cambiarTamanioLetra(4)}
+                  style={[styles.fontBtn, fontSizeMod  === 4 && styles.fontBtnSelected]}
+                  onPress={() => cambiarTamano(4)}
                 >
-                  <Text style={[styles.fontBtnText, { fontSize: 22 }, modLetraValor === 4 && styles.fontBtnTextSelected]}>A</Text>
+                  <Text style={[styles.fontBtnText, { fontSize: 22 }, fontSizeMod  === 4 && styles.fontBtnTextSelected]}>A</Text>
                   <Text style={styles.fontLabel}>Grande</Text>
                 </TouchableOpacity>
               </View>
@@ -172,14 +166,14 @@ export default function PantallaConfiguracion({ navigation }) {
         </View>
 
         {/* 🔹 Preferencias */}
-        <Text style={[styles.sectionTitle, { fontSize: 14 + modLetraValor }]}>PREFERENCIAS</Text>
+        <Text style={[styles.sectionTitle, { fontSize: 14 + fontSizeMod  }]}>PREFERENCIAS</Text>
         <View style={styles.card}>
           <SwitchItem
             icon="bell"
             text="Notificaciones"
             value={notificationsEnabled}
             onValueChange={setNotificationsEnabled}
-            fontSize={baseFontSize + modLetraValor}
+            fontSize={baseFontSize + fontSizeMod }
           />
           <View style={styles.divider} />
           <OptionItem
@@ -187,12 +181,12 @@ export default function PantallaConfiguracion({ navigation }) {
             text="Idioma"
             rightText="Español"
             onPress={() => showInfoAlert("Idioma")}
-            fontSize={baseFontSize + modLetraValor}
+            fontSize={baseFontSize + fontSizeMod }
           />
         </View>
 
         {/* 🔹 Acciones de Cuenta */}
-        <Text style={[styles.sectionTitle, { fontSize: 14 + modLetraValor }]}>CUENTA</Text>
+        <Text style={[styles.sectionTitle, { fontSize: 14 + fontSizeMod  }]}>CUENTA</Text>
         <View style={styles.card}>
           {!estadoUsuario ? (
             <>
@@ -200,14 +194,14 @@ export default function PantallaConfiguracion({ navigation }) {
                 icon="sign-in-alt"
                 text="Iniciar sesión"
                 onPress={() => navigation.navigate('Login')}
-                fontSize={baseFontSize + modLetraValor}
+                fontSize={baseFontSize + fontSizeMod }
               />
               <View style={styles.divider} />
               <OptionItem
                 icon="user-plus"
                 text="Registrarse"
                 onPress={() => navigation.navigate('Register')}
-                fontSize={baseFontSize + modLetraValor}
+                fontSize={baseFontSize + fontSizeMod }
               />
             </>
           ) : (
@@ -216,14 +210,14 @@ export default function PantallaConfiguracion({ navigation }) {
                 icon="lock"
                 text="Cambiar contraseña"
                 onPress={() => navigation.navigate('Password change')}
-                fontSize={baseFontSize + modLetraValor}
+                fontSize={baseFontSize + fontSizeMod }
               />
               <View style={styles.divider} />
               <OptionItem
                 icon="sign-out-alt"
                 text="Cerrar sesión"
                 onPress={handleLogout}
-                fontSize={baseFontSize + modLetraValor}
+                fontSize={baseFontSize + fontSizeMod }
                 isDestructive={true}
                 showChevron={false}
               />
@@ -232,20 +226,20 @@ export default function PantallaConfiguracion({ navigation }) {
         </View>
 
         {/* 🔹 Información */}
-        <Text style={[styles.sectionTitle, { fontSize: 14 + modLetraValor }]}>INFORMACIÓN</Text>
+        <Text style={[styles.sectionTitle, { fontSize: 14 + fontSizeMod  }]}>INFORMACIÓN</Text>
         <View style={styles.card}>
           <OptionItem
             icon="file-alt"
             text="Términos y Condiciones"
             onPress={() => showInfoAlert("Términos y Condiciones")}
-            fontSize={baseFontSize + modLetraValor}
+            fontSize={baseFontSize + fontSizeMod }
           />
           <View style={styles.divider} />
           <OptionItem
             icon="shield-alt"
             text="Política de Privacidad"
             onPress={() => showInfoAlert("Política de Privacidad")}
-            fontSize={baseFontSize + modLetraValor}
+            fontSize={baseFontSize + fontSizeMod }
           />
           <View style={styles.divider} />
           <View style={styles.optionItem}>
@@ -253,9 +247,9 @@ export default function PantallaConfiguracion({ navigation }) {
               <View style={[styles.iconContainer, { backgroundColor: '#f5f5f5' }]}>
                 <FontAwesome5 name="info" size={18} color="#757575" />
               </View>
-              <Text style={[styles.optionText, { fontSize: baseFontSize + modLetraValor }]}>Versión</Text>
+              <Text style={[styles.optionText, { fontSize: baseFontSize + fontSizeMod  }]}>Versión</Text>
             </View>
-            <Text style={[styles.rightText, { fontSize: 14 + modLetraValor }]}>v1.0.0</Text>
+            <Text style={[styles.rightText, { fontSize: 14 + fontSizeMod  }]}>v1.0.0</Text>
           </View>
         </View>
 

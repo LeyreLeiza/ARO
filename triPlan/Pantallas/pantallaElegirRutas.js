@@ -121,13 +121,13 @@ export default function PantallaElegirRutas({ navigation }) {
           styles.tipoBoton,
           tipoSeleccionado === 'predeterminadas' && { backgroundColor: '#fff' }]}
           onPress={() => setTipoSeleccionado('predeterminadas')}>
-          <Text style={[styles.tipoTexto, { fontSize: 16 + fontSizeMod }]}>Predeterminadas</Text> {/* 🔹 Aplicamos fontSizeMod */}
+          <Text style={[styles.tipoTexto, { fontSize: 16 + fontSizeMod }]}>Predeterminadas</Text>
         </Pressable>
         <Pressable style={[
           styles.tipoBoton,
           tipoSeleccionado === 'personalizadas' && { backgroundColor: '#fff' }]}
           onPress={() => setTipoSeleccionado('personalizadas')}>
-          <Text style={[styles.tipoTexto, { fontSize: 16 + fontSizeMod }]}>Personalizadas</Text> {/* 🔹 Aplicamos fontSizeMod */}
+          <Text style={[styles.tipoTexto, { fontSize: 16 + fontSizeMod }]}>Personalizadas</Text>
         </Pressable>
       </View>
 
