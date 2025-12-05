@@ -4,10 +4,16 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 import { obtenerRutaOSRM, generarRutaConCalles, ordenarRutaPorDistancia } from '../Funcionalidades/mapaHelpers';
 
+// 🔹 Importamos el contexto
+import { useFontSize } from '../Componentes/FontSizeContext';
+
 const { height } = Dimensions.get('window');
 
 export default function DetalleRutaModal({ visible, onClose, ruta, onStartRoute, isCustom, onDelete }) {
     const [totalDuration, setTotalDuration] = useState(null);
+
+    // 🔹 Obtenemos el modificador de tamaño de letra
+    const { fontSizeMod } = useFontSize();
 
     useEffect(() => {
         if (visible && ruta && ruta.puntos_interes && ruta.puntos_interes.length > 0) {
@@ -31,13 +37,10 @@ export default function DetalleRutaModal({ visible, onClose, ruta, onStartRoute,
                         longitude: location.coords.longitude
                     };
 
-                    // 1. Order points by distance from user
                     const orden = ordenarRutaPorDistancia(userLoc, ruta.puntos_interes);
 
-                    // 2. Calculate full route duration (User -> Point 1 -> ... -> Point N)
                     const { totalDuration: durationInSeconds } = await generarRutaConCalles(userLoc, orden);
 
-                    // 3. Convert to minutes
                     const durationInMinutes = Math.round(durationInSeconds / 60);
 
                     setTotalDuration(durationInMinutes);
@@ -64,39 +67,38 @@ export default function DetalleRutaModal({ visible, onClose, ruta, onStartRoute,
         >
             <View style={styles.modalOverlay}>
                 <View style={styles.modalContent}>
-                    {/* Close Button */}
                     <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-                        <Ionicons name="close" size={24} color="#666" />
+                        <Ionicons name="close" size={24 + fontSizeMod} color="#666" />
                     </TouchableOpacity>
 
                     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
                         {/* Header */}
-                        <Text style={styles.title}>{ruta.nombre}</Text>
-                        <Text style={styles.description}>{ruta.descripcion}</Text>
+                        <Text style={[styles.title, { fontSize: 22 + fontSizeMod }]}>{ruta.nombre}</Text>
+                        <Text style={[styles.description, { fontSize: 14 + fontSizeMod }]}>{ruta.descripcion}</Text>
 
                         {/* Stats Row */}
                         <View style={styles.statsRow}>
                             <View style={styles.statCard}>
-                                <Ionicons name="time-outline" size={24} color="#4A90E2" />
-                                <Text style={styles.statLabel}>Duración Total</Text>
-                                <Text style={styles.statValue}>{totalDuration !== null ? totalDuration : '-'} min</Text>
+                                <Ionicons name="time-outline" size={24 + fontSizeMod} color="#4A90E2" />
+                                <Text style={[styles.statLabel, { fontSize: 12 + fontSizeMod }]}>Duración Total</Text>
+                                <Text style={[styles.statValue, { fontSize: 16 + fontSizeMod }]}>{totalDuration !== null ? totalDuration : '-'} min</Text>
                             </View>
                             <View style={styles.statCard}>
-                                <Ionicons name="location-outline" size={24} color="#4A90E2" />
-                                <Text style={styles.statLabel}>Paradas</Text>
-                                <Text style={styles.statValue}>{paradas}</Text>
+                                <Ionicons name="location-outline" size={24 + fontSizeMod} color="#4A90E2" />
+                                <Text style={[styles.statLabel, { fontSize: 12 + fontSizeMod }]}>Paradas</Text>
+                                <Text style={[styles.statValue, { fontSize: 16 + fontSizeMod }]}>{paradas}</Text>
                             </View>
                         </View>
 
                         {/* Points List */}
-                        <Text style={styles.sectionTitle}>Puntos de la ruta</Text>
+                        <Text style={[styles.sectionTitle, { fontSize: 16 + fontSizeMod }]}>Puntos de la ruta</Text>
                         <View style={styles.pointsList}>
                             {ruta.puntos_interes && ruta.puntos_interes.map((punto, index) => (
                                 <View key={punto.id || index} style={styles.pointItem}>
                                     <View style={styles.pointBadge}>
-                                        <Text style={styles.pointIndex}>{index + 1}</Text>
+                                        <Text style={[styles.pointIndex, { fontSize: 14 + fontSizeMod }]}>{index + 1}</Text>
                                     </View>
-                                    <Text style={styles.pointName}>{punto.nombre}</Text>
+                                    <Text style={[styles.pointName, { fontSize: 16 + fontSizeMod }]}>{punto.nombre}</Text>
                                 </View>
                             ))}
                         </View>
@@ -107,14 +109,14 @@ export default function DetalleRutaModal({ visible, onClose, ruta, onStartRoute,
                         {isCustom && (
                             <View style={styles.actionButtons}>
                                 <TouchableOpacity style={[styles.actionButton, styles.deleteButton]} onPress={onDelete}>
-                                    <Ionicons name="trash-outline" size={20} color="white" />
-                                    <Text style={styles.actionButtonText}>Eliminar</Text>
+                                    <Ionicons name="trash-outline" size={20 + fontSizeMod} color="white" />
+                                    <Text style={[styles.actionButtonText, { fontSize: 16 + fontSizeMod }]}>Eliminar</Text>
                                 </TouchableOpacity>
                             </View>
                         )}
                         <TouchableOpacity style={styles.startButton} onPress={onStartRoute}>
-                            <Ionicons name="navigate" size={20} color="white" style={{ marginRight: 10 }} />
-                            <Text style={styles.startButtonText}>Iniciar Ruta</Text>
+                            <Ionicons name="navigate" size={20 + fontSizeMod} color="white" style={{ marginRight: 10 }} />
+                            <Text style={[styles.startButtonText, { fontSize: 18 + fontSizeMod }]}>Iniciar Ruta</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -133,7 +135,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
-        height: height * 0.85, // Occupy 85% of screen
+        height: height * 0.85,
         padding: 20,
         paddingBottom: 30,
     },
@@ -142,16 +144,14 @@ const styles = StyleSheet.create({
         padding: 5,
     },
     scrollContent: {
-        paddingBottom: 80, // Space for footer
+        paddingBottom: 80,
     },
     title: {
-        fontSize: 22,
         fontWeight: 'bold',
         color: '#333',
         marginBottom: 8,
     },
     description: {
-        fontSize: 14,
         color: '#666',
         marginBottom: 20,
         lineHeight: 20,
@@ -170,35 +170,19 @@ const styles = StyleSheet.create({
         marginHorizontal: 5,
     },
     statLabel: {
-        fontSize: 12,
         color: '#888',
         marginTop: 5,
     },
     statValue: {
-        fontSize: 16,
         fontWeight: 'bold',
         color: '#333',
         marginTop: 2,
     },
     sectionTitle: {
-        fontSize: 16,
         fontWeight: '600',
         color: '#666',
         marginBottom: 10,
         marginTop: 10,
-    },
-    difficultyTag: {
-        backgroundColor: '#E8F0FE',
-        paddingHorizontal: 12,
-        paddingVertical: 6,
-        borderRadius: 20,
-        alignSelf: 'flex-start',
-        marginBottom: 10,
-    },
-    difficultyText: {
-        color: '#1A73E8',
-        fontWeight: '600',
-        fontSize: 14,
     },
     pointsList: {
         marginTop: 5,
@@ -222,10 +206,8 @@ const styles = StyleSheet.create({
     pointIndex: {
         color: 'white',
         fontWeight: 'bold',
-        fontSize: 14,
     },
     pointName: {
-        fontSize: 16,
         color: '#333',
     },
     footer: {
@@ -235,7 +217,7 @@ const styles = StyleSheet.create({
         right: 20,
     },
     startButton: {
-        backgroundColor: '#000', // Black as in design
+        backgroundColor: '#000',
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
@@ -249,7 +231,6 @@ const styles = StyleSheet.create({
     },
     startButtonText: {
         color: 'white',
-        fontSize: 18,
         fontWeight: 'bold',
     },
     actionButtons: {
@@ -271,7 +252,6 @@ const styles = StyleSheet.create({
     },
     actionButtonText: {
         color: 'white',
-        fontSize: 16,
         fontWeight: 'bold',
         marginLeft: 5,
     },

@@ -1,23 +1,35 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { StyleSheet, Text, View, Image, FlatList, ActivityIndicator, Pressable } from 'react-native'; 
 import { Ionicons } from '@expo/vector-icons'; 
+
+// 🔹 Importamos el contexto
+import { useFontSize } from '../Componentes/FontSizeContext';
 
 const imagenUbicacion = require("../assets/simboloUbicacion.png");
 
 export default function ListaPuntos({ filteredUbis, loading, error, onSelect }) {
+    const { fontSizeMod } = useFontSize(); // 🔹 Obtenemos el modificador de tamaño
+
+    const handlePress = (item) => {
+        if(onSelect){
+            onSelect(item); // Esto manda el punto seleccionado al padre
+        } 
+    };
+
     const renderItem = ({ item }) => (
-          <Pressable onPress={() => handlePress(item)}>
+        <Pressable onPress={() => handlePress(item)}>
             <View style={styles.caja}>
                 <View style={styles.row}>
                     <Image style={styles.imagenUbi} source={imagenUbicacion} />
                     <View style={styles.textContainer}>
-                    <Text style={styles.titulo}>{item.nombre}</Text>
-                    <Text style={styles.tipo}>{item.tipo}</Text>
+                        <Text style={[styles.titulo, { fontSize: 16 + fontSizeMod }]}>{item.nombre}</Text>
+                        <Text style={[styles.tipo, { fontSize: 14 + fontSizeMod }]}>{item.tipo}</Text>
                     </View>
                     <View style={styles.iconContainer}>
                         <Ionicons
                             name={'chevron-down'}
-                            style={styles.icono} size={25}
+                            style={styles.icono} 
+                            size={25 + fontSizeMod} 
                         />
                     </View>
                 </View>
@@ -25,24 +37,17 @@ export default function ListaPuntos({ filteredUbis, loading, error, onSelect }) 
         </Pressable>
     );
 
-    const handlePress = (item) => {
-      if(onSelect){
-        onSelect(item); // Esto manda el punto seleccionado al padre
-      } 
-    };
-
-
-
     if (loading) {
         return (
             <View style={{ padding: 10, alignItems: 'center' }}>
                 <ActivityIndicator size="large" color="#333" />
-                <Text style={{ fontSize: 16, fontWeight: '700', color: '#333'}}>Cargando datos...</Text>
-            </View>);
+                <Text style={{ fontSize: 16 + fontSizeMod, fontWeight: '700', color: '#333'}}>Cargando datos...</Text>
+            </View>
+        );
     } else if (error) {
         return (
             <View style={{ padding: 20, alignItems: 'center' }}>
-                <Text style={{ fontSize: 16, fontWeight: '700', color: 'red' }}>Error: {error}</Text>
+                <Text style={{ fontSize: 16 + fontSizeMod, fontWeight: '700', color: 'red' }}>Error: {error}</Text>
             </View>
         );
     } else {
@@ -52,14 +57,13 @@ export default function ListaPuntos({ filteredUbis, loading, error, onSelect }) 
                 keyExtractor={(item) => item.id}
                 renderItem={renderItem}
                 ListEmptyComponent={
-                <View style={{ padding: 20, alignItems: 'center' }}>
-                    <Text style={{ color: '#777', fontSize: 16 }}>No se encontraron ubicaciones</Text>
-                </View>
+                    <View style={{ padding: 20, alignItems: 'center' }}>
+                        <Text style={{ color: '#777', fontSize: 16 + fontSizeMod }}>No se encontraron ubicaciones</Text>
+                    </View>
                 }
             />
         );
-    }
-            
+    }        
 }
 
 const styles = StyleSheet.create({
@@ -90,7 +94,6 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   titulo: {
-    fontSize: 16,
     fontWeight: '700',
     color: '#333',
     flexWrap: 'wrap',
@@ -98,7 +101,6 @@ const styles = StyleSheet.create({
   },
   tipo: {
     color: '#555',
-    fontSize: 14,
   },
   descripcion: {
     fontSize: 12,

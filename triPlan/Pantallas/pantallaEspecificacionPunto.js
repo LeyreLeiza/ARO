@@ -1,12 +1,16 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity } from 'react-native';
+// 🔹 Importamos el contexto
+import { useFontSize } from '../Componentes/FontSizeContext';
 
 export default function InformacionPunto({ punto, onBack }) {
+  const { fontSizeMod } = useFontSize(); // 🔹 Obtenemos el modificador de tamaño
+
   return (
     <View style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.container}>
         <TouchableOpacity style={styles.botonVolver} onPress={() => onBack()}>
-          <Text style={styles.botonTexto}>←</Text>
+          <Text style={[styles.botonTexto, { fontSize: 16 + fontSizeMod }]}>←</Text>
         </TouchableOpacity>
 
         {punto.imagen ? (
@@ -16,12 +20,14 @@ export default function InformacionPunto({ punto, onBack }) {
         ) : null}
 
         <View style={styles.textosContainer}>
-          <Text style={styles.titulo}>{punto.nombre}</Text>
-          <Text style={styles.tipo}>{punto.tipo}</Text>
+          <Text style={[styles.titulo, { fontSize: 28 + fontSizeMod }]}>{punto.nombre}</Text>
+          <Text style={[styles.tipo, { fontSize: 18 + fontSizeMod }]}>{punto.tipo}</Text>
         </View>
 
         <View style={styles.descripcionContainer}>
-          <Text style={styles.descripcion}>{punto.descripcion}</Text>
+          <Text style={[styles.descripcion, { fontSize: 16 + fontSizeMod, lineHeight: 24 + fontSizeMod }]}>
+            {punto.descripcion}
+          </Text>
         </View>
       </ScrollView>
     </View>
@@ -52,7 +58,6 @@ const styles = StyleSheet.create({
   botonTexto: {
     color: '#fff',
     fontWeight: '700',
-    fontSize: 16,
   },
 
   imagenContainer: {
@@ -78,7 +83,6 @@ const styles = StyleSheet.create({
   },
 
   titulo: {
-    fontSize: 28,
     fontWeight: '900',
     color: '#0b1d5d', 
     textAlign: 'center',
@@ -86,7 +90,6 @@ const styles = StyleSheet.create({
   },
 
   tipo: {
-    fontSize: 18,
     fontWeight: '600',
     color: '#4b5563', 
     textAlign: 'center',
@@ -104,9 +107,7 @@ const styles = StyleSheet.create({
   },
 
   descripcion: {
-    fontSize: 16,
     color: '#000', // texto negro
-    lineHeight: 24,
     textAlign: 'justify',
   },
 });
