@@ -45,7 +45,16 @@ function getMarkerImage(tipo) {
 }
 
 export default function Mapa({ ubicaciones = [], onSelectPunto }) {
-  const lastPointId = useRef(null); // 👉 RECORDAR EL ÚLTIMO PUNTO
+  const lastPointId = useRef(null);
+  const mapRef = useRef(null); // Para centrar el mapa programáticamente si se necesita
+
+  // Punto de referencia fijo (solo para centrar el mapa)
+  const puntoReferencia = {
+    latitude: 42.81692327976999,
+    longitude: -1.642821055102835,
+    latitudeDelta: 0.01,
+    longitudeDelta: 0.01,
+  };
 
   useEffect(() => {
     (async () => {
@@ -73,13 +82,12 @@ export default function Mapa({ ubicaciones = [], onSelectPunto }) {
 
           if (!nearest) return;
 
-          // 👉 Cambiar el número para ajustar la distancia
-          const DISTANCIA_ACTIVACION = 20; // metros
+          const DISTANCIA_ACTIVACION = 20;
 
-          // ➤ SOLO ENTRA SI TE ACERCAS A UN PUNTO DIFERENTE
-          if (nearest.distance < DISTANCIA_ACTIVACION &&
-              nearest.id !== lastPointId.current) {
-
+          if (
+            nearest.distance < DISTANCIA_ACTIVACION &&
+            nearest.id !== lastPointId.current
+          ) {
             lastPointId.current = nearest.id;
             if (onSelectPunto) onSelectPunto(nearest);
           }
@@ -92,7 +100,13 @@ export default function Mapa({ ubicaciones = [], onSelectPunto }) {
 
   return (
     <View style={styles.container}>
-      <MapView style={styles.map} showsUserLocation>
+      <MapView
+        ref={mapRef}
+        style={styles.map}
+        showsUserLocation
+        initialRegion={puntoReferencia} // 🔹 Centrado al abrir la app
+      >
+        {/* Solo los marcadores de ubicaciones dinámicas */}
         {(ubicaciones || []).map((m) => (
           <Marker
             key={m.id}
@@ -112,5 +126,5 @@ export default function Mapa({ ubicaciones = [], onSelectPunto }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  map: { flex: 1 }
+  map: { flex: 1 },
 });
