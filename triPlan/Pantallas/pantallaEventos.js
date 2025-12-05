@@ -4,8 +4,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { useBuscaEventos, useBuscaEventosPorNombre, obtenerTiposUnicos, obtenerEventosPorRango, añadirEventoFavorito, eliminarEventoFavorito, obtenerEventosFavoritos } from '../Funcionalidades/busquedaEventos';
 import MiSelectorRango from '../Componentes/calendario';
 import { useFocusEffect } from "@react-navigation/native";
+import { useFontSize } from '../Componentes/FontSizeContext';
 
 const PantallaEventos = ({ navigation }) => {
+  const { fontSizeMod } = useFontSize();
   const [busqueda, setBusqueda] = useState('');
   const [tipos, setTipos] = useState(['Todos']);
   const [rangoFiltro, setRangoFiltro] = useState({ start: null, end: null });
@@ -209,12 +211,13 @@ const PantallaEventos = ({ navigation }) => {
           </TouchableOpacity>
 
           <View style={styles.info}>
-            <Text style={styles.etiqueta}>{item.tipo}</Text>
-            <Text style={styles.nombre}>{item.nombre}</Text>
-            <Text style={styles.descripcion}>{item.descripcion}</Text>
+            <Text style={[styles.etiqueta, { fontSize: 12 + fontSizeMod }]}>{item.tipo}</Text>
+            <Text style={[styles.nombre, { fontSize: 16 + fontSizeMod }]}>{item.nombre}</Text>
+            <Text style={[styles.descripcion, { fontSize: 13 + fontSizeMod }]}>{item.descripcion}</Text>
+            
             <View style={styles.infoFila}>
               <Ionicons name="calendar-outline" size={16} color="#777" />
-              <Text style={styles.infoTexto}>
+              <Text style={[styles.infoTexto, { fontSize: 14 + fontSizeMod }]}>
                 {new Date(item.fecha_ini).toLocaleDateString()} →{' '}
                 {new Date(item.fecha_fin).toLocaleDateString()}
               </Text>
@@ -222,7 +225,7 @@ const PantallaEventos = ({ navigation }) => {
             {item.punto?.nombre && (
               <View style={styles.infoFila}>
                 <Ionicons name="location-outline" size={16} color="#777" />
-                <Text style={styles.infoTexto}>{item.punto.nombre}</Text>
+                <Text style={[styles.infoTexto, { fontSize: 14 + fontSizeMod }]}>{item.punto.nombre}</Text>
               </View>
             )}
           </View>
@@ -235,16 +238,18 @@ const PantallaEventos = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.titulo}>Eventos</Text>
-      <Text style={styles.subtitulo}>Descubre eventos cerca de ti</Text>
+      {/* 🔹 APLICANDO EL TAMAÑO DINÁMICO A TÍTULOS */}
+      <Text style={[styles.titulo, { fontSize: 24 + fontSizeMod }]}>Eventos</Text>
+      <Text style={[styles.subtitulo, { fontSize: 14 + fontSizeMod }]}>Descubre eventos cerca de ti</Text>
 
       <View style={styles.buscadorContainer}>
         <Ionicons name="search-outline" size={20} color="#666" style={{ marginRight: 6 }} />
+        {/* 🔹 APLICANDO EL TAMAÑO DINÁMICO AL INPUT */}
         <TextInput
           placeholder="Buscar eventos..."
           value={busqueda}
           onChangeText={handleBusqueda}
-          style={styles.inputBusqueda}
+          style={[styles.inputBusqueda, { fontSize: 14 + fontSizeMod }]}
           placeholderTextColor="#999"
         />
 
@@ -288,13 +293,7 @@ const PantallaEventos = ({ navigation }) => {
               onPress={() => toggleCategoria(tipo)}
               activeOpacity={0.8}
             >
-              <Text
-                style={[
-                  styles.filtroTexto,
-                  tipos.includes(tipo) && styles.filtroTextoActivo
-                ]}
-                numberOfLines={1}
-              >
+              <Text style={[styles.filtroTexto, { fontSize: 14 + fontSizeMod }, tipos.includes(tipo) && styles.filtroTextoActivo]} numberOfLines={1}>
                 {tipo}
               </Text>
             </TouchableOpacity>
@@ -323,15 +322,15 @@ const PantallaEventos = ({ navigation }) => {
           <Text style={styles.sinResultados}>No hay eventos disponibles.</Text>
         ) : (
           <FlatList
-            style={{ flex: 1 }}
-            data={eventosFiltrados}
-            renderItem={renderEvento}
-            keyExtractor={item => (item.id || item.evento_id).toString()}
-            extraData={favoritos}
-            contentContainerStyle={{ paddingBottom: 60 }}
-            refreshing={loadingPorTipo || loadingPorNombre}
-            onRefresh={refrescarTodo}
-          />
+          style={{ flex: 1 }}
+          data={eventosFiltrados}
+          renderItem={renderEvento}
+          keyExtractor={item => (item.id || item.evento_id).toString()}
+          extraData={[favoritos, fontSizeMod]} // 🔹 IMPORTANTE: Agregamos fontSizeMod para forzar re-render de la lista
+          contentContainerStyle={{ paddingBottom: 60 }}
+          refreshing={loadingPorTipo || loadingPorNombre}
+          onRefresh={refrescarTodo}
+        />
         )}
     </View>
   );
