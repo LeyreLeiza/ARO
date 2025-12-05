@@ -67,12 +67,17 @@ export default function PantallaRutas({ navigation, route }) {
 
   const handleMarkersUpdate = (markers) => setPuntosRutas(markers);
 
+  const handlePoiDetected = (punto) => {
+    setPuntoSeleccionado(punto);
+  };
+
   const handleExitRoute = () => {
     navigation.setParams({ ruta: null });
     haCargadoRuta.current = false;
     setUbicaciones(puntosPorTipo);
     setNavigationSteps([]);
     setErrorRuta(null);
+    setPuntoSeleccionado(null);
     navigation.goBack();
   };
 
@@ -107,6 +112,7 @@ export default function PantallaRutas({ navigation, route }) {
           ubicaciones={ubicaciones}
           onMarkersUpdate={handleMarkersUpdate}
           onStepsUpdate={setNavigationSteps}
+          onPoiDetected={handlePoiDetected}
         />
       </View>
 

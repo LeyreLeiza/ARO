@@ -62,9 +62,9 @@ export default function MapaRutas({
   const [selectedMarkers, setSelectedMarkers] = useState([]);
   const [routeCoords, setRouteCoords] = useState([]);
   const [totalDuration, setTotalDuration] = useState(0);
+  const primeraVez = useRef(true);
 
   const selectedMarkersRef = useRef([]);
-  const primeraVez = useRef(true);
 
   const [region] = useState({
     latitude: 42.8169,
@@ -88,9 +88,7 @@ export default function MapaRutas({
   }
 }, [ubicaciones]);
 
-
-  // Localización y detección
-  useEffect(() => {
+   useEffect(() => {
     (async () => {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") return;
@@ -114,31 +112,32 @@ export default function MapaRutas({
           if (puntoCercano) {
             onPoiDetected && onPoiDetected(puntoCercano);
 
-            // Marcar como visitado
-            setSelectedMarkers(prev =>
-              prev.map(p =>
+            setSelectedMarkers(prev => {
+              const updated = prev.map(p =>
                 p.id === puntoCercano.id ? { ...p, visitado: true } : p
-              )
-            );
+              );
+              
+              const todosVisitados = updated.every(p => p.visitado);
+              
+              if (todosVisitados && primeraVez.current) {
+                primeraVez.current = false;
+                
+                setTimeout(() => {
+                  Alert.alert(
+                    "Ruta finalizada",
+                    "¡Has completado todos los puntos de la ruta!",
+                    [{text: "Aceptar"}]
+                  );
+                }, 100);
+              }
+              return updated;
+            });
           }
         }
       );
-
       return () => subscription.remove();
     })();
   }, []);
-
-  useEffect(() => {
-    if (selectedMarkers.length > 0 && selectedMarkers.every(p => p.visitado) && primeraVez.current) {
-      primeraVez.current = false;
-
-      Alert.alert(
-        "Ruta finalizada",
-        "¡Has completado todos los puntos de la ruta!",
-        [{ text: "Aceptar" }]
-      );
-    }
-  }, [selectedMarkers]);
 
 
   useEffect(() => {
