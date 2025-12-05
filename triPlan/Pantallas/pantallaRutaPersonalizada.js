@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvo
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useBuscaPuntos } from "../Funcionalidades/busquedaPuntos";
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { insertarRutaPersonalizada, actualizarRutaPersonalizada } from "../Funcionalidades/busquedaUsuarios";
+import { insertarRutaPersonalizada } from "../Funcionalidades/busquedaUsuarios";
 
 global.idUsuario = global.idUsuario || "";
 global.modLetraValor = global.modLetraValor || 0;
@@ -22,33 +22,21 @@ export default function RutaPersonalizada({ navigation, route }) {
   const { puntosPorTipo, loadingPorTipo, error } = useBuscaPuntos(['Todos']);
   const [puntosFiltrados, setPuntosFiltrados] = useState([]);
 
-  const rutaEditar = route.params?.ruta;
-
   useEffect(() => {
-    if (rutaEditar) {
-      setNombre(rutaEditar.nombre);
-      setDescripcion(rutaEditar.descripcion);
-      const puntosMapeados = rutaEditar.puntos_interes.map(p => ({
-        id: p.id,
-        nombre: p.nombre,
-        tipo: p.tipo || p.descripcion
-      }));
-      setPuntos(puntosMapeados);
-    }
-  }, [rutaEditar]);
+    if (loadingPorTipo) return;
 
-  useEffect(() => {
-    if (!loadingPorTipo) {
-      if (busqueda.trim()) {
-        const puntosFiltrados2 = puntosPorTipo.filter((item) =>
-          item.nombre.toLowerCase().includes(busqueda.toLowerCase())
-        );
-        setPuntosFiltrados(puntosFiltrados2);
-      } else {
-        setPuntosFiltrados(puntosPorTipo);
-      }
+    if (!busqueda.trim()) {
+      setPuntosFiltrados(puntosPorTipo);
+      return;
     }
-  }, [loadingPorTipo, puntosPorTipo, busqueda]);
+
+    const resultado = puntosPorTipo.filter((item) =>
+      item.nombre.toLowerCase().includes(busqueda.toLowerCase())
+    );
+
+    setPuntosFiltrados(resultado);
+
+  }, [loadingPorTipo, busqueda]); 
 
 
   const handleInsertadoRuta = async () => {
@@ -67,24 +55,13 @@ export default function RutaPersonalizada({ navigation, route }) {
     const puntosIds = puntos.map(p => p.id);
 
     try {
-      if (rutaEditar) {
-        await actualizarRutaPersonalizada({
-          userId: global.idUsuario,
-          rutaId: rutaEditar.id,
-          nombre,
-          descripcion,
-          puntos: puntosIds
-        });
-        Alert.alert("Actualizado", "Ruta personalizada actualizada correctamente");
-      } else {
-        await insertarRutaPersonalizada({
-          userId: global.idUsuario,
-          nombre,
-          descripcion,
-          puntos: puntosIds
-        });
-        Alert.alert("Guardado", "Ruta personalizada guardada correctamente");
-      }
+      await insertarRutaPersonalizada({
+        userId: global.idUsuario,
+        nombre,
+        descripcion,
+        puntos: puntosIds
+      });
+      Alert.alert("Guardado", "Ruta personalizada guardada correctamente");
       navigation.goBack();
     } catch (error) {
       Alert.alert("Error", "Hubo un problema al guardar la ruta");
@@ -118,7 +95,7 @@ export default function RutaPersonalizada({ navigation, route }) {
 
           <View style={styles.header}>
             <Text style={[styles.title, { fontSize: 40 + modLetra }]}>
-              {rutaEditar ? "Editar ruta" : "Rutas personalizadas"}
+              Rutas personalizadas
             </Text>
             <View style={styles.linea}></View>
           </View>
@@ -216,7 +193,7 @@ export default function RutaPersonalizada({ navigation, route }) {
 
             <TouchableOpacity style={styles.button} onPress={handleInsertadoRuta}>
               <Text style={[styles.buttonText, { fontSize: 24 + modLetra }]}>
-                {rutaEditar ? "Actualizar ruta" : "Insertar ruta"}
+                Insertar ruta
               </Text>
             </TouchableOpacity>
           </View>

@@ -24,6 +24,7 @@ function getDistance(lat1, lon1, lat2, lon2) {
     Math.sin(dLon / 2) ** 2;
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
+  
 }
 
 // ----------------------
@@ -34,12 +35,13 @@ function verificarCercania(userLoc, puntos) {
   for (let punto of puntos) {
     if (punto.visitado) continue;
 
-    const d = getDistance(
-      userLoc.latitude,
-      userLoc.longitude,
-      Number(punto.latitud),
-      Number(punto.longitud)
-    );
+  const d = getDistance(
+    userLoc.latitude,
+    userLoc.longitude,
+    Number(punto.latitud),
+    Number(punto.longitud)
+  );
+
 
     if (d < radio) return punto;
   }
@@ -60,9 +62,9 @@ export default function MapaRutas({
   const [selectedMarkers, setSelectedMarkers] = useState([]);
   const [routeCoords, setRouteCoords] = useState([]);
   const [totalDuration, setTotalDuration] = useState(0);
-  const [popupShown, setPopupShown] = useState(false);
 
   const selectedMarkersRef = useRef([]);
+  const primeraVez = useRef(true);
 
   const [region] = useState({
     latitude: 42.8169,
@@ -71,22 +73,21 @@ export default function MapaRutas({
     longitudeDelta: 0.05,
   });
 
+  
   useEffect(() => {
     selectedMarkersRef.current = selectedMarkers;
   }, [selectedMarkers]);
 
-  // Tomar primeros 5 puntos e inicializar "visitado"
-  useEffect(() => {
-    if (ubicaciones.length > 0) {
-      const primeros5 = ubicaciones.slice(0, 5).map(p => ({
-        ...p,
-        visitado: false
-      }));
 
-      setSelectedMarkers(primeros5);
-      onMarkersUpdate && onMarkersUpdate(primeros5);
-    }
-  }, [ubicaciones]);
+  useEffect(() => {
+  if (ubicaciones.length > 0) {
+    const ubis = ubicaciones.map(p => ({ ...p, visitado: false }));
+    setSelectedMarkers(ubis);
+    selectedMarkersRef.current = ubis; // <--- actualizar ref aquí
+    onMarkersUpdate && onMarkersUpdate(ubis);
+  }
+}, [ubicaciones]);
+
 
   // Localización y detección
   useEffect(() => {
@@ -127,29 +128,19 @@ export default function MapaRutas({
     })();
   }, []);
 
-  // 🔥 POP-UP cuando desaparece el círculo (totalDuration === 0)
   useEffect(() => {
-    if (
-      totalDuration === 0 &&   // La ruta terminó de verdad
-      selectedMarkers.some(p => p.visitado) && // Que realmente hayamos empezado
-      !popupShown
-    ) {
-      setPopupShown(true);
+    if (selectedMarkers.length > 0 && selectedMarkers.every(p => p.visitado) && primeraVez.current) {
+      primeraVez.current = false;
 
       Alert.alert(
         "Ruta finalizada",
         "¡Has completado todos los puntos de la ruta!",
-        [
-          {
-            text: "Aceptar",
-            onPress: () => setPopupShown(false)
-          }
-        ]
+        [{ text: "Aceptar" }]
       );
     }
-  }, [totalDuration, selectedMarkers, popupShown]);
+  }, [selectedMarkers]);
 
-  // Generar ruta con puntos NO visitados
+
   useEffect(() => {
     if (!location) return;
 
@@ -157,7 +148,6 @@ export default function MapaRutas({
 
     if (activos.length === 0) {
       setRouteCoords([]);
-      setTotalDuration(0);
       return;
     }
 
@@ -171,7 +161,6 @@ export default function MapaRutas({
 
       setRouteCoords(coords);
       setTotalDuration(totalDuration);
-
       onStepsUpdate && onStepsUpdate(steps);
     })();
   }, [location, selectedMarkers]);
@@ -211,7 +200,6 @@ export default function MapaRutas({
 
       </MapView>
 
-      {/* Círculo solo aparece cuando totalDuration > 0 */}
       {totalDuration > 0 && (
         <View style={styles.floatingTime}>
           <Text style={styles.floatingTimeText}>

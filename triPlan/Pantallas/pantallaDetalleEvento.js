@@ -12,8 +12,8 @@ const DetalleEvento = ({ route }) => {
   const { evento } = route.params;
 
   const abrirCompra = () => {
-    if (evento.url) {
-      Linking.openURL(evento.url);
+    if (evento.enlace) {
+      Linking.openURL(evento.enlace);
     }
   };
 
@@ -76,7 +76,7 @@ const DetalleEvento = ({ route }) => {
                 {/* 🔹 Aplicamos fontSizeMod */}
                 <Text style={[styles.tituloContenedor, { fontSize: 12 + fontSizeMod * 0.5 }]}>Precio</Text>
                 {/* 🔹 Aplicamos fontSizeMod */}
-                <Text style={[styles.infoTexto, { fontSize: 14 + fontSizeMod }]}>{evento.precio ? `$${evento.precio}` : 'Gratis'}</Text>
+                <Text style={[styles.infoTexto, { fontSize: 14 + fontSizeMod }]}>{evento.precio ? `${evento.precio}€` : 'Gratis'}</Text>
               </View>
             </View>
           </View>
@@ -97,10 +97,10 @@ const DetalleEvento = ({ route }) => {
         <TouchableOpacity
           style={styles.boton}
           onPress={abrirCompra}
-          disabled={!evento.url}
+          disabled={!evento.enlace}
         >
           {/* 🔹 Aplicamos fontSizeMod */}
-          <Text style={[styles.botonTexto, { fontSize: 16 + fontSizeMod }]}>Comprar Entradas</Text>
+          <Text style={[styles.botonTexto, { fontSize: 16 + fontSizeMod }]}>Más información</Text>
         </TouchableOpacity>
       </ScrollView>
     </View>
