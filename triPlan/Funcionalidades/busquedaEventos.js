@@ -146,7 +146,11 @@ export const obtenerEventosFavoritos = async (usuario_id, soloIds = false) => {
     if (soloIds) {
       return data.map(e => e.evento_id);
     }
-    return data; 
+    return data.map(({ evento_id, ...rest }) => ({
+    id: evento_id,
+    ...rest
+  }));
+; 
   } catch (err) {
     console.error("Error obteniendo eventos favoritos:", err);
     return [];
@@ -187,7 +191,6 @@ export const eliminarEventoFavorito = async (usuario_id, evento_id) => {
         "x-api-key": "GW1FKVKqydjW8K0AJBmwpRgVhjx0mnNN2EuQv19PNW77M"
       }
     });
-    console.log(res.ok);
     return res.ok;
   } catch (err) {
     console.error("Error al eliminar evento favorito:", err);

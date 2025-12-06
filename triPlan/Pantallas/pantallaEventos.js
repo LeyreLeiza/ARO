@@ -117,7 +117,7 @@ const PantallaEventos = ({ navigation }) => {
       aplicarFiltros(); 
     }
 
-  }, [ loadingPorTipo, loadingPorNombre, eventosPorTipo, eventosPorNombre, busqueda, tipos, rangoFiltro, reloadFlag  ]
+  }, [ loadingPorTipo, loadingPorNombre, eventosPorTipo, eventosPorNombre, busqueda, tipos, rangoFiltro, reloadFlag, favoritos  ]
   );
 
   useEffect(() => {
@@ -125,6 +125,7 @@ const PantallaEventos = ({ navigation }) => {
       if (!global.usuarioLogueado) return;
 
       const ids = await obtenerEventosFavoritos(global.idUsuario, true);
+
       setFavoritos(ids);
     };
 
