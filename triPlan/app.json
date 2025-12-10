@@ -13,7 +13,12 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.proyectotriplan.triPlan",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
+        "GMSApiKey": "AIzaSyBCl1RWIfMGrLvf_tbWirf4s5dZVbMF1ig" 
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -21,7 +26,12 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.proyectotriplan.triPlan"
+      "package": "com.proyectotriplan.triPlan",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyBCl1RWIfMGrLvf_tbWirf4s5dZVbMF1ig" 
+        }
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"

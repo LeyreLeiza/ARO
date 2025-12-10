@@ -116,6 +116,7 @@ const styles = StyleSheet.create({
   content: { alignItems: "center" },
   image: { width: 200, height: 200, borderRadius: 60, marginBottom: 30 },
   input: {
+    text: '#000000ff',
     width: "100%", 
     height: 50, 
     backgroundColor: "#fff",

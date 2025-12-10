@@ -162,6 +162,7 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderRadius: 10,
     backgroundColor: '#e8e8e8ff',
+    text: '#000000ff',
     // 🔹 Se elimina el fontSize fijo de aquí para que solo se use el del estilo en línea
     // fontSize: 16, 
     marginRight: 10,       

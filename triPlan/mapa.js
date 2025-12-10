@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Image } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
 
@@ -31,17 +31,28 @@ function getDistance(lat1, lon1, lat2, lon2) {
 }
 
 function getMarkerImage(tipo) {
+  let markerImage;
   switch(tipo) {
-    case "Zonas": return zonaImg;
-    case "Monumentos": return monumentoImg;
-    case "Edificios": return edificioImg;
-    case "Gastronomia": return gastronomiaImg;
-    case "Arte": return arteImg;
-    case "Deportes": return deporteImg;
-    case "Eventos": return eventoImg;
-    case "Zonas verdes": return zonaVerdeImg;
-    default: return null;
+    case "Zonas": markerImage = zonaImg; break;
+    case "Monumentos": markerImage = monumentoImg; break;
+    case "Edificios": markerImage = edificioImg; break;
+    case "Gastronomia": markerImage = gastronomiaImg; break;
+    case "Arte": markerImage = arteImg; break;
+    case "Deportes": markerImage = deporteImg; break;
+    case "Eventos": markerImage = eventoImg; break;
+    case "Zonas verdes": markerImage = zonaVerdeImg; break;
+    default: markerImage = null;
   }
+
+  if (markerImage) {
+    const imageSource = Image.resolveAssetSource(markerImage);
+    return {
+      uri: imageSource.uri,
+      width: 22,
+      height: 28,
+    };
+  }
+  return null;
 }
 
 export default function Mapa({ ubicaciones = [], onSelectPunto }) {

@@ -6,6 +6,7 @@ import arteImg from "../assets/markerArte.png";
 import deporteImg from "../assets/markerDeporte.png";
 import eventoImg from "../assets/markerEventos.png";
 import zonaVerdeImg from "../assets/markerZonaVerde.png";
+import { Image } from "react-native";
 
 export async function obtenerRutaOSRM(origen, destino) {
     try {
@@ -163,24 +164,27 @@ export async function generarRutaConCalles(userLoc, puntosOrdenados) {
 }
 
 export function getMarkerImage(tipo) {
-    switch (tipo) {
-        case "Zonas":
-            return zonaImg;
-        case "Monumentos":
-            return monumentoImg;
-        case "Edificios":
-            return edificioImg;
-        case "Gastronomia":
-            return gastronomiaImg;
-        case "Arte":
-            return arteImg;
-        case "Deportes":
-            return deporteImg;
-        case "Eventos":
-            return eventoImg;
-        case "Zonas verdes":
-            return zonaVerdeImg;
-        default:
-            return null;
-    }
+  let markerImage;
+  switch(tipo) {
+    case "Zonas": markerImage = zonaImg; break;
+    case "Monumentos": markerImage = monumentoImg; break;
+    case "Edificios": markerImage = edificioImg; break;
+    case "Gastronomia": markerImage = gastronomiaImg; break;
+    case "Arte": markerImage = arteImg; break;
+    case "Deportes": markerImage = deporteImg; break;
+    case "Eventos": markerImage = eventoImg; break;
+    case "Zonas verdes": markerImage = zonaVerdeImg; break;
+    default: markerImage = null;
+  }
+
+  if (markerImage) {
+    const imageSource = Image.resolveAssetSource(markerImage);
+    return {
+      uri: imageSource.uri,
+      width: 22,
+      height: 28,
+    };
+  }
+  return null;
 }
+

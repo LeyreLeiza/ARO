@@ -215,6 +215,7 @@ const styles = StyleSheet.create({
   },
   content: { alignItems: "center" },
   input: {
+    text: '#000000ff',
     width: "100%",
     height: 50,
     backgroundColor: "#fff",
