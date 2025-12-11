@@ -9,6 +9,23 @@ import {
   generarRutaConCalles
 } from "./Funcionalidades/mapaHelpers";
 
+const customMapStyle = [
+  {
+    featureType: "poi",
+    elementType: "labels",
+    stylers: [{ visibility: "off" }]
+  },
+  {
+    featureType: "poi.business",
+    stylers: [{ visibility: "off" }]
+  },
+  {
+    featureType: "transit",
+    elementType: "labels.icon",
+    stylers: [{ visibility: "off" }]
+  }
+];
+
 // ----------------------
 // Función auxiliar: distancia
 // ----------------------
@@ -175,19 +192,27 @@ export default function MapaRutas({
 
   return (
     <View style={styles.container}>
-      <MapView style={styles.map} initialRegion={region} showsUserLocation>
+      <MapView style={styles.map} initialRegion={region} showsUserLocation showsBuildings={false} showsPointsOfInterest={false} customMapStyle={customMapStyle}>
 
-        {selectedMarkers.map((m) => (
-          <Marker
-            key={m.id}
-            coordinate={{
-              latitude: Number(m.latitud),
-              longitude: Number(m.longitud),
-            }}
-            title={m.nombre}
-            image={getMarkerImage(m.tipo)}
-          />
-        ))}
+        {selectedMarkers.map((m) => {
+          return (
+            <Marker
+              key={m.id}
+              coordinate={{
+                latitude: Number(m.latitud),
+                longitude: Number(m.longitud),
+              }}
+              title={m.nombre}
+              image={getMarkerImage(m.tipo)}
+            >
+              <Image
+                source={markerSource}
+                style={{ width: 30, height: 38 }}
+                resizeMode="contain"
+              />
+            </Marker>
+          );
+        })}
 
         {routeCoords.length > 1 && (
           <Polyline

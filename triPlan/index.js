@@ -20,12 +20,24 @@ import RutaPersonalizada from './Pantallas/pantallaRutaPersonalizada';
 import CalendarIcon from './assets/CalendarIcon';
 import MapIcon from './assets/MapIcon';
 import SettingsIcon from './assets/SettingsIcon';
+import { registerRootComponent } from 'expo';
 
 // 🔹 IMPORTACIÓN NUEVA: El proveedor de contexto
 import { FontSizeProvider } from './Componentes/FontSizeContext'; 
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator(); 
+
+function AppWrapper() {
+  return (
+    <>
+      <StatusBar style="dark" />
+      <App />
+    </>
+  );
+}
+
+registerRootComponent(AppWrapper);
 
 // Navegación inferior (Tabs)
 const TabNavigation = () => {

@@ -12,6 +12,23 @@ import deporteImg from "./assets/markerDeporte.png";
 import eventoImg from "./assets/markerEventos.png";
 import zonaVerdeImg from "./assets/markerZonaVerde.png";
 
+const customMapStyle = [
+  {
+    featureType: "poi",
+    elementType: "labels",
+    stylers: [{ visibility: "off" }]
+  },
+  {
+    featureType: "poi.business",
+    stylers: [{ visibility: "off" }]
+  },
+  {
+    featureType: "transit",
+    elementType: "labels.icon",
+    stylers: [{ visibility: "off" }]
+  }
+];
+
 // Función Haversine para calcular distancia (en metros)
 function getDistance(lat1, lon1, lat2, lon2) {
   const R = 6371e3;
@@ -48,8 +65,6 @@ function getMarkerImage(tipo) {
     const imageSource = Image.resolveAssetSource(markerImage);
     return {
       uri: imageSource.uri,
-      width: 22,
-      height: 28,
     };
   }
   return null;
@@ -115,21 +130,35 @@ export default function Mapa({ ubicaciones = [], onSelectPunto }) {
         ref={mapRef}
         style={styles.map}
         showsUserLocation
+        showsBuildings={false} 
+        showsPointsOfInterest={false}
+        customMapStyle={customMapStyle}
         initialRegion={puntoReferencia} // 🔹 Centrado al abrir la app
       >
         {/* Solo los marcadores de ubicaciones dinámicas */}
-        {(ubicaciones || []).map((m) => (
-          <Marker
-            key={m.id}
-            coordinate={{
-              latitude: Number(m.latitud),
-              longitude: Number(m.longitud)
-            }}
-            title={m.nombre}
-            image={getMarkerImage(m.tipo)}
-            onPress={() => onSelectPunto && onSelectPunto(m)}
-          />
-        ))}
+        {(ubicaciones || []).map((m) => {
+          const markerSource = getMarkerImage(m.tipo);
+          if (!markerSource) return null;
+          
+          return (
+            <Marker
+              key={m.id}
+              coordinate={{
+                latitude: Number(m.latitud),
+                longitude: Number(m.longitud)
+              }}
+              title={m.nombre}
+              anchor={{ x: 0.5, y: 1 }}
+              onPress={() => onSelectPunto && onSelectPunto(m)}
+            >
+              <Image
+                source={markerSource}
+                style={{ width: 30, height: 38 }}
+                resizeMode="contain"
+              />
+            </Marker>
+          );
+        })}
       </MapView>
     </View>
   );
